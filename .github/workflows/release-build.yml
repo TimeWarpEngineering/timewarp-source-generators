@@ -34,27 +34,16 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 17.x
-
-      - name: Build esproj
-        run: |
-          cd Source/BlazorState.Js/
-          npm install
-          npm run build
-
       - name: Build
         run: |
-          cd Source/BlazorState/
-          dotnet build --configuration Release
+          cd source/TimeWarp.SourceGenerators/
+          dotnet build --configuration Debug
         shell: pwsh
 
       - name: Publish
         run: |
-          cd Source/BlazorState/bin/Packages
-          dotnet nuget push Blazor-State.*.nupkg --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{secrets.PUBLISH_TO_NUGET_ORG}}
+          cd source/TimeWarp.SourceGenerators
+          dotnet nuget push TimeWarp.SourceGenerators.*.nupkg --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{secrets.PUBLISH_TO_NUGET_ORG}}
         shell: pwsh
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
