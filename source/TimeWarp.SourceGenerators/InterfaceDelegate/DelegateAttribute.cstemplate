@@ -1,13 +1,12 @@
-﻿namespace TimeWarp
-{
-  using System;
+﻿namespace TimeWarp;
 
-  /// <summary>
-  /// Use this attribute to indicate that delegate source should be generated
-  /// </summary>
-  [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    sealed class DelegateAttribute : Attribute
-    {
-      public string PropertyName { get; set; }
-    }
-  }
+using System;
+
+/// <summary>
+/// Use this attribute to indicate that delegate source should be generated
+/// </summary>
+[AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+public sealed class DelegateAttribute : Attribute
+{
+  public string PropertyName { get; set; }
+}
