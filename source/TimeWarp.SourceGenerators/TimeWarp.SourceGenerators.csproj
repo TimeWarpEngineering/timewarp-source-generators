@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>./bin/Packages</PackageOutputPath>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -8,6 +9,14 @@
     <PackageLicenseExpression>Unlicense</PackageLicenseExpression>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Title>TimeWarp Source Generators</Title>
+    <Description>The TimeWarp collection of source generators</Description>
+    <PackageId>TimeWarp.SourceGenerators</PackageId>
+    <AssemblyName>TimeWarp.SourceGenerators</AssemblyName>
+    <PackageIcon>Logo.png</PackageIcon>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\README.md">
