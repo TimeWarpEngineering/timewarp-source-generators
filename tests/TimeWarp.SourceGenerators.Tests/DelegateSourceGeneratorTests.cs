@@ -1,4 +1,4 @@
-﻿namespace DelegateSourceGenerator_;
+namespace DelegateSourceGenerator_;
 
 using FluentAssertions;
 using TimeWarp.SourceCodeGenerators;

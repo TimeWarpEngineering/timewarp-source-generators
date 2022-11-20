@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace TimeWarp.SourceCodeGenerators.Tests.TestSource;
 
 using System.Collections.Generic;

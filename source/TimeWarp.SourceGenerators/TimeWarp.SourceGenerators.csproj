@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -29,10 +29,20 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
   </ItemGroup>
 
+	<ItemGroup>
+		<!-- Generator package dependencies -->
+    <PackageReference Include="Morris.Moxy" PrivateAssets="all" GeneratePathProperty="true"/>
+		<!-- <PackageReference Include="Scriban.Signed" PrivateAssets="all" GeneratePathProperty="true" /> -->
+		<PackageReference Include="Microsoft.CSharp" PrivateAssets="all" GeneratePathProperty="true" />
+	</ItemGroup>
+
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\assets\Logo.png" Pack="true" PackagePath="" />
     <!-- Package the generator in the analyzer directory of the nuget package -->
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+      <!-- Package the Morris.Moxy dependency alongside the generator assembly -->
+    <None Include="$(PkgMorris_Moxy)\analyzers\dotnet\cs\Morris.Moxy.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(PkgMorris_Moxy)\analyzers\dotnet\cs\Scriban.Signed.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace TimeWarp.SourceCodeGenerators.Tests.TestSource;
+namespace TimeWarp.SourceCodeGenerators.Tests.TestSource;
 
 using MediatR;
 using System;

@@ -1,4 +1,4 @@
-﻿namespace TimeWarp.SourceCodeGenerators.Tests.Infrastructure;
+namespace TimeWarp.SourceCodeGenerators.Tests.Infrastructure;
 
 using FluentAssertions;
 using Microsoft.CodeAnalysis;

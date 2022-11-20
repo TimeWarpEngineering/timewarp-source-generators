@@ -1,4 +1,4 @@
-﻿namespace TimeWarp.SourceCodeGenerators;
+namespace TimeWarp.SourceCodeGenerators;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
