@@ -1,0 +1,1 @@
+$Host.UI.RawUI.WindowTitle = "timewarp-source-generators"
