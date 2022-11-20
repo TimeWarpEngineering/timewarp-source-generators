@@ -1,0 +1,6 @@
+namespace {{ moxy.Class.Namespace }};
+
+public partial class BaseComponent : BlazorStateDevToolsComponent, IAttributeComponent
+{
+  internal {{ moxy.Class.Name }} {{ moxy.Class.Name }} => GetState<{{ moxy.Class.Name }}>();
+}

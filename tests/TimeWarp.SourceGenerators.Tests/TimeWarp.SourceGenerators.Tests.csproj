@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <PackageReference Include="FakeItEasy" />
@@ -11,7 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\source\TimeWarp.SourceGenerators\TimeWarp.SourceGenerators.csproj" />
+    <ProjectReference Include="..\..\source\TimeWarp.SourceGenerators\TimeWarp.SourceGenerators.csproj" >
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>
