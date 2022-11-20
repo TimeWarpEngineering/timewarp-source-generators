@@ -24,6 +24,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TimeWarpStateBaseMixin\tw_base.mixin" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="TimeWarpStateBaseMixin\tw_base.mixin" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!--<PackageReference Include="Microsoft.CodeAnalysis" />-->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
@@ -31,7 +39,7 @@
 
 	<ItemGroup>
 		<!-- Generator package dependencies -->
-    <PackageReference Include="Morris.Moxy" PrivateAssets="all" GeneratePathProperty="true"/>
+    <PackageReference Include="Morris.Moxy" PrivateAssets="all" GeneratePathProperty="true" />
 		<!-- <PackageReference Include="Scriban.Signed" PrivateAssets="all" GeneratePathProperty="true" /> -->
 		<PackageReference Include="Microsoft.CSharp" PrivateAssets="all" GeneratePathProperty="true" />
 	</ItemGroup>
