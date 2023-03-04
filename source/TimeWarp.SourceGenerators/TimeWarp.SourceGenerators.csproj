@@ -41,8 +41,5 @@
     <None Include="..\..\assets\Logo.png" Pack="true" PackagePath="" />
     <!-- Package the generator in the analyzer directory of the nuget package -->
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-      <!-- Package the Morris.Moxy dependency alongside the generator assembly -->
-    <None Include="$(PkgMorris_Moxy)\analyzers\dotnet\cs\Morris.Moxy.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="$(PkgMorris_Moxy)\analyzers\dotnet\cs\Scriban.Signed.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>
