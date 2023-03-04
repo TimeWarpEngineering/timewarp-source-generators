@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Authors>Steven T. Cramer</Authors>
     <Product>TimeWarp.SourceGenerators</Product>
-    <PackageVersion>1.0.0-alpha.5+7.0.100</PackageVersion>
+    <PackageVersion>1.0.0-alpha.6+7.0.100</PackageVersion>
     <PackageProjectUrl>https://timewarpengineering.github.io/timewarp-source-generators/</PackageProjectUrl>
     <PackageTags>TimeWarp; Source Generator;SourceGenerators; Delegate</PackageTags>
     <RepositoryUrl>https://github.com/TimeWarpEngineering/timewarp-source-generators.git</RepositoryUrl>
