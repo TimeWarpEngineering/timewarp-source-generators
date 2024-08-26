@@ -1,10 +1,3 @@
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using System.Text;
-using System.Text.RegularExpressions;
-
 namespace DocumentationGenerator;
 
 [Generator]
@@ -17,66 +10,91 @@ public class MarkdownDocumentationGenerator : ISourceGenerator
 
   public void Execute(GeneratorExecutionContext context)
   {
-    Dictionary<string, string> mdContents = GetMarkdownContents(context.AdditionalFiles);
-    HashSet<string> processedMdFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    var csFiles = new HashSet<string>(
+      context.Compilation.SyntaxTrees
+        .Select(st => Path.GetFileNameWithoutExtension(st.FilePath)),
+      StringComparer.OrdinalIgnoreCase
+    );
 
-    foreach (SyntaxTree syntaxTree in context.Compilation.SyntaxTrees)
+    var mdContents = GetRelevantMarkdownContents(context.AdditionalFiles, csFiles);
+
+    foreach (var syntaxTree in context.Compilation.SyntaxTrees)
     {
-      string csFileName = Path.GetFileName(syntaxTree.FilePath);
-      string mdFileName = Path.ChangeExtension(csFileName, ".md");
+      string csFileNameWithoutExtension = Path.GetFileNameWithoutExtension(syntaxTree.FilePath);
 
-      if (mdContents.TryGetValue(mdFileName, out string mdContent))
+      if (mdContents.TryGetValue(csFileNameWithoutExtension, out string mdContent))
       {
-        processedMdFiles.Add(mdFileName);
-
         SemanticModel semanticModel = context.Compilation.GetSemanticModel(syntaxTree);
         SyntaxNode root = syntaxTree.GetRoot();
 
-        SyntaxNode newRoot = ProcessMembers(root, semanticModel, mdContent);
+        string documentationSource = GenerateDocumentationSource(root, semanticModel, mdContent);
 
-        context.AddSource(
-          $"{Path.GetFileNameWithoutExtension(csFileName)}_Generated.cs",
-          SourceText.From(newRoot.ToFullString(), Encoding.UTF8)
-        );
-      }
-    }
-
-    // Log warnings for Markdown files without corresponding .cs files
-    foreach (var mdFile in mdContents.Keys)
-    {
-      if (!processedMdFiles.Contains(mdFile))
-      {
-        context.ReportDiagnostic(Diagnostic.Create(
-          new DiagnosticDescriptor(
-            "MW001",
-            "Unprocessed Markdown file",
-            "Markdown file '{0}' does not have a corresponding .cs file and was not processed.",
-            "MarkdownWarning",
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true),
-          Location.None,
-          mdFile));
+        if (!string.IsNullOrWhiteSpace(documentationSource))
+        {
+          context.AddSource(
+            $"{csFileNameWithoutExtension}.Documentation.cs",
+            SourceText.From(documentationSource, Encoding.UTF8)
+          );
+        }
       }
     }
   }
 
-  private static Dictionary<string, string> GetMarkdownContents(IEnumerable<AdditionalText> additionalFiles)
+  private string GenerateDocumentationSource(SyntaxNode root, SemanticModel semanticModel, string mdContent)
+  {
+    var documentationBuilder = new StringBuilder();
+
+    foreach (var member in root.DescendantNodes().OfType<MemberDeclarationSyntax>())
+    {
+      var symbol = semanticModel.GetDeclaredSymbol(member);
+      if (symbol != null)
+      {
+        var documentation = FindDocumentationForSymbol(symbol, mdContent);
+        if (documentation != null)
+        {
+          string xmlDoc = GenerateXmlDocumentation(documentation);
+          documentationBuilder.AppendLine(xmlDoc);
+          documentationBuilder.AppendLine(member.ToFullString());
+        }
+      }
+    }
+
+    return documentationBuilder.ToString();
+  }
+
+  private static Dictionary<string, string> GetRelevantMarkdownContents(
+    IEnumerable<AdditionalText> additionalFiles,
+    HashSet<string> csFiles)
   {
     return additionalFiles
-      .Where(file => Path.GetExtension(file.Path).Equals(".md", StringComparison.OrdinalIgnoreCase))
+      .Where(file =>
+        Path.GetExtension(file.Path).Equals(".md", StringComparison.OrdinalIgnoreCase) &&
+        csFiles.Contains(Path.GetFileNameWithoutExtension(file.Path))
+      )
       .ToDictionary(
-        file => Path.GetFileName(file.Path),
+        file => Path.GetFileNameWithoutExtension(file.Path),
         file => file.GetText()?.ToString() ?? string.Empty,
-        StringComparer.OrdinalIgnoreCase  // Use case-insensitive comparison for file names
+        StringComparer.OrdinalIgnoreCase
       );
   }
 
   private static SyntaxNode ProcessMembers(SyntaxNode root, SemanticModel semanticModel, string mdContent)
   {
-    return root.ReplaceNodes(
+    bool changes = false;
+    var newRoot = root.ReplaceNodes(
       root.DescendantNodes().OfType<MemberDeclarationSyntax>(),
-      (node, _) => ProcessMember(node, semanticModel, mdContent)
+      (node, _) =>
+      {
+        var newNode = ProcessMember(node, semanticModel, mdContent);
+        if (newNode != node)
+        {
+          changes = true;
+        }
+        return newNode;
+      }
     );
+
+    return changes ? newRoot : root;
   }
 
   private static SyntaxNode ProcessMember(MemberDeclarationSyntax member, SemanticModel semanticModel, string mdContent)
@@ -84,24 +102,44 @@ public class MarkdownDocumentationGenerator : ISourceGenerator
     ISymbol symbol = semanticModel.GetDeclaredSymbol(member);
     if (symbol == null)
     {
+      Console.WriteLine($"Warning: Unable to get symbol for member {member}");
       return member;
     }
 
     MarkdownDocumentation documentation = FindDocumentationForSymbol(symbol, mdContent);
     if (documentation == null)
     {
+      Console.WriteLine($"Warning: No documentation found for symbol {symbol.ToDisplayString()}");
       return member;
     }
 
+    Console.WriteLine($"Info: Found documentation for symbol {symbol.ToDisplayString()}");
+
+    string xmlDoc = GenerateXmlDocumentation(documentation);
     SyntaxTriviaList newLeadingTrivia = member.GetLeadingTrivia()
-      .Add(SyntaxFactory.Trivia(
-        SyntaxFactory.DocumentationCommentTrivia(
-          SyntaxKind.SingleLineDocumentationCommentTrivia,
-          SyntaxFactory.List(GenerateDocumentationNodes(documentation))
-        )
-      ));
+      .Add(SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, xmlDoc));
 
     return member.WithLeadingTrivia(newLeadingTrivia);
+  }
+
+  private static string GenerateXmlDocumentation(MarkdownDocumentation documentation)
+  {
+    var xmlBuilder = new StringBuilder();
+    xmlBuilder.AppendLine("/// <summary>");
+    xmlBuilder.AppendLine($"/// {documentation.Summary}");
+    xmlBuilder.AppendLine("/// </summary>");
+
+    foreach (var param in documentation.Parameters)
+    {
+      xmlBuilder.AppendLine($"/// <param name=\"{param.name}\">{param.description}</param>");
+    }
+
+    if (!string.IsNullOrEmpty(documentation.Returns))
+    {
+      xmlBuilder.AppendLine($"/// <returns>{documentation.Returns}</returns>");
+    }
+
+    return xmlBuilder.ToString();
   }
 
   private static MarkdownDocumentation FindDocumentationForSymbol(ISymbol symbol, string mdContent)
@@ -109,16 +147,21 @@ public class MarkdownDocumentationGenerator : ISourceGenerator
     string fullName = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
     string[] parts = fullName.Split('.');
 
+    Console.WriteLine($"Searching for documentation for symbol: {fullName}");
+
     for (int i = parts.Length; i > 0; i--)
     {
       string sectionName = string.Join(".", parts.Skip(parts.Length - i));
+      Console.WriteLine($"Checking section: {sectionName}");
       MarkdownDocumentation documentation = ParseDocumentation(mdContent, sectionName);
       if (documentation != null)
       {
+        Console.WriteLine($"Found documentation for section: {sectionName}");
         return documentation;
       }
     }
 
+    Console.WriteLine($"No documentation found for symbol: {fullName}");
     return null;
   }
 
