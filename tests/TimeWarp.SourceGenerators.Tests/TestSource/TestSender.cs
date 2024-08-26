@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using TimeWarp.Fixie;
 
 [NotTest]
-public class TestSender : ISender
+public class TestSender
 {
   public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default) =>
     throw new NotImplementedException();
