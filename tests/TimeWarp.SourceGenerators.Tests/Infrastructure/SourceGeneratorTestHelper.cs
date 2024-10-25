@@ -12,7 +12,7 @@ using TimeWarp.Fixie;
 [NotTest]
 public static class SourceGeneratorTestHelper
 {
-  public static string GetGeneratedOutput<TGenerator>(string sourceCode)
+  public static string GetGeneratedOutput<TGenerator>(string sourceCode, AdditionalText[] additionalTexts = null)
     where TGenerator : class, ISourceGenerator, new()
   {
     SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
@@ -33,14 +33,16 @@ public static class SourceGeneratorTestHelper
       );
 
     var generator = new TGenerator();
-    CSharpGeneratorDriver
-      .Create(generator)
-      .RunGeneratorsAndUpdateCompilation
-      (
-        compilation,
-        out Compilation outputCompilation,
-        out ImmutableArray<Diagnostic> diagnostics
-      );
+
+    var driver = CSharpGeneratorDriver
+      .Create(new[] { generator }, additionalTexts: additionalTexts ?? Array.Empty<AdditionalText>());
+
+    driver.RunGeneratorsAndUpdateCompilation
+    (
+      compilation,
+      out Compilation outputCompilation,
+      out ImmutableArray<Diagnostic> diagnostics
+    );
 
     // optional
     diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
@@ -48,6 +50,5 @@ public static class SourceGeneratorTestHelper
     return outputCompilation.SyntaxTrees.Skip(1).LastOrDefault()?.ToString();
   }
 }
-
 
 // References: https://www.thinktecture.com/en/net/roslyn-source-generators-analyzers-code-fixes-testing/

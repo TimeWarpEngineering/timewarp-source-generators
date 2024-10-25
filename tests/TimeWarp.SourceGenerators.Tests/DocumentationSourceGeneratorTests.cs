@@ -1,15 +1,12 @@
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using System.Collections.Immutable;
-using TimeWarp.SourceGenerators.Tests.Infrastructure;
-using Xunit;
+using FluentAssertions;
+using TimeWarp.SourceGenerators;
+using static TimeWarp.SourceGenerators.Tests.Infrastructure.SourceGeneratorTestHelper;
 
-namespace TimeWarp.SourceGenerators.Tests;
+namespace DocumentationSourceGenerator_;
 
-public class DocumentationSourceGeneratorTests
+public class Should_
 {
-    [Fact]
-    public void Should_Generate_Documentation_From_Markdown()
+    public void Generate_Documentation_From_Markdown()
     {
         // Arrange
         var source = @"
@@ -24,44 +21,34 @@ public class TestClass
 
 This is a test class that demonstrates documentation generation.
 
-## TestMethod
+### TestMethod
 
-This method is used for testing the documentation generator.";
+This method is used for testing the documentation generator.
 
-        var compilation = CSharpCompilation.Create(
-            assemblyName: "TestAssembly",
-            syntaxTrees: new[] { CSharpSyntaxTree.ParseText(source) },
-            references: SourceGeneratorTestHelper.DefaultReferences
-        );
+Parameters:
+- name: The name of the person to greet
 
-        // Create AdditionalText for markdown file
-        var markdownFile = new CustomAdditionalText("TestClass.cs.md", markdownContent);
+Returns: A string containing the greeting message";
 
-        var generator = new DocumentationSourceGenerator();
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(
-            generators: new[] { generator },
-            additionalTexts: new[] { markdownFile },
-            parseOptions: compilation.SyntaxTrees.First().Options as CSharpParseOptions
-        );
+        var additionalTexts = new[]
+        {
+            new CustomAdditionalText("TestClass.cs.md", markdownContent)
+        };
 
         // Act
-        driver = driver.RunGenerators(compilation);
+        string output = GetGeneratedOutput<DocumentationSourceGenerator>(source, additionalTexts);
 
         // Assert
-        var runResult = driver.GetRunResult();
-        var generatedFiles = runResult.GeneratedTrees;
-
-        Assert.Single(generatedFiles);
-        var generatedSource = generatedFiles[0].ToString();
-        
-        Assert.Contains("/// <summary>", generatedSource);
-        Assert.Contains("This is a test class that demonstrates documentation generation.", generatedSource);
-        Assert.Contains("This method is used for testing the documentation generator.", generatedSource);
+        output.Should().Contain("/// <summary>");
+        output.Should().Contain("/// This is a test class that demonstrates documentation generation.");
+        output.Should().Contain("/// This method is used for testing the documentation generator.");
+        output.Should().Contain("/// <param name=\"name\">The name of the person to greet</param>");
+        output.Should().Contain("/// <returns>A string containing the greeting message</returns>");
     }
 }
 
 // Helper class to create AdditionalText for testing
-public class CustomAdditionalText : AdditionalText
+public class CustomAdditionalText : Microsoft.CodeAnalysis.AdditionalText
 {
     private readonly string _text;
     public override string Path { get; }
@@ -72,8 +59,8 @@ public class CustomAdditionalText : AdditionalText
         _text = text;
     }
 
-    public override SourceText GetText(CancellationToken cancellationToken = default)
+    public override Microsoft.CodeAnalysis.Text.SourceText GetText(System.Threading.CancellationToken cancellationToken = default)
     {
-        return SourceText.From(_text);
+        return Microsoft.CodeAnalysis.Text.SourceText.From(_text);
     }
 }
