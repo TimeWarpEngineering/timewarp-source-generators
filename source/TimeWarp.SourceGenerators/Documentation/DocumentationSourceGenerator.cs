@@ -15,6 +15,14 @@ public class DocumentationSourceGenerator : ISourceGenerator
 
     public void Execute(GeneratorExecutionContext context)
     {
+        // Get all .cs.md files from AdditionalFiles
+        var markdownFiles = context.AdditionalFiles
+            .Where(f => f.Path.EndsWith(".cs.md"))
+            .ToDictionary(
+                f => f.Path.Substring(0, f.Path.Length - 3), // Remove .md to get .cs path
+                f => f.GetText()?.ToString() ?? string.Empty
+            );
+
         // Find all .cs files in the compilation
         var csFiles = context.Compilation.SyntaxTrees
             .Where(st => st.FilePath.EndsWith(".cs"))
@@ -22,20 +30,13 @@ public class DocumentationSourceGenerator : ISourceGenerator
 
         foreach (var csFile in csFiles)
         {
-            var mdFile = $"{csFile}.md";
-            
-            // Check if corresponding .cs.md file exists
-            if (File.Exists(mdFile))
+            // Check if we have corresponding markdown documentation
+            if (markdownFiles.TryGetValue(csFile, out var mdContent))
             {
-                var mdContent = File.ReadAllText(mdFile);
                 var documentationContent = GenerateDocumentation(mdContent, Path.GetFileNameWithoutExtension(csFile));
                 
                 // Generate the documentation file
                 var documentationFileName = Path.GetFileNameWithoutExtension(csFile) + ".Documentation.cs";
-                var documentationFilePath = Path.Combine(
-                    Path.GetDirectoryName(csFile)!,
-                    documentationFileName
-                );
 
                 context.AddSource
                 (

@@ -1,5 +1,5 @@
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using TimeWarp.SourceGenerators.Tests.Infrastructure;
 using Xunit;
@@ -34,8 +34,15 @@ This method is used for testing the documentation generator.";
             references: SourceGeneratorTestHelper.DefaultReferences
         );
 
+        // Create AdditionalText for markdown file
+        var markdownFile = new CustomAdditionalText("TestClass.cs.md", markdownContent);
+
         var generator = new DocumentationSourceGenerator();
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(
+            generators: new[] { generator },
+            additionalTexts: new[] { markdownFile },
+            parseOptions: compilation.SyntaxTrees.First().Options as CSharpParseOptions
+        );
 
         // Act
         driver = driver.RunGenerators(compilation);
@@ -50,5 +57,23 @@ This method is used for testing the documentation generator.";
         Assert.Contains("/// <summary>", generatedSource);
         Assert.Contains("This is a test class that demonstrates documentation generation.", generatedSource);
         Assert.Contains("This method is used for testing the documentation generator.", generatedSource);
+    }
+}
+
+// Helper class to create AdditionalText for testing
+public class CustomAdditionalText : AdditionalText
+{
+    private readonly string _text;
+    public override string Path { get; }
+
+    public CustomAdditionalText(string path, string text)
+    {
+        Path = path;
+        _text = text;
+    }
+
+    public override SourceText GetText(CancellationToken cancellationToken = default)
+    {
+        return SourceText.From(_text);
     }
 }
