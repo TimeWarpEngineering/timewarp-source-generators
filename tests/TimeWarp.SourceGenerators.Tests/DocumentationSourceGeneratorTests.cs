@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using TimeWarp.SourceGenerators;
 using static TimeWarp.SourceCodeGenerators.Tests.Infrastructure.SourceGeneratorTestHelper;
 
