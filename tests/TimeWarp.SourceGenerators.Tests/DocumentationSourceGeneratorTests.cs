@@ -1,6 +1,7 @@
 using FluentAssertions;
+using Microsoft.CodeAnalysis;
 using TimeWarp.SourceGenerators;
-using static TimeWarp.SourceGenerators.Tests.Infrastructure.SourceGeneratorTestHelper;
+using static TimeWarp.SourceCodeGenerators.Tests.Infrastructure.SourceGeneratorTestHelper;
 
 namespace DocumentationSourceGenerator_;
 
@@ -48,7 +49,7 @@ Returns: A string containing the greeting message";
 }
 
 // Helper class to create AdditionalText for testing
-public class CustomAdditionalText : Microsoft.CodeAnalysis.AdditionalText
+file class CustomAdditionalText : AdditionalText
 {
     private readonly string _text;
     public override string Path { get; }
@@ -59,8 +60,8 @@ public class CustomAdditionalText : Microsoft.CodeAnalysis.AdditionalText
         _text = text;
     }
 
-    public override Microsoft.CodeAnalysis.Text.SourceText GetText(System.Threading.CancellationToken cancellationToken = default)
+    public override SourceText GetText(CancellationToken cancellationToken = default)
     {
-        return Microsoft.CodeAnalysis.Text.SourceText.From(_text);
+        return SourceText.From(_text);
     }
 }
