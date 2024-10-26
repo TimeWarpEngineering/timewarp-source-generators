@@ -6,45 +6,40 @@ using System.Text.RegularExpressions;
 namespace TimeWarp.SourceGenerators;
 
 [Generator]
-public class DocumentationSourceGenerator : ISourceGenerator
+public class DocumentationSourceGenerator : IIncrementalGenerator
 {
-    public void Initialize(GeneratorInitializationContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // No initialization required for now
-    }
+        // Register additional files with .cs.md extension
+        var markdownFiles = context.AdditionalTextsProvider
+            .Where(file => file.Path.EndsWith(".cs.md"));
 
-    public void Execute(GeneratorExecutionContext context)
-    {
-        // Get all .cs.md files from AdditionalFiles
-        var markdownFiles = context.AdditionalFiles
-            .Where(f => f.Path.EndsWith(".cs.md"))
-            .ToDictionary(
-                f => f.Path.Substring(0, f.Path.Length - 3), // Remove .md to get .cs path
-                f => f.GetText()?.ToString() ?? string.Empty
-            );
+        // Get all C# source files
+        var sourceFiles = context.CompilationProvider
+            .SelectMany((compilation, _) => compilation.SyntaxTrees)
+            .Where(tree => tree.FilePath.EndsWith(".cs"));
 
-        // Find all .cs files in the compilation
-        var csFiles = context.Compilation.SyntaxTrees
-            .Where(st => st.FilePath.EndsWith(".cs"))
-            .Select(st => st.FilePath);
+        // Combine markdown files with their corresponding source files
+        var combined = markdownFiles.Combine(sourceFiles)
+            .Where(tuple => 
+                Path.GetFileNameWithoutExtension(tuple.Left.Path) == 
+                Path.GetFileNameWithoutExtension(tuple.Right.FilePath));
 
-        foreach (var csFile in csFiles)
+        // Generate documentation
+        context.RegisterSourceOutput(combined, (context, tuple) =>
         {
-            // Check if we have corresponding markdown documentation
-            if (markdownFiles.TryGetValue(csFile, out var mdContent))
-            {
-                var documentationContent = GenerateDocumentation(mdContent, Path.GetFileNameWithoutExtension(csFile));
-                
-                // Generate the documentation file
-                var documentationFileName = Path.GetFileNameWithoutExtension(csFile) + ".Documentation.cs";
+            var (markdownFile, sourceFile) = tuple;
+            var mdContent = markdownFile.GetText()?.ToString() ?? string.Empty;
+            var documentationContent = GenerateDocumentation(mdContent, Path.GetFileNameWithoutExtension(sourceFile.FilePath));
 
-                context.AddSource
-                (
-                    documentationFileName,
-                    SourceText.From(documentationContent, Encoding.UTF8)
-                );
-            }
-        }
+            var documentationFileName = Path.GetFileNameWithoutExtension(sourceFile.FilePath) + ".Documentation.cs";
+
+            context.AddSource
+            (
+                documentationFileName,
+                SourceText.From(documentationContent, Encoding.UTF8)
+            );
+        });
     }
 
     private string GenerateDocumentation(string markdownContent, string className)
