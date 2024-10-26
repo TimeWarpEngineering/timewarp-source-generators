@@ -19,7 +19,7 @@ namespace TimeWarp
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     sealed class DelegateAttribute : Attribute
     {
-        public string PropertyName { get; set; }
+        public string? PropertyName { get; set; }
     }
 }";
 
