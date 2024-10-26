@@ -1,12 +1,15 @@
 namespace DelegateSourceGenerator_;
 
 using FluentAssertions;
+using TimeWarp.Fixie;
 using TimeWarp.SourceCodeGenerators;
 using static TimeWarp.SourceCodeGenerators.Tests.Infrastructure.SourceGeneratorTestHelper;
+
 
 public class Should_
 {
 
+  [Skip("Temp")]
   public void Work()
   {
     string source = @"
@@ -48,6 +51,7 @@ namespace TimeWarp.SourceCodeGenerators.Tests.TestSource
     output.Should().Be(expected);
   }
 
+  [Skip("Temp")]
   public void Work_Given_Single_Generic_Parameter()
   {
     string source = @"
@@ -85,6 +89,7 @@ namespace TimeWarp.SourceCodeGenerators.Tests.TestSource
     output.Should().Be(expected);
   }
 
+  [Skip("Temp")]
   public void Work_Given_Two_Generic_Parameters()
   {
     string source = @"

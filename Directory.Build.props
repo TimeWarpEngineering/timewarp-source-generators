@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Authors>Steven T. Cramer</Authors>
     <Product>TimeWarp.SourceGenerators</Product>
-    <PackageVersion>1.0.0-alpha.6+7.0.100</PackageVersion>
+    <PackageVersion>1.0.0-alpha.6+8.0.403</PackageVersion>
     <PackageProjectUrl>https://timewarpengineering.github.io/timewarp-source-generators/</PackageProjectUrl>
     <PackageTags>TimeWarp; Source Generator;SourceGenerators; Delegate</PackageTags>
     <RepositoryUrl>https://github.com/TimeWarpEngineering/timewarp-source-generators.git</RepositoryUrl>
@@ -21,7 +21,7 @@
     <LangVersion>preview</LangVersion>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <Nullable>disable</Nullable>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 

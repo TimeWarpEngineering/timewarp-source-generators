@@ -17,4 +17,9 @@
     </ProjectReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="TestSource\TestClass.cs.md" />
+    <AdditionalFiles Include="TestSource\TestClass.cs.md" />
+  </ItemGroup>
+
 </Project>
