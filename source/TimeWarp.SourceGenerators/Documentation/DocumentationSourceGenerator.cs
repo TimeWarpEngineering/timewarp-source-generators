@@ -1,5 +1,3 @@
-#nullable enable
-
 namespace TimeWarp.SourceGenerators;
 
 using Microsoft.CodeAnalysis;
@@ -13,33 +11,67 @@ using System.Threading;
 [Generator(LanguageNames.CSharp)]
 public sealed class MarkdownDocsGenerator : IIncrementalGenerator
 {
+  // Define diagnostics descriptors as static fields for consistency
+  private static readonly DiagnosticDescriptor FileFoundInfo = new(
+    id: "MDGEN001",
+    title: "Markdown documentation file found",
+    messageFormat: "Documentation file found: {0}",
+    category: "MarkdownDocumentation",
+    DiagnosticSeverity.Info,
+    isEnabledByDefault: true
+  );
+
+  private static readonly DiagnosticDescriptor ProcessingStarted = new(
+    id: "MDGEN002",
+    title: "Processing documentation file",
+    messageFormat: "Processing documentation for: {0}",
+    category: "MarkdownDocumentation",
+    DiagnosticSeverity.Info,
+    isEnabledByDefault: true
+  );
+
+  private static readonly DiagnosticDescriptor FileEmpty = new(
+    id: "MDGEN003",
+    title: "Documentation file is empty",
+    messageFormat: "Documentation file is empty: {0}",
+    category: "MarkdownDocumentation",
+    DiagnosticSeverity.Warning,
+    isEnabledByDefault: true
+  );
+
+  private static readonly DiagnosticDescriptor GenerationSuccess = new(
+    id: "MDGEN004",
+    title: "Documentation generated successfully",
+    messageFormat: "Generated documentation for: {0}",
+    category: "MarkdownDocumentation",
+    DiagnosticSeverity.Info,
+    isEnabledByDefault: true
+  );
+
+  private static readonly DiagnosticDescriptor GenerationError = new(
+    id: "MDGEN005",
+    title: "Documentation generation failed",
+    messageFormat: "Failed to generate documentation for {0}: {1}",
+    category: "MarkdownDocumentation",
+    DiagnosticSeverity.Error,
+    isEnabledByDefault: true
+  );
+
   public void Initialize(IncrementalGeneratorInitializationContext context)
   {
     // Create a provider for finding markdown files
     IncrementalValuesProvider<AdditionalText> markdownFiles = context.AdditionalTextsProvider
       .Where(file => file.Path.EndsWith(".cs.md", StringComparison.OrdinalIgnoreCase));
 
-    // Add diagnostics for markdown files found
+    // Report found files
     context.RegisterSourceOutput(
       markdownFiles,
-      (sourceProductionContext, file) =>
-        sourceProductionContext.ReportDiagnostic(
-          Diagnostic.Create(
-            new DiagnosticDescriptor(
-              id: "MD2DOC002",
-              title: "Found markdown file",
-              messageFormat: "Found markdown file: {0}",
-              category: "Documentation",
-              defaultSeverity: DiagnosticSeverity.Info,
-              isEnabledByDefault: true
-            ),
-            location: Location.None,
-            messageArgs: new[] { file.Path }
-          )
-        )
+      (spc, file) => spc.ReportDiagnostic(
+        Diagnostic.Create(FileFoundInfo, Location.None, Path.GetFileName(file.Path))
+      )
     );
 
-    // Get all C# source files in the compilation
+    // Process files
     IncrementalValuesProvider<(AdditionalText Left, Compilation Right)> csFiles = markdownFiles
       .Combine(context.CompilationProvider);
 
@@ -51,59 +83,21 @@ public sealed class MarkdownDocsGenerator : IIncrementalGenerator
 
   private static void Execute(SourceProductionContext context, AdditionalText markdownFile, Compilation compilation)
   {
-    // Log that we're starting to process a file
+    string fileName = Path.GetFileName(markdownFile.Path);
+
+    // Report starting to process
     context.ReportDiagnostic(
-      Diagnostic.Create(
-        new DiagnosticDescriptor(
-          id: "MD2DOC003",
-          title: "Processing markdown file",
-          messageFormat: "Starting to process: {0}",
-          category: "Documentation",
-          defaultSeverity: DiagnosticSeverity.Info,
-          isEnabledByDefault: true
-        ),
-        location: Location.None,
-        messageArgs: new[] { markdownFile.Path }
-      )
+      Diagnostic.Create(ProcessingStarted, Location.None, fileName)
     );
 
     // Get the content of the markdown file
     SourceText? sourceText = markdownFile.GetText(context.CancellationToken);
-    if (sourceText is null)
-    {
-      context.ReportDiagnostic(
-        Diagnostic.Create(
-          new DiagnosticDescriptor(
-            id: "MD2DOC004",
-            title: "Failed to read file",
-            messageFormat: "Could not read content from: {0}",
-            category: "Documentation",
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true
-          ),
-          location: Location.None,
-          messageArgs: new[] { markdownFile.Path }
-        )
-      );
-      return;
-    }
+    string markdownContent = sourceText?.ToString() ?? string.Empty;
 
-    string markdownContent = sourceText.ToString();
     if (string.IsNullOrEmpty(markdownContent))
     {
       context.ReportDiagnostic(
-        Diagnostic.Create(
-          new DiagnosticDescriptor(
-            id: "MD2DOC005",
-            title: "Empty file",
-            messageFormat: "File is empty: {0}",
-            category: "Documentation",
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true
-          ),
-          location: Location.None,
-          messageArgs: new[] { markdownFile.Path }
-        )
+        Diagnostic.Create(FileEmpty, Location.None, fileName)
       );
       return;
     }
@@ -119,37 +113,14 @@ public sealed class MarkdownDocsGenerator : IIncrementalGenerator
         SourceText.From(documentation, Encoding.UTF8)
       );
 
-      // Log successful generation
       context.ReportDiagnostic(
-        Diagnostic.Create(
-          new DiagnosticDescriptor(
-            id: "MD2DOC006",
-            title: "Documentation generated",
-            messageFormat: "Successfully generated documentation for: {0}",
-            category: "Documentation",
-            defaultSeverity: DiagnosticSeverity.Info,
-            isEnabledByDefault: true
-          ),
-          location: Location.None,
-          messageArgs: new[] { className }
-        )
+        Diagnostic.Create(GenerationSuccess, Location.None, fileName)
       );
     }
     catch (Exception ex)
     {
       context.ReportDiagnostic(
-        Diagnostic.Create(
-          new DiagnosticDescriptor(
-            id: "MD2DOC001",
-            title: "Documentation Generation Error",
-            messageFormat: "Failed to generate documentation for {0}: {1}",
-            category: "Documentation",
-            defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: true
-          ),
-          location: Location.None,
-          messageArgs: new[] { className, ex.Message }
-        )
+        Diagnostic.Create(GenerationError, Location.None, fileName, ex.Message)
       );
     }
   }
@@ -164,7 +135,6 @@ public sealed class MarkdownDocsGenerator : IIncrementalGenerator
 
     docs.AppendLine("// <auto-generated/>");
     docs.AppendLine("// Generated by TimeWarp.SourceGenerators.MarkdownDocsGenerator");
-    docs.AppendLine("#nullable enable");
     docs.AppendLine();
     docs.AppendLine("namespace TimeWarp.SourceGenerators;");
     docs.AppendLine();
