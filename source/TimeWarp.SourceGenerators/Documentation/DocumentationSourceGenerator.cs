@@ -15,9 +15,32 @@ public sealed class MarkdownDocsGenerator : IIncrementalGenerator
 {
   public void Initialize(IncrementalGeneratorInitializationContext context)
   {
+    // Create a provider for finding markdown files
+    IncrementalValuesProvider<AdditionalText> markdownFiles = context.AdditionalTextsProvider
+      .Where(file => file.Path.EndsWith(".cs.md", StringComparison.OrdinalIgnoreCase));
+
+    // Add diagnostics for markdown files found
+    context.RegisterSourceOutput(
+      markdownFiles,
+      (sourceProductionContext, file) =>
+        sourceProductionContext.ReportDiagnostic(
+          Diagnostic.Create(
+            new DiagnosticDescriptor(
+              id: "MD2DOC002",
+              title: "Found markdown file",
+              messageFormat: "Found markdown file: {0}",
+              category: "Documentation",
+              defaultSeverity: DiagnosticSeverity.Info,
+              isEnabledByDefault: true
+            ),
+            location: Location.None,
+            messageArgs: new[] { file.Path }
+          )
+        )
+    );
+
     // Get all C# source files in the compilation
-    IncrementalValuesProvider<(AdditionalText Left, Compilation Right)> csFiles = context.AdditionalTextsProvider
-      .Where(file => file.Path.EndsWith(".cs.md", StringComparison.OrdinalIgnoreCase))
+    IncrementalValuesProvider<(AdditionalText Left, Compilation Right)> csFiles = markdownFiles
       .Combine(context.CompilationProvider);
 
     // Register the source output
@@ -28,12 +51,62 @@ public sealed class MarkdownDocsGenerator : IIncrementalGenerator
 
   private static void Execute(SourceProductionContext context, AdditionalText markdownFile, Compilation compilation)
   {
+    // Log that we're starting to process a file
+    context.ReportDiagnostic(
+      Diagnostic.Create(
+        new DiagnosticDescriptor(
+          id: "MD2DOC003",
+          title: "Processing markdown file",
+          messageFormat: "Starting to process: {0}",
+          category: "Documentation",
+          defaultSeverity: DiagnosticSeverity.Info,
+          isEnabledByDefault: true
+        ),
+        location: Location.None,
+        messageArgs: new[] { markdownFile.Path }
+      )
+    );
+
     // Get the content of the markdown file
     SourceText? sourceText = markdownFile.GetText(context.CancellationToken);
-    if (sourceText is null) return;
+    if (sourceText is null)
+    {
+      context.ReportDiagnostic(
+        Diagnostic.Create(
+          new DiagnosticDescriptor(
+            id: "MD2DOC004",
+            title: "Failed to read file",
+            messageFormat: "Could not read content from: {0}",
+            category: "Documentation",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true
+          ),
+          location: Location.None,
+          messageArgs: new[] { markdownFile.Path }
+        )
+      );
+      return;
+    }
 
     string markdownContent = sourceText.ToString();
-    if (string.IsNullOrEmpty(markdownContent)) return;
+    if (string.IsNullOrEmpty(markdownContent))
+    {
+      context.ReportDiagnostic(
+        Diagnostic.Create(
+          new DiagnosticDescriptor(
+            id: "MD2DOC005",
+            title: "Empty file",
+            messageFormat: "File is empty: {0}",
+            category: "Documentation",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true
+          ),
+          location: Location.None,
+          messageArgs: new[] { markdownFile.Path }
+        )
+      );
+      return;
+    }
 
     string csFilePath = markdownFile.Path.Substring(0, markdownFile.Path.Length - 3); // Remove .md from .cs.md
     string className = Path.GetFileNameWithoutExtension(csFilePath);
@@ -45,10 +118,25 @@ public sealed class MarkdownDocsGenerator : IIncrementalGenerator
         $"{className}.Documentation.g.cs",
         SourceText.From(documentation, Encoding.UTF8)
       );
+
+      // Log successful generation
+      context.ReportDiagnostic(
+        Diagnostic.Create(
+          new DiagnosticDescriptor(
+            id: "MD2DOC006",
+            title: "Documentation generated",
+            messageFormat: "Successfully generated documentation for: {0}",
+            category: "Documentation",
+            defaultSeverity: DiagnosticSeverity.Info,
+            isEnabledByDefault: true
+          ),
+          location: Location.None,
+          messageArgs: new[] { className }
+        )
+      );
     }
     catch (Exception ex)
     {
-      // Report any errors during generation
       context.ReportDiagnostic(
         Diagnostic.Create(
           new DiagnosticDescriptor(
