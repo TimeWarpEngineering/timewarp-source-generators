@@ -6,8 +6,8 @@ Create a minimal source generator that outputs diagnostic information to verify 
 ## Steps
 1. Create Project
    - [x] Create new source generator project: `dotnet new classlib -n TimeWarp.SourceGenerators`
-   - [ ] Add required source generator package references to .csproj
-   - [ ] Add to solution: `dotnet sln add TimeWarp.SourceGenerators`
+   - [x] Add required source generator package references to .csproj
+   - [x] Add to solution: `dotnet sln add TimeWarp.SourceGenerators`
 
 2. Implement Basic Generator
    - [ ] Create HelloWorldGenerator class implementing ISourceGenerator
