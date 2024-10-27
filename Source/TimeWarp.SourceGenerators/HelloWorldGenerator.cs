@@ -7,30 +7,29 @@ public class HelloWorldGenerator : IIncrementalGenerator
 {
   public void Initialize(IncrementalGeneratorInitializationContext context)
   {
-    // Register a simple diagnostic
-    context.ReportDiagnostic
-    (
-      Diagnostic.Create
-      (
-        new DiagnosticDescriptor
-        (
-          id: "TW0001",
-          title: "HelloWorld Generator Loaded",
-          messageFormat: "The HelloWorld generator has been loaded and initialized",
-          category: "TimeWarp.SourceGenerators",
-          DiagnosticSeverity.Info,
-          isEnabledByDefault: true
-        ),
-        Location.None
-      )
-    );
-
-    // Generate a simple class
+    // Register a simple diagnostic and generate source
     context.RegisterPostInitializationOutput
     (
-      (context) =>
+      (postContext) =>
       {
-        context.AddSource
+        postContext.ReportDiagnostic
+        (
+          Diagnostic.Create
+          (
+            new DiagnosticDescriptor
+            (
+              id: "TW0001",
+              title: "HelloWorld Generator Loaded", 
+              messageFormat: "The HelloWorld generator has been loaded and initialized",
+              category: "TimeWarp.SourceGenerators",
+              DiagnosticSeverity.Info,
+              isEnabledByDefault: true
+            ),
+            Location.None
+          )
+        );
+
+        postContext.AddSource
         (
           "HelloWorld.g.cs",
           """
