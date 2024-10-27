@@ -16,8 +16,16 @@ Create a minimal source generator that outputs diagnostic information to verify 
 
 ## Acceptance Criteria
 - [ ] Project builds successfully
+    ```shell
+    dotnet build Source/TimeWarp.SourceGenerators
+    ```
 - [ ] Diagnostic information appears in build output
+    - Should see diagnostic TW0001: "The HelloWorld generator has been loaded and initialized"
 - [ ] Generated source code is visible in IDE
+    - Look for generated file: HelloWorld.g.cs
+    - Should contain TimeWarp.Generated.HelloWorld class
 
 ## Notes
+- To verify the generator, build the project and check build output for TW0001 diagnostic
+- The generated HelloWorld.g.cs file should be visible in Solution Explorer under Dependencies > Analyzers
 This is a minimal proof-of-concept. Additional capabilities will be added in subsequent tasks.
