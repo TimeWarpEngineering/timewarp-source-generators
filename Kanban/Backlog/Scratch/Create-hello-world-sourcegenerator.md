@@ -1,0 +1,1 @@
+Create a place holder source generator that dumps some diagnostics so we can see it works.
