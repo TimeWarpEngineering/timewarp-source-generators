@@ -10,7 +10,7 @@ Create a minimal source generator that outputs diagnostic information to verify 
    - [x] Add to solution: `dotnet sln add TimeWarp.SourceGenerators`
 
 2. Implement Basic Generator
-   - [ ] Create HelloWorldGenerator class implementing ISourceGenerator
+   - [ ] Create HelloWorldGenerator class implementing IIncrementalGenerator
    - [ ] Add minimal diagnostic output in Initialize method
    - [ ] Add simple source generation in Execute method
 
