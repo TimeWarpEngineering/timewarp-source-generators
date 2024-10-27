@@ -1,0 +1,1 @@
+We want to be able to write our C# documentation in an adjacent markdown file `MySuperClass.cs.md` and have this C# Source generator create a `MySuperClass.Documentation.g.cs` file that contains the triple slash XML Docs based from the markdown file.
