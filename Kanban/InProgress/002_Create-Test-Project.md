@@ -6,7 +6,8 @@ Create a test console application that references the TimeWarp.SourceGenerators 
 ## Steps
 1. Create Test Project
    - [x] Create new console project: `dotnet new console -n TimeWarp.SourceGenerators.TestConsole`
-   - [x] Add to solution: `dotnet sln add TimeWarp.SourceGenerators.TestConsole`
+   - [x] Move project to Tests directory
+   - [x] Update solution reference to point to Tests directory
    - [ ] Add project reference to TimeWarp.SourceGenerators
 
 2. Verify Source Generator
