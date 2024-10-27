@@ -3,6 +3,7 @@
 
   <PropertyGroup>
     <Authors>Steven T. Cramer</Authors>
+    <Company>TimeWarp Enterprises</Company>
     <Product>TimeWarp.SourceGenerators</Product>
     <PackageVersion>1.0.0-alpha.6+8.0.403</PackageVersion>
     <PackageProjectUrl>https://timewarpengineering.github.io/timewarp-source-generators/</PackageProjectUrl>
@@ -16,13 +17,22 @@
   <PropertyGroup>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <EnablePreviewFeatures>true</EnablePreviewFeatures>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <ImplicitUsings>enable</ImplicitUsings>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <Nullable>enable</Nullable>
     <TargetFramework>net8.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Compiler Generated files https://andrewlock.net/creating-a-source-generator-part-6-saving-source-generator-output-in-source-control/ -->
+  <PropertyGroup>
+    <!-- Persist the source generator (and other) files to disk -->
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <!-- 👇 The "base" path for the source generators -->
+    <GeneratedFolder>$(MSBuildProjectDirectory)\Generated</GeneratedFolder>
+    <!-- 👇 Write the output for each target framework to a different sub-folder -->
+    <CompilerGeneratedFilesOutputPath>$(GeneratedFolder)\$(TargetFramework)</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
   <Target Name="EmbedLocal" BeforeTargets="PrepareForBuild">
