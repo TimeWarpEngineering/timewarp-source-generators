@@ -16,7 +16,7 @@ Create a test console application that references the TimeWarp.SourceGenerators 
      dotnet sln remove Source/TimeWarp.SourceGenerators.TestConsole
      dotnet sln add Tests/TimeWarp.SourceGenerators.TestConsole
      ```
-   - [ ] Add project reference to TimeWarp.SourceGenerators
+   - [x] Add project reference to TimeWarp.SourceGenerators
 
 2. Verify Source Generator
    - [ ] Add code that uses the generated HelloWorld class
