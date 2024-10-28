@@ -19,13 +19,13 @@ Create a test console application that references the TimeWarp.SourceGenerators 
    - [x] Add project reference to TimeWarp.SourceGenerators
 
 2. Verify Source Generator
-   - [ ] Add code that uses the generated HelloWorld class
-   - [ ] Build and run the test project
+   - [x] Add code that uses the generated HelloWorld class
+   - [x] Build and run the test project
    
 ## Acceptance Criteria
-- [ ] Project builds successfully
-- [ ] Can access the generated HelloWorld.Message constant
-- [ ] Running the program displays the generated message
+- [x] Project builds successfully
+- [x] Can access the generated HelloWorld.Message constant
+- [x] Running the program displays the generated message
 
 ## Notes
 - This will help verify both the source generation and diagnostic output are working correctly
