@@ -5,9 +5,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- Set MSBuild verbosity to show Info messages -->
-    <MSBuildTreatWarningsAsErrors>false</MSBuildTreatWarningsAsErrors>
-    <MSBuildWarningLevel>4</MSBuildWarningLevel>
+    <!-- Configure MSBuild to show detailed output including Info messages -->
+    <MSBuildLoggerVerbosity>diagnostic</MSBuildLoggerVerbosity>
   </PropertyGroup>
   
   <ItemGroup>
