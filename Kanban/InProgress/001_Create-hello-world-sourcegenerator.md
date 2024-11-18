@@ -11,7 +11,7 @@ Create a minimal source generator that outputs diagnostic information to verify 
 
 2. Implement Basic Generator
    - [x] Create HelloWorldGenerator class implementing IIncrementalGenerator
-   - [x] Add minimal diagnostic output in Initialize method
+   - [ ] Add minimal diagnostic output in Initialize method
    - [x] Add simple source generation in Execute method
 
 ## Acceptance Criteria
