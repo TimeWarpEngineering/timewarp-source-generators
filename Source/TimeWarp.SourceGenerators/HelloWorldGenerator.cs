@@ -10,7 +10,9 @@ public class HelloWorldGenerator : IIncrementalGenerator
     title: "HelloWorld Generator Loaded",
     messageFormat: "The HelloWorld generator has been loaded and initialized",
     category: "SourceGenerator",
-    DiagnosticSeverity.Warning, // Changed from Info to Warning to make it more visible
+    // Using Info severity as this is informational output
+    // Visibility is controlled by build verbosity settings in the consuming project
+    DiagnosticSeverity.Info,
     isEnabledByDefault: true
   );
 
