@@ -2,6 +2,13 @@ using Microsoft.CodeAnalysis;
 
 namespace TimeWarp.SourceGenerators;
 
+/// <summary>
+/// A simple source generator that generates a HelloWorld class and reports a diagnostic when loaded.
+/// The Info diagnostic (TW0001) can be viewed in:
+/// 1. Visual Studio: View -> Output Window -> Show output from: Build
+/// 2. Visual Studio: View -> Error List (make sure "Information" messages are enabled)
+/// 3. Command line: Use -v:detailed or -v:diagnostic with MSBuild
+/// </summary>
 [Generator]
 public class HelloWorldGenerator : IIncrementalGenerator
 {
@@ -11,7 +18,7 @@ public class HelloWorldGenerator : IIncrementalGenerator
     messageFormat: "The HelloWorld generator has been loaded and initialized",
     category: "SourceGenerator",
     // Using Info severity as this is informational output
-    // Visibility is controlled by build verbosity settings in the consuming project
+    // View in VS Output window, Error List (with Info enabled), or MSBuild detailed/diagnostic output
     DiagnosticSeverity.Info,
     isEnabledByDefault: true
   );
