@@ -157,7 +157,8 @@ public partial class {className}
                     var match = Regex.Match(line, @"\[(.*?)\]\((.*?)\)");
                     if (match.Success)
                     {
-                        builder.AppendLine($"/// <seealso cref=\"{match.Groups[1].Value.Replace("<", "{").Replace(">", "}")}\"/>");
+                        var crefValue = match.Groups[1].Value.Replace("<", "{").Replace(">", "}");
+                        builder.AppendLine($"/// <seealso cref=\"{crefValue}\"/>");
                     }
                 }
                 break;
@@ -168,7 +169,8 @@ public partial class {className}
                     : null;
                 if (inheritDoc != null)
                 {
-                    builder.AppendLine($"/// <inheritdoc cref=\"{inheritDoc.Replace("<", "{").Replace(">", "}")}\"/>");
+                    var crefValue = inheritDoc.Replace("<", "{").Replace(">", "}");
+                    builder.AppendLine($"/// <inheritdoc cref=\"{crefValue}\"/>");
                 }
                 break;
                 
@@ -179,7 +181,8 @@ public partial class {className}
                     var match = Regex.Match(line, @"@(\S+)");
                     if (match.Success)
                     {
-                        builder.AppendLine($"/// <see cref=\"{match.Groups[1].Value.Replace("<", "{").Replace(">", "}")}\"/>");
+                        var crefValue = match.Groups[1].Value.Replace("<", "{").Replace(">", "}");
+                        builder.AppendLine($"/// <see cref=\"{crefValue}\"/>");
                     }
                 }
                 break;
