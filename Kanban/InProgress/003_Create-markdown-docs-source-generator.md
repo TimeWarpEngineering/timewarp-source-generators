@@ -5,19 +5,19 @@ Create a source generator that takes associated markdown files and generates doc
 
 ## Steps
 1. Create Documentation Generator
-   - [ ] Create new MarkdownDocsGenerator class implementing IIncrementalGenerator
-   - [ ] Add diagnostic output for generator initialization
-   - [ ] Implement file pair discovery (.cs and .md files with matching names)
+   - [x] Create new MarkdownDocsGenerator class implementing IIncrementalGenerator
+   - [x] Add diagnostic output for generator initialization
+   - [x] Implement file pair discovery (.cs and .md files with matching names)
 
 2. Implement Source Generation
-   - [ ] Read content from markdown file
-   - [ ] Convert markdown content to C# comments (prefix each line with //)
-   - [ ] Generate .docs.cs file with commented content
-   - [ ] Add source to compilation with appropriate naming
+   - [x] Read content from markdown file
+   - [x] Convert markdown content to C# comments (prefix each line with //)
+   - [x] Generate .docs.cs file with commented content
+   - [x] Add source to compilation with appropriate naming
 
 ## Acceptance Criteria
-- [ ] Project builds successfully
-- [ ] Given a pair of files:
+- [x] Project builds successfully
+- [x] Given a pair of files:
     ```
     MyClass.cs
     MyClass.md
@@ -26,9 +26,9 @@ Create a source generator that takes associated markdown files and generates doc
     ```
     MyClass.docs.cs
     ```
-- [ ] Generated file contains markdown content as C# comments
-- [ ] Comments are properly formatted (each line prefixed with //)
-- [ ] Generator only processes .cs files that have matching .md files
+- [x] Generated file contains markdown content as C# comments
+- [x] Comments are properly formatted (each line prefixed with //)
+- [x] Generator only processes .cs files that have matching .md files
 
 ## Notes
 - Keep the implementation simple for this step
