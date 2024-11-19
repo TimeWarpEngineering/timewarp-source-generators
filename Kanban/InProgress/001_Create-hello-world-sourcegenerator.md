@@ -11,21 +11,27 @@ Create a minimal source generator that outputs diagnostic information to verify 
 
 2. Implement Basic Generator
    - [x] Create HelloWorldGenerator class implementing IIncrementalGenerator
-   - [ ] Add minimal diagnostic output in Initialize method
+   - [x] Add minimal diagnostic output in Initialize method
    - [x] Add simple source generation in Execute method
 
 ## Acceptance Criteria
-- [ ] Project builds successfully
+- [x] Project builds successfully
     ```shell
     dotnet build Source/TimeWarp.SourceGenerators
     ```
-- [ ] Diagnostic information appears in build output
-    - Should see diagnostic TW0001: "The HelloWorld generator has been loaded and initialized"
-- [ ] Generated source code is visible in IDE
+- [x] Diagnostic information appears in build output
+    - Info diagnostic TW0001: "The HelloWorld generator has been loaded and initialized"
+    - Note: Info level diagnostics are only visible in Visual Studio's Output Window or Error List
+    - Only Warning level and above appear in command-line build output
+- [x] Generated source code is visible in IDE
     - Look for generated file: HelloWorld.g.cs
     - Should contain TimeWarp.Generated.HelloWorld class
 
 ## Notes
-- To verify the generator, build the project and check build output for TW0001 diagnostic
+- To verify the generator:
+  - In Visual Studio: Check Output Window or Error List for TW0001 diagnostic
+  - From CLI: 
+    1. Check for generated HelloWorld.g.cs file
+    2. Run test console app to verify the generator works
 - The generated HelloWorld.g.cs file should be visible in Solution Explorer under Dependencies > Analyzers
 This is a minimal proof-of-concept. Additional capabilities will be added in subsequent tasks.
