@@ -30,37 +30,40 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
         });
 
         // Find all .cs files in the compilation
+        IncrementalValuesProvider<SyntaxTree> csFiles = context.CompilationProvider
+            .SelectMany((compilation, _) => compilation.SyntaxTrees);
+
+        // Find all .md files
         IncrementalValuesProvider<AdditionalText> markdownFiles = context.AdditionalTextsProvider
             .Where(file => file.Path.EndsWith(".md", StringComparison.OrdinalIgnoreCase));
 
-        // Combine .cs and .md files that have matching names
-        var combined = context.CompilationProvider.Combine(markdownFiles.Collect());
+        // Combine into pairs
+        var pairs = csFiles.Combine(markdownFiles.Collect());
 
-        // Generate documentation for each pair
-        context.RegisterSourceOutput(combined, (sourceContext, pair) =>
+        // Generate documentation for matching pairs
+        context.RegisterSourceOutput(pairs, (sourceContext, pair) =>
         {
-            var (compilation, markdownTexts) = pair;
-            
-            foreach (var markdownFile in markdownTexts)
-            {
-                var mdPath = markdownFile.Path;
-                var csPath = Path.ChangeExtension(mdPath, ".cs");
-                
-                // Only process if corresponding .cs file exists
-                if (!File.Exists(csPath)) continue;
+            var (csFile, markdownTexts) = pair;
+            var csPath = csFile.FilePath;
+            var csFileName = Path.GetFileNameWithoutExtension(csPath);
 
-                var className = Path.GetFileNameWithoutExtension(csPath);
-                var markdownContent = markdownFile.GetText()?.ToString() ?? string.Empty;
+            // Find matching markdown file
+            var matchingMd = markdownTexts.FirstOrDefault(md => 
+                Path.GetFileNameWithoutExtension(md.Path).Equals(csFileName, StringComparison.OrdinalIgnoreCase));
+
+            if (matchingMd != null)
+            {
+                var markdownContent = matchingMd.GetText()?.ToString() ?? string.Empty;
                 
                 // Convert markdown content to comments
                 var commentedContent = ConvertToComments(markdownContent);
                 
                 // Generate the documentation file
-                var sourceText = SourceText.From($@"// Auto-generated documentation for {className}
+                var sourceText = SourceText.From($@"// Auto-generated documentation for {csFileName}
 {commentedContent}
 ", Encoding.UTF8);
 
-                sourceContext.AddSource($"{className}.docs.g.cs", sourceText);
+                sourceContext.AddSource($"{csFileName}.docs.g.cs", sourceText);
             }
         });
     }
