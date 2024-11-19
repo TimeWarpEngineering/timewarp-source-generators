@@ -7,7 +7,12 @@ namespace TimeWarp.SourceGenerators;
 /// The Info diagnostic (TW0001) can be viewed in:
 /// 1. Visual Studio: View -> Output Window -> Show output from: Build
 /// 2. Visual Studio: View -> Error List (make sure "Information" messages are enabled)
-/// 3. Command line: Use -v:detailed or -v:diagnostic with MSBuild
+/// 3. Visual Studio: View -> Other Windows -> Source Generator Diagnostics Window
+/// 
+/// Note: Info level diagnostics may not be visible in command-line build output.
+/// To verify the generator is working from CLI:
+/// 1. Check that HelloWorld.g.cs is generated in the project's Generated folder
+/// 2. Run the test console app to see the generated message: dotnet run --project Tests/TimeWarp.SourceGenerators.TestConsole
 /// </summary>
 [Generator]
 public class HelloWorldGenerator : IIncrementalGenerator
@@ -18,7 +23,7 @@ public class HelloWorldGenerator : IIncrementalGenerator
     messageFormat: "The HelloWorld generator has been loaded and initialized",
     category: "SourceGenerator",
     // Using Info severity as this is informational output
-    // View in VS Output window, Error List (with Info enabled), or MSBuild detailed/diagnostic output
+    // Best viewed in Visual Studio's Output Window or Error List
     DiagnosticSeverity.Info,
     isEnabledByDefault: true
   );
