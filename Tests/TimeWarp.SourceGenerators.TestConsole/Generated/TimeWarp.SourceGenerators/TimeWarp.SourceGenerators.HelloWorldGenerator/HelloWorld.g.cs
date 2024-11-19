@@ -1,5 +1,4 @@
-﻿// TW0001: The HelloWorld generator has been loaded and initialized
-namespace TimeWarp.Generated;
+﻿namespace TimeWarp.Generated;
 
 public static class HelloWorld 
 {
