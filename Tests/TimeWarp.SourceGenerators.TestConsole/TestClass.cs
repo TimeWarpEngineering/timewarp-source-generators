@@ -1,10 +1,6 @@
 namespace TimeWarp.SourceGenerators.TestConsole;
 
-/// <summary>
-/// A test class that demonstrates various documentation features.
-/// Implements string processing capabilities.
-/// </summary>
-public class TestClass : IDataProcessor<string>
+public partial class TestClass : IDataProcessor<string>
 {
     private readonly bool _strictMode;
     private int _processCount;
