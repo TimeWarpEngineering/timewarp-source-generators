@@ -64,9 +64,11 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
             if (matchingMd != null)
             {
                 var markdownContent = matchingMd.GetText()?.ToString() ?? string.Empty;
-                var (classDocs, methodDocs) = ConvertMarkdownToXmlDocs(markdownContent);
+                var (classDocs, methodDocs) = ConvertMarkdownToXmlDocs(markdownContent, classDeclaration);
                 
                 var sourceText = SourceText.From($@"// Auto-generated documentation for {className}
+#nullable enable
+
 {(namespaceName != null ? $"namespace {namespaceName};" : "")}
 
 {classDocs}
@@ -81,7 +83,7 @@ public partial class {className}
         });
     }
 
-    private static (string ClassDocs, string MethodDocs) ConvertMarkdownToXmlDocs(string markdownContent)
+    private static (string ClassDocs, string MethodDocs) ConvertMarkdownToXmlDocs(string markdownContent, ClassDeclarationSyntax classDeclaration)
     {
         var classBuilder = new StringBuilder();
         var methodBuilder = new StringBuilder();
@@ -95,6 +97,14 @@ public partial class {className}
         var currentMethod = "";
         var currentMethodDescription = "";
         
+        // Get method signatures from the class declaration
+        var methodSignatures = classDeclaration.Members
+            .OfType<MethodDeclarationSyntax>()
+            .ToDictionary(
+                m => m.Identifier.Text,
+                m => $"public partial {m.ReturnType} {m.Identifier}({string.Join(", ", m.ParameterList.Parameters.Select(p => $"{p.Type} {p.Identifier}"))});"
+            );
+        
         while ((line = reader.ReadLine()) != null)
         {
             if (line.StartsWith("# ")) // Class name - skip
@@ -104,7 +114,7 @@ public partial class {className}
             {
                 // Process previous section
                 if (inMethodSection)
-                    ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim());
+                    ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim(), methodSignatures);
                 else
                     ProcessSection(classBuilder, currentSection, contentBuilder.ToString().Trim());
                 
@@ -121,7 +131,7 @@ public partial class {className}
                 // Process previous method if exists
                 if (!string.IsNullOrEmpty(currentMethod))
                 {
-                    ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim());
+                    ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim(), methodSignatures);
                 }
 
                 // Start new method
@@ -156,7 +166,7 @@ public partial class {className}
         
         // Process the last section
         if (inMethodSection)
-            ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim());
+            ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim(), methodSignatures);
         else
             ProcessSection(classBuilder, currentSection, contentBuilder.ToString().Trim());
         
@@ -218,9 +228,16 @@ public partial class {className}
         }
     }
 
-    private static void ProcessMethodSection(StringBuilder builder, string methodName, string description, string content)
+    private static void ProcessMethodSection(StringBuilder builder, string methodName, string description, string content, Dictionary<string, string> methodSignatures)
     {
         if (string.IsNullOrEmpty(methodName))
+            return;
+
+        // Handle constructor specially
+        if (methodName == "Constructor")
+            methodName = methodSignatures.Keys.FirstOrDefault(k => k.Contains("ctor")) ?? "";
+
+        if (!methodSignatures.ContainsKey(methodName))
             return;
 
         builder.AppendLine($"    // Documentation for {methodName}");
@@ -261,6 +278,8 @@ public partial class {className}
         // Process the last subsection
         ProcessMethodSubSection(builder, currentSubSection, subSectionContent.ToString().Trim());
         
+        // Add the method signature
+        builder.AppendLine($"    {methodSignatures[methodName]}");
         builder.AppendLine();
     }
 
