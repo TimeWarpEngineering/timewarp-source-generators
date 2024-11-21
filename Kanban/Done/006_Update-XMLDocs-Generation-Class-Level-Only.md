@@ -4,9 +4,9 @@
 Update the source generator to create XMLDocs at the CLASS Level Only. This will establish the foundation for class-level documentation generation before any member-level documentation is implemented.
 
 ## Acceptance Criteria
-- [ ] Modify MarkdownDocsGenerator to generate XMLDocs for class-level documentation
-- [ ] Ensure class-level documentation follows the established XMLDoc template format
-- [ ] Generated documentation should be clean and properly formatted
+- [x] Modify MarkdownDocsGenerator to generate XMLDocs for class-level documentation
+- [x] Ensure class-level documentation follows the established XMLDoc template format
+- [x] Generated documentation should be clean and properly formatted
 
 ## Technical Notes
 - Primary file to modify: Source/TimeWarp.SourceGenerators/MarkdownDocsGenerator.cs
