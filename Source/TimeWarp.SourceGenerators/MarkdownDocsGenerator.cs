@@ -64,14 +64,15 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
             if (matchingMd != null)
             {
                 var markdownContent = matchingMd.GetText()?.ToString() ?? string.Empty;
-                var xmlDocs = ConvertMarkdownToXmlDocs(markdownContent);
+                var (classDocs, methodDocs) = ConvertMarkdownToXmlDocs(markdownContent);
                 
                 var sourceText = SourceText.From($@"// Auto-generated documentation for {className}
 {(namespaceName != null ? $"namespace {namespaceName};" : "")}
 
-{xmlDocs}
+{classDocs}
 public partial class {className}
 {{
+{methodDocs}
 }}
 ", Encoding.UTF8);
 
@@ -80,15 +81,19 @@ public partial class {className}
         });
     }
 
-    private static string ConvertMarkdownToXmlDocs(string markdownContent)
+    private static (string ClassDocs, string MethodDocs) ConvertMarkdownToXmlDocs(string markdownContent)
     {
-        var builder = new StringBuilder();
+        var classBuilder = new StringBuilder();
+        var methodBuilder = new StringBuilder();
         var reader = new StringReader(markdownContent);
         string? line;
         
         // State tracking
         var currentSection = "";
         var contentBuilder = new StringBuilder();
+        var inMethodSection = false;
+        var currentMethod = "";
+        var currentMethodDescription = "";
         
         while ((line = reader.ReadLine()) != null)
         {
@@ -98,29 +103,50 @@ public partial class {className}
             if (line.StartsWith("## "))
             {
                 // Process previous section
-                ProcessSection(builder, currentSection, contentBuilder.ToString().Trim());
+                if (inMethodSection)
+                    ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim());
+                else
+                    ProcessSection(classBuilder, currentSection, contentBuilder.ToString().Trim());
                 
                 // Start new section
                 currentSection = line.Substring(3).Trim();
+                inMethodSection = currentSection == "Methods";
                 contentBuilder.Clear();
+                currentMethodDescription = "";
+                continue;
+            }
+
+            if (line.StartsWith("### ") && inMethodSection)
+            {
+                // Process previous method if exists
+                if (!string.IsNullOrEmpty(currentMethod))
+                {
+                    ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim());
+                }
+
+                // Start new method
+                currentMethod = line.Substring(4).Trim();
+                contentBuilder.Clear();
+                currentMethodDescription = "";
                 continue;
             }
             
-            // If we haven't hit any section yet, this is the summary
+            // If we haven't hit any section yet, this is the class summary
             if (string.IsNullOrEmpty(currentSection) && !string.IsNullOrWhiteSpace(line))
             {
-                builder.AppendLine("/// <summary>");
-                builder.AppendLine($"/// {line.Trim()}");
-                builder.AppendLine("/// </summary>");
+                classBuilder.AppendLine("/// <summary>");
+                classBuilder.AppendLine($"/// {line.Trim()}");
+                classBuilder.AppendLine("/// </summary>");
+                continue;
+            }
+
+            // Capture method description (text before any #### subsections)
+            if (inMethodSection && !string.IsNullOrWhiteSpace(line) && !line.StartsWith("####") && string.IsNullOrEmpty(currentMethodDescription))
+            {
+                currentMethodDescription = line.Trim();
                 continue;
             }
             
-            // Skip sections we don't want
-            if (currentSection.StartsWith("Properties") || 
-                currentSection.StartsWith("Methods") || 
-                currentSection.StartsWith("Examples"))
-                continue;
-                
             // Add content to current section
             if (!string.IsNullOrWhiteSpace(line))
             {
@@ -129,9 +155,12 @@ public partial class {className}
         }
         
         // Process the last section
-        ProcessSection(builder, currentSection, contentBuilder.ToString().Trim());
+        if (inMethodSection)
+            ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim());
+        else
+            ProcessSection(classBuilder, currentSection, contentBuilder.ToString().Trim());
         
-        return builder.ToString();
+        return (classBuilder.ToString(), methodBuilder.ToString());
     }
     
     private static void ProcessSection(StringBuilder builder, string section, string content)
@@ -183,6 +212,95 @@ public partial class {className}
                     {
                         var crefValue = match.Groups[1].Value.Replace("<", "{").Replace(">", "}");
                         builder.AppendLine($"/// <see cref=\"{crefValue}\"/>");
+                    }
+                }
+                break;
+        }
+    }
+
+    private static void ProcessMethodSection(StringBuilder builder, string methodName, string description, string content)
+    {
+        if (string.IsNullOrEmpty(methodName))
+            return;
+
+        builder.AppendLine($"    // Documentation for {methodName}");
+
+        // Add method summary if available
+        if (!string.IsNullOrEmpty(description))
+        {
+            builder.AppendLine("    /// <summary>");
+            builder.AppendLine($"    /// {description}");
+            builder.AppendLine("    /// </summary>");
+        }
+
+        var reader = new StringReader(content);
+        string? line;
+        var currentSubSection = "";
+        var subSectionContent = new StringBuilder();
+        
+        while ((line = reader.ReadLine()) != null)
+        {
+            if (line.StartsWith("#### "))
+            {
+                // Process previous subsection
+                ProcessMethodSubSection(builder, currentSubSection, subSectionContent.ToString().Trim());
+                
+                // Start new subsection
+                currentSubSection = line.Substring(5).Trim();
+                subSectionContent.Clear();
+                continue;
+            }
+            
+            // Add content to current subsection
+            if (!string.IsNullOrWhiteSpace(line))
+            {
+                subSectionContent.AppendLine(line);
+            }
+        }
+        
+        // Process the last subsection
+        ProcessMethodSubSection(builder, currentSubSection, subSectionContent.ToString().Trim());
+        
+        builder.AppendLine();
+    }
+
+    private static void ProcessMethodSubSection(StringBuilder builder, string subSection, string content)
+    {
+        if (string.IsNullOrEmpty(content))
+            return;
+
+        switch (subSection)
+        {
+            case "Parameters":
+                foreach (var line in content.Split('\n'))
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    var match = Regex.Match(line, @"`(.*?)`\s*-\s*(.*)");
+                    if (match.Success)
+                    {
+                        builder.AppendLine($"    /// <param name=\"{match.Groups[1].Value}\">{match.Groups[2].Value.Trim()}</param>");
+                    }
+                }
+                break;
+
+            case "Returns":
+                builder.AppendLine("    /// <returns>");
+                foreach (var line in content.Split('\n'))
+                {
+                    builder.AppendLine($"    /// {line.Trim()}");
+                }
+                builder.AppendLine("    /// </returns>");
+                break;
+
+            case "Exceptions":
+                foreach (var line in content.Split('\n'))
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    var match = Regex.Match(line, @"`(.*?)`\s*-\s*(.*)");
+                    if (match.Success)
+                    {
+                        var exceptionType = match.Groups[1].Value.Replace("<", "{").Replace(">", "}");
+                        builder.AppendLine($"    /// <exception cref=\"{exceptionType}\">{match.Groups[2].Value.Trim()}</exception>");
                     }
                 }
                 break;
