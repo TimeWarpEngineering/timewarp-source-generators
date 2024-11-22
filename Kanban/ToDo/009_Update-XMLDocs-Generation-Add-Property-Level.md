@@ -1,9 +1,14 @@
 # Update XMLDocs Generation - Add Property Level Documentation
 
-## Description
-Extend the MarkdownDocsGenerator to support property-level documentation generation from markdown files. This will allow developers to document class properties with XML documentation comments, similar to how class and method documentation is currently supported.
+## Status: NOT FEASIBLE
+This task has been determined to be not feasible with C# 13 due to language limitations.
 
-## Requirements
+### Technical Blocker
+Error CS9250: A partial property may not have multiple defining declarations, and cannot be an auto-property.
+
+This means we cannot generate documentation for properties in a separate partial class declaration like we do for methods, as C# does not support partial properties or multiple declarations of auto-properties.
+
+## Original Requirements (For Reference)
 
 ### Property Documentation Format
 - Support property documentation in markdown files under a "Properties" section
@@ -21,52 +26,11 @@ Description of the property
 Description of the property's value
 ```
 
-### Generator Updates
-1. Update the MarkdownDocsGenerator to:
-   - Collect property declarations from class syntax
-   - Process property documentation sections from markdown
-   - Generate appropriate XML documentation comments for properties
-   - Handle property signatures correctly (accessibility, type, get/set modifiers)
+### Alternative Approaches to Consider
+1. Document properties in the same file where they are declared
+2. Generate documentation in a separate format (e.g., separate documentation files)
+3. Wait for future C# versions that might support partial properties
+4. Use a different approach for property documentation that doesn't rely on partial classes
 
-2. Support various property types:
-   - Auto-implemented properties
-   - Properties with backing fields
-   - Read-only properties
-   - Computed properties
-
-### Expected Output
-The generator should produce XML documentation comments for properties in the following format:
-```csharp
-/// <summary>
-/// Property description from markdown
-/// </summary>
-/// <value>
-/// Value description from markdown
-/// </value>
-public Type PropertyName { get; set; }
-```
-
-## Test Cases
-1. Test with TestClass.md which includes documentation for:
-   - MaxLength (get/set property)
-   - ProcessedCount (computed property)
-   - LastMessage (get with private set)
-
-## Acceptance Criteria
-- [ ] Property documentation is correctly extracted from markdown files
-- [ ] XML documentation comments are generated for properties
-- [ ] Property signatures are preserved in the generated code
-- [ ] All test cases pass and generate expected documentation
-- [ ] Generated documentation maintains existing class and method documentation
-
-## Implementation Steps
-1. Update ConvertMarkdownToXmlDocs method to handle property sections
-2. Add property signature collection similar to method signatures
-3. Create ProcessPropertySection method for property documentation
-4. Update property documentation processing logic
-5. Test with existing TestClass implementation
-
-## Notes
-- Follow existing patterns used for class and method documentation
-- Maintain consistent XML documentation format
-- Ensure backward compatibility with existing documentation
+## Conclusion
+This task needs to be reconsidered with a different technical approach that works within C#'s current limitations regarding property declarations.
