@@ -65,7 +65,7 @@ Processes the input string according to configured rules.
 - `input` - The input string to process.
 
 #### Returns
-The processed string, converted to uppercase and trimmed.
+The processed string.
 
 #### Exceptions
 - `ArgumentNullException` - Thrown when input is null.
