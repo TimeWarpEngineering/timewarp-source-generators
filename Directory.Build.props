@@ -4,12 +4,13 @@
   <PropertyGroup>
     <Authors>Steven T. Cramer</Authors>
     <Product>TimeWarp.SourceGenerators</Product>
-    <PackageVersion>1.0.0-alpha.6+7.0.100</PackageVersion>
+    <PackageVersion>1.0.0-alpha.7+9.0.100</PackageVersion>
     <PackageProjectUrl>https://timewarpengineering.github.io/timewarp-source-generators/</PackageProjectUrl>
     <PackageTags>TimeWarp; Source Generator;SourceGenerators; Delegate</PackageTags>
     <RepositoryUrl>https://github.com/TimeWarpEngineering/timewarp-source-generators.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <!-- Common compile parameters -->
@@ -18,10 +19,10 @@
     <EnablePreviewFeatures>true</EnablePreviewFeatures>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <ImplicitUsings>enable</ImplicitUsings>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <Nullable>disable</Nullable>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
