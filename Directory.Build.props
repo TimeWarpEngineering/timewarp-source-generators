@@ -10,6 +10,7 @@
     <RepositoryUrl>https://github.com/TimeWarpEngineering/timewarp-source-generators.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <!-- Common compile parameters -->
