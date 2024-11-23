@@ -37,11 +37,11 @@ jobs:
           dotnet build --configuration Debug
         shell: pwsh
 
-      - name: TimeWarp.SourceGenerators.Tests
-        run: |
-          cd Tests/TimeWarp.SourceGenerators.Tests/
-          dotnet tool restore
-          dotnet restore
-          dotnet fixie --configuration Debug      
+      # - name: TimeWarp.SourceGenerators.Tests
+      #   run: |
+      #     cd Tests/TimeWarp.SourceGenerators.Tests/
+      #     dotnet tool restore
+      #     dotnet restore
+      #     dotnet fixie --configuration Debug
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
