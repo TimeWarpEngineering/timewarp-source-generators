@@ -17,7 +17,7 @@ public partial class TestClass : IDataProcessor<string>
         _processCount = 0;
     }
 
-    public partial string GetMessage(string? prefix = null)
+    public partial string GetMessage(string? prefix)
     {
         var message = "This is a test class";
         return string.IsNullOrEmpty(prefix) ? message : $"{prefix}: {message}";

@@ -33,11 +33,11 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
         });
 
         // Find all class declarations in C# files
-        IncrementalValuesProvider<(ClassDeclarationSyntax ClassDeclaration, string? Namespace)> classDeclarations = 
+        IncrementalValuesProvider<(ClassDeclarationSyntax ClassDeclaration, string? Namespace)> classDeclarations =
             context.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: (s, _) => s is ClassDeclarationSyntax,
-                    transform: (ctx, _) => 
+                    transform: (ctx, _) =>
                     {
                         var classDeclaration = (ClassDeclarationSyntax)ctx.Node;
                         var namespaceDecl = classDeclaration.Ancestors().OfType<BaseNamespaceDeclarationSyntax>().FirstOrDefault();
@@ -58,14 +58,14 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
             var className = classDeclaration.Identifier.Text;
 
             // Find matching markdown file
-            var matchingMd = markdownTexts.FirstOrDefault(md => 
+            var matchingMd = markdownTexts.FirstOrDefault(md =>
                 Path.GetFileNameWithoutExtension(md.Path).Equals(className, StringComparison.OrdinalIgnoreCase));
 
             if (matchingMd != null)
             {
                 var markdownContent = matchingMd.GetText()?.ToString() ?? string.Empty;
                 var (classDocs, methodDocs) = ConvertMarkdownToXmlDocs(markdownContent, classDeclaration);
-                
+
                 var sourceText = SourceText.From($@"// Auto-generated documentation for {className}
 #nullable enable
 
@@ -89,27 +89,27 @@ public partial class {className}
         var methodBuilder = new StringBuilder();
         var reader = new StringReader(markdownContent);
         string? line;
-        
+
         // State tracking
         var currentSection = "";
         var contentBuilder = new StringBuilder();
         var inMethodSection = false;
         var currentMethod = "";
         var currentMethodDescription = "";
-        
+
         // Get method signatures from the class declaration
         var methodSignatures = classDeclaration.Members
             .OfType<MethodDeclarationSyntax>()
             .ToDictionary(
                 m => m.Identifier.Text,
-                m => $"public partial {m.ReturnType} {m.Identifier}({string.Join(", ", m.ParameterList.Parameters.Select(p => $"{p.Type} {p.Identifier}"))});"
+                m => $"public partial {m.ReturnType} {m.Identifier}({string.Join(", ", m.ParameterList.Parameters.Select(p => $"{p.Type} {p.Identifier}{(p.Default != null ? " = " + p.Default.Value.ToString() : "")}"))})"
             );
-        
+
         while ((line = reader.ReadLine()) != null)
         {
             if (line.StartsWith("# ")) // Class name - skip
                 continue;
-                
+
             if (line.StartsWith("## "))
             {
                 // Process previous section
@@ -117,7 +117,7 @@ public partial class {className}
                     ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim(), methodSignatures);
                 else
                     ProcessSection(classBuilder, currentSection, contentBuilder.ToString().Trim());
-                
+
                 // Start new section
                 currentSection = line.Substring(3).Trim();
                 inMethodSection = currentSection == "Methods";
@@ -140,7 +140,7 @@ public partial class {className}
                 currentMethodDescription = "";
                 continue;
             }
-            
+
             // If we haven't hit any section yet, this is the class summary
             if (string.IsNullOrEmpty(currentSection) && !string.IsNullOrWhiteSpace(line))
             {
@@ -156,28 +156,28 @@ public partial class {className}
                 currentMethodDescription = line.Trim();
                 continue;
             }
-            
+
             // Add content to current section
             if (!string.IsNullOrWhiteSpace(line))
             {
                 contentBuilder.AppendLine(line);
             }
         }
-        
+
         // Process the last section
         if (inMethodSection)
             ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim(), methodSignatures);
         else
             ProcessSection(classBuilder, currentSection, contentBuilder.ToString().Trim());
-        
+
         return (classBuilder.ToString(), methodBuilder.ToString());
     }
-    
+
     private static void ProcessSection(StringBuilder builder, string section, string content)
     {
         if (string.IsNullOrEmpty(content))
             return;
-            
+
         switch (section)
         {
             case "Remarks":
@@ -188,7 +188,7 @@ public partial class {className}
                 }
                 builder.AppendLine("/// </remarks>");
                 break;
-                
+
             case "See Also":
                 foreach (var line in content.Split('\n'))
                 {
@@ -196,23 +196,28 @@ public partial class {className}
                     var match = Regex.Match(line, @"\[(.*?)\]\((.*?)\)");
                     if (match.Success)
                     {
-                        var crefValue = match.Groups[1].Value.Replace("<", "{").Replace(">", "}");
-                        builder.AppendLine($"/// <seealso cref=\"{crefValue}\"/>");
+                        var type = match.Groups[1].Value;
+                        // Convert angle brackets to curly braces for XML documentation
+                        var xmlType = type.Replace('<', '{').Replace('>', '}');
+                        builder.AppendLine($"/// <seealso cref=\"{xmlType}\"/>");
                     }
                 }
                 break;
-                
+
             case "Inheritance":
-                var inheritDoc = content.Contains("@") 
-                    ? content.Substring(content.IndexOf("@") + 1).Split(' ')[0]
-                    : null;
-                if (inheritDoc != null)
+                if (content.Contains("@"))
                 {
-                    var crefValue = inheritDoc.Replace("<", "{").Replace(">", "}");
-                    builder.AppendLine($"/// <inheritdoc cref=\"{crefValue}\"/>");
+                    var match = Regex.Match(content, @"@(\S+)");
+                    if (match.Success)
+                    {
+                        var type = match.Groups[1].Value;
+                        // Extract the type name and keep T as the generic parameter
+                        var baseType = type.Split('<')[0];
+                        builder.AppendLine($"/// <seealso cref=\"{baseType}{{T}}\"/>");
+                    }
                 }
                 break;
-                
+
             case "References":
                 foreach (var line in content.Split('\n'))
                 {
@@ -220,8 +225,13 @@ public partial class {className}
                     var match = Regex.Match(line, @"@(\S+)");
                     if (match.Success)
                     {
-                        var crefValue = match.Groups[1].Value.Replace("<", "{").Replace(">", "}");
-                        builder.AppendLine($"/// <see cref=\"{crefValue}\"/>");
+                        var type = match.Groups[1].Value;
+                        // Handle fully qualified type names
+                        if (!type.Contains("."))
+                        {
+                            type = "System." + type;
+                        }
+                        builder.AppendLine($"/// <see cref=\"{type}\"/>");
                     }
                 }
                 break;
@@ -254,32 +264,32 @@ public partial class {className}
         string? line;
         var currentSubSection = "";
         var subSectionContent = new StringBuilder();
-        
+
         while ((line = reader.ReadLine()) != null)
         {
             if (line.StartsWith("#### "))
             {
                 // Process previous subsection
                 ProcessMethodSubSection(builder, currentSubSection, subSectionContent.ToString().Trim());
-                
+
                 // Start new subsection
                 currentSubSection = line.Substring(5).Trim();
                 subSectionContent.Clear();
                 continue;
             }
-            
+
             // Add content to current subsection
             if (!string.IsNullOrWhiteSpace(line))
             {
                 subSectionContent.AppendLine(line);
             }
         }
-        
+
         // Process the last subsection
         ProcessMethodSubSection(builder, currentSubSection, subSectionContent.ToString().Trim());
-        
-        // Add the method signature
-        builder.AppendLine($"    {methodSignatures[methodName]}");
+
+        // Add the method signature with a semicolon
+        builder.AppendLine($"    {methodSignatures[methodName]};");
         builder.AppendLine();
     }
 
@@ -318,8 +328,7 @@ public partial class {className}
                     var match = Regex.Match(line, @"`(.*?)`\s*-\s*(.*)");
                     if (match.Success)
                     {
-                        var exceptionType = match.Groups[1].Value.Replace("<", "{").Replace(">", "}");
-                        builder.AppendLine($"    /// <exception cref=\"{exceptionType}\">{match.Groups[2].Value.Trim()}</exception>");
+                        builder.AppendLine($"    /// <exception cref=\"{match.Groups[1].Value}\">{match.Groups[2].Value.Trim()}</exception>");
                     }
                 }
                 break;

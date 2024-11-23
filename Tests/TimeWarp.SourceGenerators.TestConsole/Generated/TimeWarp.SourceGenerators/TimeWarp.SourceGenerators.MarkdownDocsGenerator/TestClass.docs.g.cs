@@ -10,7 +10,7 @@ namespace TimeWarp.SourceGenerators.TestConsole;
 /// The TestClass provides string processing functionality with configurable validation rules. It can operate in either normal or strict mode, where strict mode enforces additional validation rules such as maximum length constraints.
 /// </remarks>
 /// <seealso cref="IDataProcessor{T}"/>
-/// <inheritdoc cref="IDataProcessor{string}"/>
+/// <seealso cref="IDataProcessor{T}"/>
 /// <see cref="System.String"/>
 /// <see cref="System.ArgumentException"/>
 
@@ -32,7 +32,7 @@ public partial class TestClass
     /// </summary>
     /// <param name="input">The input string to process.</param>
     /// <returns>
-    /// The processed string, converted to uppercase and trimmed.
+    /// The processed string.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when input is null.</exception>
     /// <exception cref="ArgumentException">Thrown when input exceeds MaxLength in strict mode.</exception>
