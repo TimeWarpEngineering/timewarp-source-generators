@@ -35,12 +35,9 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
     "*.generated.cs",
     "*.designer.cs",
     "*.Designer.cs",
-    "GlobalUsings.cs",
     "Directory.Build.props",
     "Directory.Build.targets",
     "Directory.Packages.props",
-    "Program.cs",
-    "Startup.cs",
     "AssemblyInfo.cs"
   };
   
