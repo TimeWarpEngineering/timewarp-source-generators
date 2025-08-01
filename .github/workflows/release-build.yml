@@ -51,7 +51,7 @@ jobs:
 
       - name: Run BuildNuGets.ps1
         run: |
-          .\BuildNuGets.ps1
+          .\build-nugets.ps1
 
       - name: Publish TimeWarp.SourceGenerators
         run: |

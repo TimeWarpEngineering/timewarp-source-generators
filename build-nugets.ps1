@@ -20,7 +20,7 @@ try {
 
     # Pack the project and output to the Packages directory
     # NoWarn=NU5128 is added to suppress the warning about lib folder matching
-    dotnet pack Source/TimeWarp.SourceGenerators/TimeWarp.SourceGenerators.csproj `
+    dotnet pack Source/TimeWarp.SourceGenerators/time-warp.source-generators.csproj `
         --configuration Release `
         --no-build `
         --output $packagesDir `
