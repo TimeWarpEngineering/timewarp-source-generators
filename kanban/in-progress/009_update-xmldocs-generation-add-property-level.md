@@ -30,11 +30,67 @@ Description of the property
 Description of the property's value
 ```
 
-### Alternative Approaches to Consider
-1. Document properties in the same file where they are declared
-2. Generate documentation in a separate format (e.g., separate documentation files)
-3. Wait for future C# versions that might support partial properties
-4. Use a different approach for property documentation that doesn't rely on partial classes
+## Current Status (2025-08-01) - START HERE FOR NEW SESSION
 
-## Conclusion
-This task needs to be reconsidered with a different technical approach that works within C#'s current limitations regarding property declarations.
+### What's Been Completed
+1. ✅ Confirmed partial properties ARE supported in .NET 9
+2. ✅ Created test file: `tests/timewarp-source-generators-test-console/partial-property-test.cs`
+3. ✅ Created markdown: `tests/timewarp-source-generators-test-console/partial-property-test.md` 
+4. ✅ Proven the technical approach is now feasible
+
+### What Still Needs Implementation
+1. Update `source/timewarp-source-generators/markdown-docs-generator.cs` to:
+   - Extract PropertyDeclarationSyntax from class members (currently only extracts methods at line 94-99)
+   - Add property signatures dictionary similar to methodSignatures
+   - Parse "Properties" section from markdown (after line 106 where it checks for "## Methods")
+   - Generate partial property declarations in the output
+
+### Key Implementation Details
+- Property declaration syntax: `public partial string PropertyName { get; set; }`
+- Properties need BOTH declaration (in generated file) and implementation (in user's file)
+- Look at existing method handling code:
+  - Lines 92-99: How methods are extracted
+  - Lines 108-163: How method sections are parsed
+  - Lines 234-287: How method documentation is generated
+
+### Markdown Format for Properties
+```markdown
+## Properties
+
+### PropertyName
+Description of the property
+
+#### Value
+Description of the property's value
+```
+
+### Files to Reference
+- **Main file to modify**: `source/timewarp-source-generators/markdown-docs-generator.cs`
+- **Test files created**: 
+  - `tests/timewarp-source-generators-test-console/partial-property-test.cs`
+  - `tests/timewarp-source-generators-test-console/partial-property-test.md`
+- **Example with properties**: `tests/timewarp-source-generators-test-console/test-class.cs` 
+  - Has properties: MaxLength, ProcessedCount, LastMessage
+  - Currently these properties are NOT documented
+
+### Technical Implementation Notes
+1. Add property extraction:
+   ```csharp
+   var propertySignatures = classDeclaration.Members
+       .OfType<PropertyDeclarationSyntax>()
+       .ToDictionary(
+           p => p.Identifier.Text,
+           p => $"public partial {p.Type} {p.Identifier} {{ get; set; }}"
+       );
+   ```
+
+2. Parse Properties section similar to Methods section
+
+3. Generate property declarations with XML docs similar to ProcessMethodSection
+
+4. The generated properties will be partial declarations that match the user's implementation
+
+### Testing Plan
+1. Update TestClass.md to include Properties section for existing properties
+2. Verify generated documentation includes property XML docs
+3. Ensure compilation succeeds with partial properties
