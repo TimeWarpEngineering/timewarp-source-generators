@@ -1,12 +1,16 @@
 # Update XMLDocs Generation - Add Property Level Documentation
 
-## Status: NOT FEASIBLE
-This task has been determined to be not feasible with C# 13 due to language limitations.
+## Status: NOW FEASIBLE WITH .NET 9
+This task is now feasible! .NET 9 and C# 13 have added support for partial properties.
 
-### Technical Blocker
-Error CS9250: A partial property may not have multiple defining declarations, and cannot be an auto-property.
+### Update (2025-08-01)
+Partial properties ARE now supported in .NET 9! Testing confirms that we can have:
+- A declaration part: `public partial string TestProperty { get; set; }`
+- An implementation part with actual getter/setter logic
 
-This means we cannot generate documentation for properties in a separate partial class declaration like we do for methods, as C# does not support partial properties or multiple declarations of auto-properties.
+This means we can now generate property documentation in the same way we generate method documentation.
+
+See `tests/timewarp-source-generators-test-console/partial-property-test.cs` for a working example of partial properties.
 
 ## Original Requirements (For Reference)
 
