@@ -7,7 +7,7 @@
     <PackageVersion>1.0.0-alpha.8+9.0.100</PackageVersion>
     <PackageProjectUrl>https://timewarpengineering.github.io/timewarp-source-generators/</PackageProjectUrl>
     <PackageTags>TimeWarp; Source Generator;SourceGenerators; Delegate</PackageTags>
-    <PackageIcon>Logo.png</PackageIcon>
+    <PackageIcon>logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/TimeWarpEngineering/timewarp-source-generators.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -15,7 +15,7 @@
     <PackageReleaseNotes>
       For detailed release notes and changelog, please visit: https://github.com/TimeWarpEngineering/timewarp-source-generators/releases
     </PackageReleaseNotes>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>read-me.md</PackageReadmeFile>
     <ContentTargetFolders>contentFiles</ContentTargetFolders>
   </PropertyGroup>
 

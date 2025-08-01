@@ -14,7 +14,7 @@
 
 # TimeWarp.SourceGenerators
 
-![TimeWarp Logo](Assets/Logo.png)
+![TimeWarp Logo](assets/logo.png)
 
 TimeWarp.SourceGenerators is our collection of source generators.
 
