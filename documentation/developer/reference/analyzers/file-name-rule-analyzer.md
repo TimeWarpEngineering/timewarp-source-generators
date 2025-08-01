@@ -60,10 +60,9 @@ dotnet_diagnostic.TW0003.excluded_files = *.g.cs;*.Generated.cs;GlobalUsings.cs;
 
 Default exceptions include:
 - Generated files (`*.g.cs`, `*.Generated.cs`, `*.designer.cs`)
-- Framework files (`Program.cs`, `Startup.cs`)
-- Build files (`Directory.Build.props`, `Directory.Build.targets`)
-- Assembly metadata (`AssemblyInfo.cs`, `*.AssemblyAttributes.cs`)
-- Global usings (`GlobalUsings.cs`)
+- Build files (`Directory.Build.props`, `Directory.Build.targets`, `Directory.Packages.props`)
+- Assembly metadata (`AssemblyInfo.cs`)
+- Analyzer tracking files (`AnalyzerReleases.Shipped.md`, `AnalyzerReleases.Unshipped.md`)
 
 ## Implementation Details
 

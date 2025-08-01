@@ -15,12 +15,12 @@ try {
 
     Write-Host "Creating NuGet Package..."
     # Create the Packages directory if it doesn't exist
-    $packagesDir = "Source/TimeWarp.SourceGenerators/bin/Packages"
+    $packagesDir = "source/timewarp-source-generators/bin/Packages"
     New-Item -ItemType Directory -Force -Path $packagesDir | Out-Null
 
     # Pack the project and output to the Packages directory
     # NoWarn=NU5128 is added to suppress the warning about lib folder matching
-    dotnet pack Source/TimeWarp.SourceGenerators/time-warp.source-generators.csproj `
+    dotnet pack source/timewarp-source-generators/timewarp-source-generators.csproj `
         --configuration Release `
         --no-build `
         --output $packagesDir `

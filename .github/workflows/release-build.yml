@@ -55,7 +55,7 @@ jobs:
 
       - name: Publish TimeWarp.SourceGenerators
         run: |
-          cd Source/TimeWarp.SourceGenerators/bin/Packages
+          cd source/timewarp-source-generators/bin/Packages
           dotnet nuget push TimeWarp.SourceGenerators.*.nupkg --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{secrets.PUBLISH_TO_NUGET_ORG}}
 
       - run: echo "🍏 This job's status is ${{ job.status }}."

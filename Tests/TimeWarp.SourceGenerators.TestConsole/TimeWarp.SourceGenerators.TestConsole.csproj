@@ -10,7 +10,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\TimeWarp.SourceGenerators\time-warp.source-generators.csproj"
+    <ProjectReference Include="..\..\source\timewarp-source-generators\timewarp-source-generators.csproj"
                     OutputItemType="Analyzer"
                     ReferenceOutputAssembly="false" />
   </ItemGroup>
