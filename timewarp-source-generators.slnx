@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Source/">
+    <Project Path="Source/TimeWarp.SourceGenerators/TimeWarp.SourceGenerators.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/TimeWarp.SourceGenerators.TestConsole/TimeWarp.SourceGenerators.TestConsole.csproj" />
+  </Folder>
+</Solution>
