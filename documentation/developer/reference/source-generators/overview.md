@@ -12,10 +12,15 @@ A simple demonstration source generator that creates a static class with a hello
 
 ### MarkdownDocsGenerator (TW0002)
 
-Generates markdown documentation from XML documentation comments.
+Generates XML documentation from markdown files for C# classes.
 
 - **Generated Files**: `*.docs.g.cs` 
-- **Purpose**: Creates structured markdown from XMLDoc comments
+- **Purpose**: Converts markdown documentation to XML documentation comments
+- **File Matching**: 
+  - Supports both PascalCase and kebab-case naming conventions
+  - For kebab-case source files (e.g., `test-class.cs`), matches kebab-case markdown files (e.g., `test-class.md`)
+  - For PascalCase source files (e.g., `TestClass.cs`), matches PascalCase markdown files (e.g., `TestClass.md`)
+  - Always falls back to class name matching for backward compatibility
 - **Templates**: See [XMLDoc Templates](#xmldoc-templates)
 
 ## XMLDoc Templates

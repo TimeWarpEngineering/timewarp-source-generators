@@ -3,6 +3,8 @@ namespace TimeWarp.SourceGenerators;
 [Generator]
 public class MarkdownDocsGenerator : IIncrementalGenerator
 {
+    // Regex pattern for checking if a file name is kebab-case
+    private static readonly Regex KebabCasePattern = new(@"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$", RegexOptions.Compiled);
     private static readonly DiagnosticDescriptor MarkdownDocsGeneratorLoadedDescriptor = new(
         id: "TW0002",
         title: "MarkdownDocs Generator Loaded",
@@ -26,7 +28,7 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
         });
 
         // Find all class declarations in C# files
-        IncrementalValuesProvider<(ClassDeclarationSyntax ClassDeclaration, string? Namespace)> classDeclarations =
+        IncrementalValuesProvider<(ClassDeclarationSyntax ClassDeclaration, string? Namespace, string FilePath)> classDeclarations =
             context.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: (s, _) => s is ClassDeclarationSyntax,
@@ -34,7 +36,8 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
                     {
                         var classDeclaration = (ClassDeclarationSyntax)ctx.Node;
                         var namespaceDecl = classDeclaration.Ancestors().OfType<BaseNamespaceDeclarationSyntax>().FirstOrDefault();
-                        return (classDeclaration, namespaceDecl?.Name.ToString());
+                        var filePath = ctx.Node.SyntaxTree.FilePath;
+                        return (classDeclaration, namespaceDecl?.Name.ToString(), filePath);
                     });
 
         // Find all .md files
@@ -47,12 +50,28 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
         // Generate documentation for matching pairs
         context.RegisterSourceOutput(pairs, (sourceContext, pair) =>
         {
-            var ((classDeclaration, namespaceName), markdownTexts) = pair;
+            var ((classDeclaration, namespaceName, filePath), markdownTexts) = pair;
             var className = classDeclaration.Identifier.Text;
-
-            // Find matching markdown file
-            var matchingMd = markdownTexts.FirstOrDefault(md =>
-                Path.GetFileNameWithoutExtension(md.Path).Equals(className, StringComparison.OrdinalIgnoreCase));
+            
+            // Extract source file name without extension
+            var sourceFileName = Path.GetFileNameWithoutExtension(filePath);
+            
+            // Find matching markdown file using appropriate strategy
+            AdditionalText? matchingMd = null;
+            
+            // If source file is kebab-case, try to match kebab-case markdown first
+            if (IsKebabCase(sourceFileName))
+            {
+                matchingMd = markdownTexts.FirstOrDefault(md =>
+                    Path.GetFileNameWithoutExtension(md.Path).Equals(sourceFileName, StringComparison.OrdinalIgnoreCase));
+            }
+            
+            // Fall back to class name match (for backward compatibility or PascalCase files)
+            if (matchingMd == null)
+            {
+                matchingMd = markdownTexts.FirstOrDefault(md =>
+                    Path.GetFileNameWithoutExtension(md.Path).Equals(className, StringComparison.OrdinalIgnoreCase));
+            }
 
             if (matchingMd != null)
             {
@@ -326,5 +345,22 @@ public partial class {className}
                 }
                 break;
         }
+    }
+
+    private static string ConvertToKebabCase(string pascalCase)
+    {
+        if (string.IsNullOrEmpty(pascalCase))
+            return pascalCase;
+
+        // Insert hyphens before uppercase letters (except the first character)
+        var kebabCase = Regex.Replace(pascalCase, "(?<!^)([A-Z])", "-$1");
+        
+        // Convert to lowercase
+        return kebabCase.ToLowerInvariant();
+    }
+
+    private static bool IsKebabCase(string fileName)
+    {
+        return KebabCasePattern.IsMatch(fileName);
     }
 }
