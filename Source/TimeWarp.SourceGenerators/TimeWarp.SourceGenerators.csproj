@@ -5,6 +5,7 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+    <NoWarn>RS2001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -274,10 +274,12 @@ dotnet_naming_style.local_function_style.capitalization = pascal_case
 
 # dotnet_diagnostic options
 dotnet_diagnostic.CS1591.severity = none
-dotnet_diagnostic.TW0001.severity = error
+dotnet_diagnostic.TW0001.severity = suggestion
 dotnet_diagnostic.TWD001.severity = warning
+dotnet_diagnostic.TW0003.severity = none  # Set to warning/error to enforce kebab-case file naming
+dotnet_diagnostic.TW0003.excluded_files = *.g.cs;*.Generated.cs;*.generated.cs;*.designer.cs;*.Designer.cs;GlobalUsings.cs;Directory.Build.props;Directory.Build.targets;Program.cs;Startup.cs;AssemblyInfo.cs
 
-#### Analyizer settings ####
+#### Analyzer settings ####
 dotnet_code_quality.null_check_validation_methods = NotNull
 
 # CA1308: Normalize strings to uppercase
