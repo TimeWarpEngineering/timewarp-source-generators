@@ -37,9 +37,9 @@ jobs:
           dotnet build --configuration Debug
         shell: pwsh
 
-      # - name: TimeWarp.SourceGenerators.Tests
+      # - name: timewarp-source-generators-tests
       #   run: |
-      #     cd Tests/TimeWarp.SourceGenerators.Tests/
+      #     cd tests/timewarp-source-generators-tests/
       #     dotnet tool restore
       #     dotnet restore
       #     dotnet fixie --configuration Debug

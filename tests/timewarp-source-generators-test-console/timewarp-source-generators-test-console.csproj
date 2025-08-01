@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>TimeWarp.SourceGenerators.TestConsole</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- Configure MSBuild to show detailed output including Info messages -->
+    <MSBuildLoggerVerbosity>diagnostic</MSBuildLoggerVerbosity>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\source\timewarp-source-generators\timewarp-source-generators.csproj"
+                    OutputItemType="Analyzer"
+                    ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Include markdown files as AdditionalFiles -->
+    <AdditionalFiles Include="**/*.md" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Persist the source generator (and other) files to disk -->
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <!-- 👇 The "base" path for the source generators -->
+    <GeneratedFolder>Generated</GeneratedFolder>
+    <!-- 👇 Write the output for each target framework to a different sub-folder -->
+    <CompilerGeneratedFilesOutputPath>$(GeneratedFolder)</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 👇 Exclude everything in the base folder -->
+    <Compile Remove="$(GeneratedFolder)/**/*.cs" />
+  </ItemGroup>
+
+</Project>
