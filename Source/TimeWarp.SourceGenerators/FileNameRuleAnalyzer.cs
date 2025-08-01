@@ -4,14 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace TimeWarp.SourceGenerators;
 
-// TODO: Rewrite as IIncrementalGenerator for better performance and consistency with modern practices
-[DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class FileNameRuleAnalyzer : DiagnosticAnalyzer
+[Generator]
+public class FileNameRuleAnalyzer : IIncrementalGenerator
 {
   public const string DiagnosticId = "TW0003";
   private const string Category = "Naming";
@@ -45,19 +43,28 @@ public class FileNameRuleAnalyzer : DiagnosticAnalyzer
     "AssemblyInfo.cs"
   };
   
-  public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-  
-  public override void Initialize(AnalysisContext context)
+  public void Initialize(IncrementalGeneratorInitializationContext context)
   {
-    context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-    context.EnableConcurrentExecution();
+    // Create a value provider that provides all syntax trees with config options
+    var syntaxTreesWithConfig = context.CompilationProvider
+      .Combine(context.AnalyzerConfigOptionsProvider)
+      .SelectMany((source, _) =>
+      {
+        var (compilation, configOptions) = source;
+        return compilation.SyntaxTrees.Select(tree => (tree, configOptions));
+      });
     
-    context.RegisterSyntaxTreeAction(AnalyzeFileNaming);
+    // Register diagnostics for each syntax tree
+    context.RegisterSourceOutput(syntaxTreesWithConfig, (spc, source) =>
+    {
+      var (tree, configOptions) = source;
+      AnalyzeFileNaming(spc, tree, configOptions);
+    });
   }
   
-  private void AnalyzeFileNaming(SyntaxTreeAnalysisContext context)
+  private void AnalyzeFileNaming(SourceProductionContext context, SyntaxTree tree, AnalyzerConfigOptionsProvider configOptions)
   {
-    string filePath = context.Tree.FilePath;
+    string filePath = tree.FilePath;
     
     // Skip if file path is empty or null
     if (string.IsNullOrEmpty(filePath))
@@ -69,8 +76,8 @@ public class FileNameRuleAnalyzer : DiagnosticAnalyzer
     if (!fileName.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
       return;
     
-    // Get configured exceptions from .editorconfig
-    string[] exceptions = GetConfiguredExceptions(context.Options);
+    // Get configured exceptions
+    string[] exceptions = GetConfiguredExceptions(configOptions);
     
     // Check if file matches any exception pattern
     if (IsFileExcepted(fileName, exceptions))
@@ -80,7 +87,7 @@ public class FileNameRuleAnalyzer : DiagnosticAnalyzer
     if (!KebabCasePattern.IsMatch(fileName))
     {
       Location location = Location.Create(
-        context.Tree,
+        tree,
         Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(0, 0)
       );
       
@@ -89,10 +96,10 @@ public class FileNameRuleAnalyzer : DiagnosticAnalyzer
     }
   }
   
-  private string[] GetConfiguredExceptions(AnalyzerOptions options)
+  private string[] GetConfiguredExceptions(AnalyzerConfigOptionsProvider configOptions)
   {
     // Try to get configured exceptions from .editorconfig
-    if (options.AnalyzerConfigOptionsProvider.GlobalOptions.TryGetValue(
+    if (configOptions.GlobalOptions.TryGetValue(
       "dotnet_diagnostic.TW0003.excluded_files", 
       out string? configuredExceptions) && !string.IsNullOrEmpty(configuredExceptions))
     {
