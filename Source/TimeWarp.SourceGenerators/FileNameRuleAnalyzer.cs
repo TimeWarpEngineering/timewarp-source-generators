@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Immutable;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
-
 namespace TimeWarp.SourceGenerators;
 
 [Generator]
@@ -28,8 +20,8 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
   private static readonly Regex KebabCasePattern = new(@"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*\.cs$", RegexOptions.Compiled);
   
   // Default exception patterns
-  private static readonly string[] DefaultExceptions = new[]
-  {
+  private static readonly string[] DefaultExceptions =
+  [
     "*.g.cs",
     "*.Generated.cs",
     "*.generated.cs",
@@ -39,7 +31,7 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
     "Directory.Build.targets",
     "Directory.Packages.props",
     "AssemblyInfo.cs"
-  };
+  ];
   
   public void Initialize(IncrementalGeneratorInitializationContext context)
   {
