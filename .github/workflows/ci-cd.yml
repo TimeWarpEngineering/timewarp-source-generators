@@ -1,0 +1,117 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'source/**'
+      - 'tests/**'
+      - '.github/workflows/**'
+      - 'Directory.Build.props'
+      - '*.props'
+      - '*.targets'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'source/**'
+      - 'tests/**'
+      - '.github/workflows/**'
+      - 'Directory.Build.props'
+      - '*.props'
+      - '*.targets'
+  release:
+    types: [published] # Triggered when a release is published via GitHub Releases UI or gh CLI
+  workflow_dispatch:
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: 🎉 Event Trigger
+        run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
+
+      - name: 📥 Check out repository code
+        uses: actions/checkout@v4
+
+      - name: 📦 Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: 🛠️ Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: 🔨 Build Project
+        run: |
+          cd source/timewarp-source-generators/
+          dotnet build --configuration Release
+
+      # TODO: Enable tests when ready
+      # - name: 🧪 Run Tests
+      #   run: |
+      #     cd tests/timewarp-source-generators-tests/
+      #     dotnet tool restore
+      #     dotnet restore
+      #     dotnet fixie --configuration Release
+
+      - name: 📦 Create NuGet Package (Push to master or Release)
+        if: github.event_name == 'push' || github.event_name == 'release'
+        run: |
+          .\build-nugets.ps1
+
+      - name: 🔍 Check if version already published (Releases only)
+        if: github.event_name == 'release'
+        run: |
+          $packagePath = Get-ChildItem -Path "source/timewarp-source-generators/bin/Packages/*.nupkg" | Select-Object -First 1
+          if ($packagePath) {
+            $packageName = [System.IO.Path]::GetFileNameWithoutExtension($packagePath.Name)
+            $version = $packageName -replace '^TimeWarp\.SourceGenerators\.', ''
+            
+            Write-Host "Checking if TimeWarp.SourceGenerators $version is already published on NuGet.org..."
+            
+            $searchResult = dotnet package search TimeWarp.SourceGenerators --exact-match --prerelease --source https://api.nuget.org/v3/index.json
+            if ($searchResult -match "TimeWarp\.SourceGenerators.*$version") {
+              Write-Host "⚠️ WARNING: TimeWarp.SourceGenerators $version is already published to NuGet.org"
+              Write-Host "❌ This version cannot be republished. Please increment the version in Directory.Build.props"
+              exit 1
+            } else {
+              Write-Host "✅ TimeWarp.SourceGenerators $version is not yet published on NuGet.org"
+            }
+          } else {
+            Write-Host "❌ No NuGet package found in expected location"
+            exit 1
+          }
+
+      - name: 🚀 Publish to NuGet.org (Releases only)
+        if: github.event_name == 'release'
+        run: |
+          cd source/timewarp-source-generators/bin/Packages
+          dotnet nuget push TimeWarp.SourceGenerators.*.nupkg `
+            --api-key ${{ secrets.PUBLISH_TO_NUGET_ORG }} `
+            --source https://api.nuget.org/v3/index.json `
+            --skip-duplicate
+
+      - name: 📤 Upload Artifacts
+        if: github.event_name == 'push' || github.event_name == 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Packages-${{ github.run_number }}
+          path: source/timewarp-source-generators/bin/Packages/*.nupkg
+
+      - name: ✅ Job Status
+        run: echo "This job's status is ${{ job.status }}."
