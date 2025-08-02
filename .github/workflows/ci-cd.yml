@@ -56,10 +56,13 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: 🔨 Build Project
+      - name: 🔨 Build and Pack
         run: |
-          cd source/timewarp-source-generators/
-          dotnet build --configuration Release
+          dotnet build source/timewarp-source-generators/timewarp-source-generators.csproj --configuration Release
+          dotnet pack source/timewarp-source-generators/timewarp-source-generators.csproj `
+            --configuration Release `
+            --no-build `
+            -p:NoWarn=NU5128
 
       # TODO: Enable tests when ready
       # - name: 🧪 Run Tests
@@ -69,39 +72,25 @@ jobs:
       #     dotnet restore
       #     dotnet fixie --configuration Release
 
-      - name: 📦 Create NuGet Package (Push to master or Release)
-        if: github.event_name == 'push' || github.event_name == 'release'
-        run: |
-          .\build-nugets.ps1
-
       - name: 🔍 Check if version already published (Releases only)
         if: github.event_name == 'release'
         run: |
-          $packagePath = Get-ChildItem -Path "source/timewarp-source-generators/bin/Packages/*.nupkg" | Select-Object -First 1
-          if ($packagePath) {
-            $packageName = [System.IO.Path]::GetFileNameWithoutExtension($packagePath.Name)
-            $version = $packageName -replace '^TimeWarp\.SourceGenerators\.', ''
-            
-            Write-Host "Checking if TimeWarp.SourceGenerators $version is already published on NuGet.org..."
-            
-            $searchResult = dotnet package search TimeWarp.SourceGenerators --exact-match --prerelease --source https://api.nuget.org/v3/index.json
-            if ($searchResult -match "TimeWarp\.SourceGenerators.*$version") {
-              Write-Host "⚠️ WARNING: TimeWarp.SourceGenerators $version is already published to NuGet.org"
-              Write-Host "❌ This version cannot be republished. Please increment the version in Directory.Build.props"
-              exit 1
-            } else {
-              Write-Host "✅ TimeWarp.SourceGenerators $version is not yet published on NuGet.org"
-            }
-          } else {
-            Write-Host "❌ No NuGet package found in expected location"
+          $version = (Select-Xml -Path "Directory.Build.props" -XPath "//PackageVersion/text()").Node.Value
+          Write-Host "Checking if TimeWarp.SourceGenerators $version is already published on NuGet.org..."
+          
+          $searchResult = dotnet package search TimeWarp.SourceGenerators --exact-match --prerelease --source https://api.nuget.org/v3/index.json
+          if ($searchResult -match "TimeWarp\.SourceGenerators.*$version") {
+            Write-Host "⚠️ WARNING: TimeWarp.SourceGenerators $version is already published to NuGet.org"
+            Write-Host "❌ This version cannot be republished. Please increment the version in Directory.Build.props"
             exit 1
+          } else {
+            Write-Host "✅ TimeWarp.SourceGenerators $version is not yet published on NuGet.org"
           }
 
       - name: 🚀 Publish to NuGet.org (Releases only)
         if: github.event_name == 'release'
         run: |
-          cd source/timewarp-source-generators/bin/Packages
-          dotnet nuget push TimeWarp.SourceGenerators.*.nupkg `
+          dotnet nuget push source/timewarp-source-generators/bin/Release/TimeWarp.SourceGenerators.*.nupkg `
             --api-key ${{ secrets.PUBLISH_TO_NUGET_ORG }} `
             --source https://api.nuget.org/v3/index.json `
             --skip-duplicate
@@ -111,7 +100,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Packages-${{ github.run_number }}
-          path: source/timewarp-source-generators/bin/Packages/*.nupkg
+          path: source/timewarp-source-generators/bin/Release/*.nupkg
 
       - name: ✅ Job Status
         run: echo "This job's status is ${{ job.status }}."
