@@ -1,0 +1,7 @@
+# EditorConfig for test console project
+
+root = true
+
+[*.cs]
+# Enable TW0004 - XML documentation to markdown analyzer
+dotnet_diagnostic.TW0004.severity = suggestion
