@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Authors>Steven T. Cramer</Authors>
     <Product>TimeWarp.SourceGenerators</Product>
-    <PackageVersion>1.0.0-alpha.8+9.0.100</PackageVersion>
+    <PackageVersion>1.0.0-beta.1</PackageVersion>
     <PackageProjectUrl>https://timewarpengineering.github.io/timewarp-source-generators/</PackageProjectUrl>
     <PackageTags>TimeWarp; Source Generator;SourceGenerators; Delegate</PackageTags>
-    <PackageIcon>Logo.png</PackageIcon>
+    <PackageIcon>logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/TimeWarpEngineering/timewarp-source-generators.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -15,7 +15,7 @@
     <PackageReleaseNotes>
       For detailed release notes and changelog, please visit: https://github.com/TimeWarpEngineering/timewarp-source-generators/releases
     </PackageReleaseNotes>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>read-me.md</PackageReadmeFile>
     <ContentTargetFolders>contentFiles</ContentTargetFolders>
   </PropertyGroup>
 
@@ -58,7 +58,7 @@
     <Exec Command="git log -1 --format=%ct" ConsoleToMSBuild="true" Condition="'$(OS)' != 'Windows_NT'">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitTimestamp"/>
     </Exec>
-    <Exec Command="pwsh -ExecutionPolicy Bypass -NoProfile -File &quot;$(MSBuildThisFileDirectory)ConvertTimestamp.ps1&quot; -GitCommitTimestamp $(GitCommitTimestamp)" ConsoleToMSBuild="true">
+    <Exec Command="pwsh -ExecutionPolicy Bypass -NoProfile -File &quot;$(MSBuildThisFileDirectory)convert-timestamp.ps1&quot; -GitCommitTimestamp $(GitCommitTimestamp)" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="CommitDate"/>
     </Exec>
     <PropertyGroup>
