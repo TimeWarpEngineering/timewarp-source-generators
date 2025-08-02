@@ -12,6 +12,7 @@ namespace TimeWarp.SourceGenerators.TestConsole;
 
 public partial class PascalCaseTest
 {
+
     // Documentation for GetPascalMessage
     /// <summary>
     /// Gets a Pascal case test message.

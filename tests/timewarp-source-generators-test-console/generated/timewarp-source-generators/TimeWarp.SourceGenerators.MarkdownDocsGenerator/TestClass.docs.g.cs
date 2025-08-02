@@ -16,6 +16,34 @@ namespace TimeWarp.SourceGenerators.TestConsole;
 
 public partial class TestClass
 {
+    // Documentation for MaxLength
+    /// <summary>
+    /// Gets or sets the maximum length allowed for processing strings.
+    /// </summary>
+    /// <value>
+    /// The maximum string length. Default is 100.
+    /// </value>
+    public partial int MaxLength { get => field; set => field = value; }
+
+    // Documentation for ProcessedCount
+    /// <summary>
+    /// Gets the number of strings processed since initialization.
+    /// </summary>
+    /// <value>
+    /// The total count of processed strings.
+    /// </value>
+    public partial int ProcessedCount { get => field; }
+
+    // Documentation for LastMessage
+    /// <summary>
+    /// Gets the last processed message.
+    /// </summary>
+    /// <value>
+    /// The last message that was successfully processed.
+    /// </value>
+    public partial string? LastMessage { get => field; set => field = value; }
+
+
     // Documentation for GetMessage
     /// <summary>
     /// Gets a test message with optional prefix.

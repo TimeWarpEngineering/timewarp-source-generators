@@ -12,6 +12,7 @@ namespace TimeWarp.SourceGenerators.TestConsole;
 
 public partial class KebabCaseTest
 {
+
     // Documentation for GetTestMessage
     /// <summary>
     /// Gets a test message to verify the generator is working.
