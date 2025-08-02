@@ -90,7 +90,7 @@ jobs:
       - name: 🚀 Publish to NuGet.org (Releases only)
         if: github.event_name == 'release'
         run: |
-          dotnet nuget push source/timewarp-source-generators/bin/Release/*.nupkg `
+          dotnet nuget push source/timewarp-source-generators/bin/Release/TimeWarp.SourceGenerators.*.nupkg `
             --api-key ${{ secrets.PUBLISH_TO_NUGET_ORG }} `
             --source https://api.nuget.org/v3/index.json `
             --skip-duplicate
