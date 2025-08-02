@@ -9,6 +9,8 @@
     <PackageVersion Include="Microsoft.CodeAnalysis" Version="4.4.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.11.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.11.0" />
     <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageVersion Include="Morris.Moxy" Version="1.1.0" />    
     <PackageVersion Include="Scriban.Signed" Version="5.5.0" />
