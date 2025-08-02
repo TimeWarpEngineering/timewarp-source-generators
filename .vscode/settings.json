@@ -18,5 +18,11 @@
     "titleBar.inactiveBackground": "#55dbe899",
     "titleBar.inactiveForeground": "#15202b99"
   },
-  "peacock.remoteColor": "#55dbe8"
+  "peacock.remoteColor": "#55dbe8",
+  "cSpell.words": [
+    "assemblyinfo",
+    "buildtransitive",
+    "contentfiles",
+    "nugets"
+  ]
 }

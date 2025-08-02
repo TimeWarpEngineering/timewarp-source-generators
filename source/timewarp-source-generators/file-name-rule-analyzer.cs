@@ -30,7 +30,10 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
     "Directory.Build.props",
     "Directory.Build.targets",
     "Directory.Packages.props",
-    "AssemblyInfo.cs",
+    "*AssemblyInfo.cs",
+    "*.AssemblyInfo.cs",
+    "*.AssemblyAttributes.cs",
+    "*.GlobalUsings.g.cs",
     "AnalyzerReleases.Shipped.md",
     "AnalyzerReleases.Unshipped.md"
   ];
@@ -38,18 +41,18 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
   public void Initialize(IncrementalGeneratorInitializationContext context)
   {
     // Create a value provider that provides all syntax trees with config options
-    var syntaxTreesWithConfig = context.CompilationProvider
+    IncrementalValuesProvider<(SyntaxTree tree, AnalyzerConfigOptionsProvider configOptions)> syntaxTreesWithConfig = context.CompilationProvider
       .Combine(context.AnalyzerConfigOptionsProvider)
       .SelectMany((source, _) =>
       {
-        var (compilation, configOptions) = source;
+        (Compilation compilation, AnalyzerConfigOptionsProvider configOptions) = source;
         return compilation.SyntaxTrees.Select(tree => (tree, configOptions));
       });
     
     // Register diagnostics for each syntax tree
     context.RegisterSourceOutput(syntaxTreesWithConfig, (spc, source) =>
     {
-      var (tree, configOptions) = source;
+      (SyntaxTree tree, AnalyzerConfigOptionsProvider configOptions) = source;
       AnalyzeFileNaming(spc, tree, configOptions);
     });
   }
@@ -69,7 +72,7 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
       return;
     
     // Get configured exceptions
-    string[] exceptions = GetConfiguredExceptions(configOptions);
+    string[] exceptions = GetConfiguredExceptions(configOptions, tree);
     
     // Check if file matches any exception pattern
     if (IsFileExcepted(fileName, exceptions))
@@ -78,28 +81,33 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
     // Check if file name follows kebab-case pattern
     if (!KebabCasePattern.IsMatch(fileName))
     {
-      Location location = Location.Create(
+      var location = Location.Create(
         tree,
-        Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(0, 0)
+        TextSpan.FromBounds(0, 0)
       );
       
-      Diagnostic diagnostic = Diagnostic.Create(Rule, location, fileName);
+      var diagnostic = Diagnostic.Create(Rule, location, fileName);
       context.ReportDiagnostic(diagnostic);
     }
   }
   
-  private string[] GetConfiguredExceptions(AnalyzerConfigOptionsProvider configOptions)
+  private string[] GetConfiguredExceptions(AnalyzerConfigOptionsProvider configOptions, SyntaxTree tree)
   {
+    // Get file-specific options
+    AnalyzerConfigOptions options = configOptions.GetOptions(tree);
+    
     // Try to get configured exceptions from .editorconfig
-    if (configOptions.GlobalOptions.TryGetValue(
+    if (options.TryGetValue(
       "dotnet_diagnostic.TW0003.excluded_files", 
       out string? configuredExceptions) && !string.IsNullOrEmpty(configuredExceptions))
     {
       // Split by semicolon and trim whitespace
-      return configuredExceptions
-        .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-        .Select(s => s.Trim())
-        .ToArray();
+      IEnumerable<string> additionalExceptions = configuredExceptions
+        .Split([';'], StringSplitOptions.RemoveEmptyEntries)
+        .Select(s => s.Trim());
+      
+      // Merge defaults with configured exceptions
+      return [.. DefaultExceptions, .. additionalExceptions];
     }
     
     // Return default exceptions if not configured
