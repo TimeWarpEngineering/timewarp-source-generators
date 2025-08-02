@@ -2,19 +2,19 @@ namespace TimeWarp.SourceGenerators.TestConsole;
 
 public partial class TestClass : IDataProcessor<string>
 {
-    private readonly bool _strictMode;
-    private int _processCount;
+    private readonly bool StrictMode;
+    private int ChickenCount;
 
-    public int MaxLength { get; set; } = 100;
+    public partial int MaxLength { get; set; }
 
-    public int ProcessedCount => _processCount;
+    public partial int ProcessedCount { get; }
 
-    public string? LastMessage { get; private set; }
+    public partial string? LastMessage { get; set; }
 
     public TestClass(bool strictMode = false)
     {
-        _strictMode = strictMode;
-        _processCount = 0;
+        StrictMode = strictMode;
+        ChickenCount = 0;
     }
 
     public partial string GetMessage(string? prefix)
@@ -28,10 +28,10 @@ public partial class TestClass : IDataProcessor<string>
         if (input == null)
             throw new ArgumentNullException(nameof(input));
 
-        if (_strictMode && input.Length > MaxLength)
+        if (StrictMode && input.Length > MaxLength)
             throw new ArgumentException($"Input exceeds maximum length of {MaxLength}", nameof(input));
 
-        _processCount++;
+        ChickenCount++;
         LastMessage = input.Trim().ToUpperInvariant();
         return LastMessage;
     }
@@ -41,7 +41,7 @@ public partial class TestClass : IDataProcessor<string>
         if (string.IsNullOrEmpty(input))
             return false;
 
-        return !_strictMode || input.Length <= MaxLength;
+        return !StrictMode || input.Length <= MaxLength;
     }
 
     public partial int TryProcessBatch(string[] inputs, string[] results)
@@ -79,7 +79,8 @@ public partial class TestClass : IDataProcessor<string>
 
     public partial void Reset()
     {
-        _processCount = 0;
+        ChickenCount = 0;
         LastMessage = null;
     }
 }
+

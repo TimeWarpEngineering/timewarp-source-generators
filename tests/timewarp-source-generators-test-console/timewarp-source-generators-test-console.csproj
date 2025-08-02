@@ -6,6 +6,7 @@
     <RootNamespace>TimeWarp.SourceGenerators.TestConsole</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
     <!-- Configure MSBuild to show detailed output including Info messages -->
     <MSBuildLoggerVerbosity>diagnostic</MSBuildLoggerVerbosity>
   </PropertyGroup>

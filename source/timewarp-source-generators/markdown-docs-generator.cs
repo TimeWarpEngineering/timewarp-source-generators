@@ -44,14 +44,25 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
         IncrementalValuesProvider<AdditionalText> markdownFiles = context.AdditionalTextsProvider
             .Where(file => file.Path.EndsWith(".md", StringComparison.OrdinalIgnoreCase));
 
+        // Group class declarations by class name to avoid duplicates
+        var groupedClasses = classDeclarations
+            .Collect()
+            .Select((classes, _) => classes
+                .GroupBy(c => (c.ClassDeclaration.Identifier.Text, c.Namespace))
+                .Select(g => g.First())
+                .ToArray());
+
         // Combine into pairs
-        var pairs = classDeclarations.Combine(markdownFiles.Collect());
+        var pairs = groupedClasses.Combine(markdownFiles.Collect());
 
         // Generate documentation for matching pairs
         context.RegisterSourceOutput(pairs, (sourceContext, pair) =>
         {
-            var ((classDeclaration, namespaceName, filePath), markdownTexts) = pair;
-            var className = classDeclaration.Identifier.Text;
+            var (classGroups, markdownTexts) = pair;
+            
+            foreach (var (classDeclaration, namespaceName, filePath) in classGroups)
+            {
+                var className = classDeclaration.Identifier.Text;
             
             // Extract source file name without extension
             var sourceFileName = Path.GetFileNameWithoutExtension(filePath);
@@ -76,7 +87,7 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
             if (matchingMd != null)
             {
                 var markdownContent = matchingMd.GetText()?.ToString() ?? string.Empty;
-                var (classDocs, methodDocs) = ConvertMarkdownToXmlDocs(markdownContent, classDeclaration);
+                var (classDocs, methodDocs, propertyDocs) = ConvertMarkdownToXmlDocs(markdownContent, classDeclaration);
 
                 var sourceText = SourceText.From($@"// Auto-generated documentation for {className}
 #nullable enable
@@ -86,19 +97,22 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
 {classDocs}
 public partial class {className}
 {{
+{propertyDocs}
 {methodDocs}
 }}
 ", Encoding.UTF8);
 
                 sourceContext.AddSource($"{className}.docs.g.cs", sourceText);
+                }
             }
         });
     }
 
-    private static (string ClassDocs, string MethodDocs) ConvertMarkdownToXmlDocs(string markdownContent, ClassDeclarationSyntax classDeclaration)
+    private static (string ClassDocs, string MethodDocs, string PropertyDocs) ConvertMarkdownToXmlDocs(string markdownContent, ClassDeclarationSyntax classDeclaration)
     {
         var classBuilder = new StringBuilder();
         var methodBuilder = new StringBuilder();
+        var propertyBuilder = new StringBuilder();
         var reader = new StringReader(markdownContent);
         string? line;
 
@@ -106,8 +120,11 @@ public partial class {className}
         var currentSection = "";
         var contentBuilder = new StringBuilder();
         var inMethodSection = false;
+        var inPropertySection = false;
         var currentMethod = "";
         var currentMethodDescription = "";
+        var currentProperty = "";
+        var currentPropertyDescription = "";
 
         // Get method signatures from the class declaration
         var methodSignatures = classDeclaration.Members
@@ -115,6 +132,49 @@ public partial class {className}
             .ToDictionary(
                 m => m.Identifier.Text,
                 m => $"public partial {m.ReturnType} {m.Identifier}({string.Join(", ", m.ParameterList.Parameters.Select(p => $"{p.Type} {p.Identifier}{(p.Default != null ? " = " + p.Default.Value.ToString() : "")}"))})"
+            );
+
+        // Get property signatures from the class declaration (only partial properties)
+        var propertySignatures = classDeclaration.Members
+            .OfType<PropertyDeclarationSyntax>()
+            .Where(p => p.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword)))
+            .ToDictionary(
+                p => p.Identifier.Text,
+                p => {
+                    var modifiers = string.Join(" ", p.Modifiers.Select(m => m.Text));
+                    var accessors = new List<string>();
+                    
+                    if (p.AccessorList != null)
+                    {
+                        foreach (var accessor in p.AccessorList.Accessors)
+                        {
+                            if (accessor.Keyword.Text == "get")
+                            {
+                                // For non-nullable reference types, initialize with default
+                                var typeStr = p.Type?.ToString() ?? "";
+                                if (typeStr == "string" && !typeStr.EndsWith("?"))
+                                {
+                                    accessors.Add("get => field ??= \"\"");
+                                }
+                                else
+                                {
+                                    accessors.Add("get => field");
+                                }
+                            }
+                            else if (accessor.Keyword.Text == "set")
+                            {
+                                accessors.Add("set => field = value");
+                            }
+                            else if (accessor.Keyword.Text == "init")
+                            {
+                                accessors.Add("init => field = value");
+                            }
+                        }
+                    }
+                    
+                    var accessorString = string.Join("; ", accessors);
+                    return $"{modifiers} {p.Type} {p.Identifier} {{ {accessorString}; }}";
+                }
             );
 
         while ((line = reader.ReadLine()) != null)
@@ -127,14 +187,18 @@ public partial class {className}
                 // Process previous section
                 if (inMethodSection)
                     ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim(), methodSignatures);
+                else if (inPropertySection)
+                    ProcessPropertySection(propertyBuilder, currentProperty, currentPropertyDescription, contentBuilder.ToString().Trim(), propertySignatures);
                 else
                     ProcessSection(classBuilder, currentSection, contentBuilder.ToString().Trim());
 
                 // Start new section
                 currentSection = line.Substring(3).Trim();
                 inMethodSection = currentSection == "Methods";
+                inPropertySection = currentSection == "Properties";
                 contentBuilder.Clear();
                 currentMethodDescription = "";
+                currentPropertyDescription = "";
                 continue;
             }
 
@@ -150,6 +214,21 @@ public partial class {className}
                 currentMethod = line.Substring(4).Trim();
                 contentBuilder.Clear();
                 currentMethodDescription = "";
+                continue;
+            }
+
+            if (line.StartsWith("### ") && inPropertySection)
+            {
+                // Process previous property if exists
+                if (!string.IsNullOrEmpty(currentProperty))
+                {
+                    ProcessPropertySection(propertyBuilder, currentProperty, currentPropertyDescription, contentBuilder.ToString().Trim(), propertySignatures);
+                }
+
+                // Start new property
+                currentProperty = line.Substring(4).Trim();
+                contentBuilder.Clear();
+                currentPropertyDescription = "";
                 continue;
             }
 
@@ -169,6 +248,13 @@ public partial class {className}
                 continue;
             }
 
+            // Capture property description (text before any #### subsections)
+            if (inPropertySection && !string.IsNullOrWhiteSpace(line) && !line.StartsWith("####") && string.IsNullOrEmpty(currentPropertyDescription))
+            {
+                currentPropertyDescription = line.Trim();
+                continue;
+            }
+
             // Add content to current section
             if (!string.IsNullOrWhiteSpace(line))
             {
@@ -179,10 +265,12 @@ public partial class {className}
         // Process the last section
         if (inMethodSection)
             ProcessMethodSection(methodBuilder, currentMethod, currentMethodDescription, contentBuilder.ToString().Trim(), methodSignatures);
+        else if (inPropertySection)
+            ProcessPropertySection(propertyBuilder, currentProperty, currentPropertyDescription, contentBuilder.ToString().Trim(), propertySignatures);
         else
             ProcessSection(classBuilder, currentSection, contentBuilder.ToString().Trim());
 
-        return (classBuilder.ToString(), methodBuilder.ToString());
+        return (classBuilder.ToString(), methodBuilder.ToString(), propertyBuilder.ToString());
     }
 
     private static void ProcessSection(StringBuilder builder, string section, string content)
@@ -343,6 +431,75 @@ public partial class {className}
                         builder.AppendLine($"    /// <exception cref=\"{match.Groups[1].Value}\">{match.Groups[2].Value.Trim()}</exception>");
                     }
                 }
+                break;
+        }
+    }
+
+    private static void ProcessPropertySection(StringBuilder builder, string propertyName, string description, string content, Dictionary<string, string> propertySignatures)
+    {
+        if (string.IsNullOrEmpty(propertyName))
+            return;
+
+        if (!propertySignatures.ContainsKey(propertyName))
+            return;
+
+        builder.AppendLine($"    // Documentation for {propertyName}");
+
+        // Add property summary if available
+        if (!string.IsNullOrEmpty(description))
+        {
+            builder.AppendLine("    /// <summary>");
+            builder.AppendLine($"    /// {description}");
+            builder.AppendLine("    /// </summary>");
+        }
+
+        var reader = new StringReader(content);
+        string? line;
+        var currentSubSection = "";
+        var subSectionContent = new StringBuilder();
+
+        while ((line = reader.ReadLine()) != null)
+        {
+            if (line.StartsWith("#### "))
+            {
+                // Process previous subsection
+                ProcessPropertySubSection(builder, currentSubSection, subSectionContent.ToString().Trim());
+
+                // Start new subsection
+                currentSubSection = line.Substring(5).Trim();
+                subSectionContent.Clear();
+                continue;
+            }
+
+            // Add content to current subsection
+            if (!string.IsNullOrWhiteSpace(line))
+            {
+                subSectionContent.AppendLine(line);
+            }
+        }
+
+        // Process the last subsection
+        ProcessPropertySubSection(builder, currentSubSection, subSectionContent.ToString().Trim());
+
+        // Add the property signature
+        builder.AppendLine($"    {propertySignatures[propertyName]}");
+        builder.AppendLine();
+    }
+
+    private static void ProcessPropertySubSection(StringBuilder builder, string subSection, string content)
+    {
+        if (string.IsNullOrEmpty(content))
+            return;
+
+        switch (subSection)
+        {
+            case "Value":
+                builder.AppendLine("    /// <value>");
+                foreach (var line in content.Split('\n'))
+                {
+                    builder.AppendLine($"    /// {line.Trim()}");
+                }
+                builder.AppendLine("    /// </value>");
                 break;
         }
     }
