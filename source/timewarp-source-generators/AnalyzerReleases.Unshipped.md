@@ -2,7 +2,6 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
-TW0001 | SourceGenerator | Info | HelloWorldGenerator
-TW0002 | SourceGenerator | Info | MarkdownDocsGenerator - Enhanced to support kebab-case file matching
-TW0003 | Naming | Info | FileNameRuleAnalyzer, disabled by default
-TW0004 | Documentation | Info | XmlDocsToMarkdownAnalyzer
+TWG001 | SourceGenerator | Info | MarkdownDocsGenerator - Enhanced to support kebab-case file matching
+TWA001 | Naming | Info | FileNameRuleAnalyzer, disabled by default
+TWA002 | Documentation | Info | XmlDocsToMarkdownAnalyzer

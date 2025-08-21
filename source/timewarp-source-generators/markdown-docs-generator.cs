@@ -6,7 +6,7 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
     // Regex pattern for checking if a file name is kebab-case
     private static readonly Regex KebabCasePattern = new(@"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$", RegexOptions.Compiled);
     private static readonly DiagnosticDescriptor MarkdownDocsGeneratorLoadedDescriptor = new(
-        id: "TW0002",
+        id: "TWG001",
         title: "MarkdownDocs Generator Loaded",
         messageFormat: "The MarkdownDocs generator has been loaded and initialized",
         category: "SourceGenerator",

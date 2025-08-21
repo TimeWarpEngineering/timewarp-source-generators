@@ -2,15 +2,7 @@
 
 ## Available Source Generators
 
-### HelloWorldGenerator (TW0001)
-
-A simple demonstration source generator that creates a static class with a hello message.
-
-- **Generated File**: `HelloWorld.g.cs`
-- **Namespace**: `TimeWarp.Generated`
-- **Diagnostic**: Info message when loaded
-
-### MarkdownDocsGenerator (TW0002)
+### MarkdownDocsGenerator (TWG001)
 
 Generates XML documentation from markdown files for C# classes.
 

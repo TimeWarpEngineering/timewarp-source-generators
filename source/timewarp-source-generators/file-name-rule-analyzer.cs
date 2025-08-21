@@ -3,7 +3,7 @@ namespace TimeWarp.SourceGenerators;
 [Generator]
 public class FileNameRuleAnalyzer : IIncrementalGenerator
 {
-  public const string DiagnosticId = "TW0003";
+  public const string DiagnosticId = "TWA001";
   private const string Category = "Naming";
   
   private static readonly DiagnosticDescriptor Rule = new(
@@ -27,6 +27,7 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
     "*.generated.cs",
     "*.designer.cs",
     "*.Designer.cs",
+    "*.razor.cs",  // Razor component code-behind files must match their .razor file names
     "Directory.Build.props",
     "Directory.Build.targets",
     "Directory.Packages.props",
@@ -98,7 +99,7 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
     
     // Try to get configured exceptions from .editorconfig
     if (options.TryGetValue(
-      "dotnet_diagnostic.TW0003.excluded_files", 
+      "dotnet_diagnostic.TWA001.excluded_files", 
       out string? configuredExceptions) && !string.IsNullOrEmpty(configuredExceptions))
     {
       // Split by semicolon and trim whitespace

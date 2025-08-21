@@ -4,7 +4,7 @@ root = true
 
 [*.cs]
 
-dotnet_diagnostic.TW0003.severity = error  # Set to warning/error to enforce kebab-case file naming
-dotnet_diagnostic.TW0003.excluded_files = PascalCaseTest.cs 
-# Enable TW0004 - XML documentation to markdown analyzer
-dotnet_diagnostic.TW0004.severity = suggestion
+dotnet_diagnostic.TWA001.severity = error  # Set to warning/error to enforce kebab-case file naming
+dotnet_diagnostic.TWA001.excluded_files = PascalCaseTest.cs 
+# Enable TWA002 - XML documentation to markdown analyzer
+dotnet_diagnostic.TWA002.severity = suggestion

@@ -14,11 +14,10 @@ Technical documentation for developers using or contributing to the project.
 ## What's Included
 
 ### Source Generators
-- **HelloWorldGenerator** - Example generator
 - **MarkdownDocsGenerator** - Generates markdown from XML docs
 
 ### Analyzers
-- **TW0003** - File name kebab-case enforcement
+- **TWA001** - File name kebab-case enforcement
 
 ## Configuration
 
