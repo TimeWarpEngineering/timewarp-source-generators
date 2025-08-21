@@ -1,7 +1,4 @@
-using TimeWarp.Generated;
 using TimeWarp.SourceGenerators.TestConsole;
-
-Console.WriteLine(HelloWorld.Message);
 
 // Test kebab-case file matching
 var kebabTest = new KebabCaseTest();

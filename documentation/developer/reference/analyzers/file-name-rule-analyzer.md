@@ -1,4 +1,4 @@
-# FileNameRuleAnalyzer (TW0003)
+# FileNameRuleAnalyzer (TWA001)
 
 ## Overview
 
@@ -6,7 +6,7 @@ The FileNameRuleAnalyzer enforces kebab-case naming conventions for C# source fi
 
 ## Rule Details
 
-- **Rule ID**: TW0003
+- **Rule ID**: TWA001
 - **Category**: Naming
 - **Default Severity**: Info (disabled by default)
 - **Message**: File '{0}' should use kebab-case naming convention (e.g., 'my-file.cs')
@@ -41,13 +41,13 @@ The analyzer is disabled by default to avoid breaking existing projects. To enab
 
 ```ini
 # Enable with warning severity
-dotnet_diagnostic.TW0003.severity = warning
+dotnet_diagnostic.TWA001.severity = warning
 
 # Or as an error to fail builds
-dotnet_diagnostic.TW0003.severity = error
+dotnet_diagnostic.TWA001.severity = error
 
 # Or as a suggestion for gentle nudging
-dotnet_diagnostic.TW0003.severity = suggestion
+dotnet_diagnostic.TWA001.severity = suggestion
 ```
 
 ### Exception Patterns
@@ -55,11 +55,12 @@ dotnet_diagnostic.TW0003.severity = suggestion
 Configure files that should be excluded from the rule:
 
 ```ini
-dotnet_diagnostic.TW0003.excluded_files = *.g.cs;*.Generated.cs;GlobalUsings.cs;Program.cs;Startup.cs
+dotnet_diagnostic.TWA001.excluded_files = *.g.cs;*.Generated.cs;GlobalUsings.cs;Program.cs;Startup.cs
 ```
 
 Default exceptions include:
 - Generated files (`*.g.cs`, `*.Generated.cs`, `*.designer.cs`)
+- Razor component code-behind files (`*.razor.cs`) - must match their `.razor` file names
 - Build files (`Directory.Build.props`, `Directory.Build.targets`, `Directory.Packages.props`)
 - Assembly metadata (`AssemblyInfo.cs`)
 - Analyzer tracking files (`AnalyzerReleases.Shipped.md`, `AnalyzerReleases.Unshipped.md`)
@@ -87,10 +88,10 @@ In your root `.editorconfig`:
 ```ini
 [*.cs]
 # Enable kebab-case file naming for all C# files
-dotnet_diagnostic.TW0003.severity = warning
+dotnet_diagnostic.TWA001.severity = warning
 
 # But allow exceptions for specific patterns
-dotnet_diagnostic.TW0003.excluded_files = *.g.cs;*.Generated.cs;*.designer.cs;Program.cs;Startup.cs;GlobalUsings.cs;AssemblyInfo.cs
+dotnet_diagnostic.TWA001.excluded_files = *.g.cs;*.Generated.cs;*.designer.cs;Program.cs;Startup.cs;GlobalUsings.cs;AssemblyInfo.cs
 ```
 
 ### Gradual Adoption
@@ -99,11 +100,11 @@ For existing projects, start with suggestion severity:
 
 ```ini
 [*.cs]
-dotnet_diagnostic.TW0003.severity = suggestion
+dotnet_diagnostic.TWA001.severity = suggestion
 
 # Only enforce in new feature folders
 [Features/**.cs]
-dotnet_diagnostic.TW0003.severity = warning
+dotnet_diagnostic.TWA001.severity = warning
 ```
 
 ## Suppressing Violations
@@ -111,9 +112,9 @@ dotnet_diagnostic.TW0003.severity = warning
 For specific files that need exceptions beyond the configured patterns:
 
 ```csharp
-#pragma warning disable TW0003 // File name should use kebab-case
+#pragma warning disable TWA001 // File name should use kebab-case
 // File: LegacyAPIClient.cs
-#pragma warning restore TW0003
+#pragma warning restore TWA001
 ```
 
 Or in the project file:
@@ -121,7 +122,7 @@ Or in the project file:
 ```xml
 <ItemGroup>
   <Compile Update="LegacyAPIClient.cs">
-    <AnalyzerSuppression>TW0003</AnalyzerSuppression>
+    <AnalyzerSuppression>TWA001</AnalyzerSuppression>
   </Compile>
 </ItemGroup>
 ```

@@ -3,7 +3,7 @@ namespace TimeWarp.SourceGenerators;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class XmlDocsToMarkdownAnalyzer : DiagnosticAnalyzer
 {
-    public const string DiagnosticId = "TW0004";
+    public const string DiagnosticId = "TWA002";
     private const string Category = "Documentation";
 
     private static readonly DiagnosticDescriptor Rule = new(
