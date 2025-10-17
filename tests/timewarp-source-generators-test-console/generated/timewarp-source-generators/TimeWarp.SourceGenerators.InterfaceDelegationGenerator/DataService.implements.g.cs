@@ -3,7 +3,7 @@
 
 namespace TimeWarp.SourceGenerators.TestConsole;
 
-// Interface delegation for DataService
+// Interface delegation for DataService - YO YO YO MAMA v2 with inherited interfaces!
 public partial class DataService
 {
     // Delegation to _logger for TimeWarp.SourceGenerators.TestConsole.ILogger
