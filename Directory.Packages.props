@@ -1,6 +1,6 @@
 <Project>
   <ItemGroup>
-    <PackageVersion Include="TimeWarp.SourceGenerators" Version="1.0.0-beta.6" />
+    <PackageVersion Include="TimeWarp.SourceGenerators" Version="$(Version)" />
     <PackageVersion Include="FakeItEasy" Version="7.3.1" />
     <PackageVersion Include="Fixie" Version="3.2.0" />
     <PackageVersion Include="Fixie.TestAdapter" Version="3.3.0" />
