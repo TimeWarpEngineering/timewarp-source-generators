@@ -420,7 +420,7 @@ namespace TimeWarp.SourceGenerators
       builder.AppendLine();
     }
 
-    builder.AppendLine($"// Interface delegation for {className} - YO YO YO MAMA v2 with inherited interfaces!");
+    builder.AppendLine($"// Interface delegation for {className}");
     builder.AppendLine($"public partial class {className}");
     builder.AppendLine("{");
 
