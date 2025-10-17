@@ -12,9 +12,10 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\source\timewarp-source-generators\timewarp-source-generators.csproj"
-                    OutputItemType="Analyzer"
-                    ReferenceOutputAssembly="false" />
+    <PackageReference Include="TimeWarp.SourceGenerators">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>build; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

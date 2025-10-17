@@ -1,57 +1,58 @@
 <Project>
-  <!-- Set common properties regarding assembly information and nuget packages -->
 
-  <PropertyGroup>
-    <Authors>Steven T. Cramer</Authors>
-    <Product>TimeWarp.SourceGenerators</Product>
-    <PackageId>TimeWarp.SourceGenerators</PackageId>
-    <PackageVersion>1.0.0-beta.4</PackageVersion>
-    <PackageProjectUrl>https://timewarpengineering.github.io/timewarp-source-generators/</PackageProjectUrl>
-    <PackageTags>TimeWarp; Source Generator;SourceGenerators; Delegate</PackageTags>
-    <PackageIcon>logo.png</PackageIcon>
-    <RepositoryUrl>https://github.com/TimeWarpEngineering/timewarp-source-generators.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageLicenseExpression>Unlicense</PackageLicenseExpression>
-    <PackageReleaseNotes>
-      For detailed release notes and changelog, please visit: https://github.com/TimeWarpEngineering/timewarp-source-generators/releases
-    </PackageReleaseNotes>
-    <PackageReadmeFile>read-me.md</PackageReadmeFile>
-    <ContentTargetFolders>contentFiles</ContentTargetFolders>
+  <!-- Custom path definitions for repository structure -->
+  <PropertyGroup Label="Custom Repository Variables">
+    <RepositoryName>timewarp-source-generators</RepositoryName>
+    <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
+    <SourceDirectory>$(RepositoryRoot)source/</SourceDirectory>
+    <TestsDirectory>$(RepositoryRoot)tests/</TestsDirectory>
+    <ArtifactsDirectory>$(RepositoryRoot)artifacts/</ArtifactsDirectory>
+    <PackagesDirectory>$(ArtifactsDirectory)packages/</PackagesDirectory>
   </PropertyGroup>
 
-  <!-- Deterministic Builds  https://devblogs.microsoft.com/dotnet/producing-packages-with-source-link/#deterministic-builds -->
-  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  <!-- MSBuild and NuGet behavior configuration -->
+  <PropertyGroup Label="MSBuild/NuGet Configuration">
+    <!-- Output packages to our local feed directory -->
+    <PackageOutputPath>$(PackagesDirectory)</PackageOutputPath>
+
+    <!-- Suppress .NET preview SDK message -->
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
 
-  <!-- Common compile parameters -->
-  <PropertyGroup>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <LangVersion>latest</LangVersion>
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <NoWarn>CS7035;NU1503;1503;1591</NoWarn>
-    <Nullable>enable</Nullable>
+  <!-- Default language and framework settings for all projects -->
+  <PropertyGroup Label="Project Defaults">
     <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- Code quality, analyzers, and warning configuration -->
+  <PropertyGroup Label="Code Quality and Analysis">
+    <!-- Treat all warnings as errors -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>CS7035;NU1503;1503;1591</NoWarn>
+
+    <!-- Enable compiler-generated files output -->
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
-  <!-- https://devblogs.microsoft.com/nuget/enable-repeatable-package-restores-using-a-lock-file/ supports caching of nugets in CI builds -->
-  <PropertyGroup>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
+  <!-- Central Package Management -->
+  <PropertyGroup Label="NuGet Configuration">
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <!-- Source Link Settings -->
+  <PropertyGroup Label="Source Link Settings">
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>false</IncludeSymbols>
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
-  <!--This is to add the CommitDate and CommitHash to your assemblyinfo -->
-  <Target Name="SetAssemblyMetaData" BeforeTargets="PreBuildEvent" >
+  <!-- Git commit metadata for assembly info -->
+  <Target Name="SetAssemblyMetaData" BeforeTargets="PreBuildEvent">
     <Exec Command="git log -1 --format=%%ct" ConsoleToMSBuild="true" Condition="'$(OS)' == 'Windows_NT'">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitTimestamp"/>
     </Exec>
@@ -61,10 +62,6 @@
     <Exec Command="pwsh -ExecutionPolicy Bypass -NoProfile -File &quot;$(MSBuildThisFileDirectory)convert-timestamp.ps1&quot; -GitCommitTimestamp $(GitCommitTimestamp)" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="CommitDate"/>
     </Exec>
-    <PropertyGroup>
-      <!-- In Visual Studio the below line crashes if they fix VS then we can use this and no need for the powershell script -->
-      <!--<LastCommitDate>$([System.DateTime]::UnixEpoch.AddSeconds($(GitCommitTimestamp)).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK"))</LastCommitDate>-->
-    </PropertyGroup>
     <ItemGroup>
       <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
         <_Parameter1>CommitDate</_Parameter1>
@@ -73,8 +70,8 @@
     </ItemGroup>
   </Target>
 
-  <!--  Common analyzers and code fixes-->
-  <ItemGroup>
+  <!-- Common analyzers for all projects -->
+  <ItemGroup Label="Code Analyzers">
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

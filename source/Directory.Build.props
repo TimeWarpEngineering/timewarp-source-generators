@@ -1,0 +1,39 @@
+<Project>
+  <!-- Import parent Directory.Build.props -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- Default package metadata (can be overridden in individual projects) -->
+  <PropertyGroup Label="Package Metadata">
+    <Version>1.0.0-beta.5</Version>
+    <Authors>Steven T. Cramer</Authors>
+    <Product>TimeWarp.SourceGenerators</Product>
+    <PackageId>TimeWarp.SourceGenerators</PackageId>
+    <RepositoryUrl>https://github.com/TimeWarpEngineering/timewarp-source-generators</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>Unlicense</PackageLicenseExpression>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <PackageProjectUrl>https://timewarpengineering.github.io/timewarp-source-generators/</PackageProjectUrl>
+    <PackageTags>TimeWarp; Source Generator; SourceGenerators; Delegate; Interface Delegation</PackageTags>
+    <PackageReleaseNotes>For detailed release notes and changelog, please visit: https://github.com/TimeWarpEngineering/timewarp-source-generators/releases</PackageReleaseNotes>
+    <ContentTargetFolders>contentFiles</ContentTargetFolders>
+  </PropertyGroup>
+
+  <PropertyGroup Label="MsBuild Packaging Defaults">
+    <IsPackable>true</IsPackable>
+    <PackageOutputPath>$(PackagesDirectory)</PackageOutputPath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Source Link Settings">
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>false</IncludeSymbols>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup Label="Shared Package Assets">
+    <None Include="$(RepositoryRoot)assets/logo.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+</Project>
