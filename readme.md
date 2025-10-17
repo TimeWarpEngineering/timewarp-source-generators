@@ -22,6 +22,65 @@ TimeWarp.SourceGenerators is our collection of source generators.
 
 If you like or are using this project please give it a star. Thank you!
 
+## Features
+
+### Interface Delegation Generator
+
+Implements Delphi-style interface delegation for C#. Mark fields or properties with `[Implements]` to automatically generate forwarding methods for interface members.
+
+#### Usage
+
+```csharp
+public partial class DataService : ILogger, IDataProcessor<string>
+{
+    [Implements]
+    private readonly ILogger Logger;
+
+    [Implements]
+    private readonly IDataProcessor<string> Processor;
+
+    public DataService(ILogger logger, IDataProcessor<string> processor)
+    {
+        Logger = logger;
+        Processor = processor;
+    }
+
+    // Optionally override specific methods
+    public string Process(string input)
+    {
+        // Custom implementation
+        return Processor.Process(input.ToUpper());
+    }
+}
+```
+
+The generator will automatically create forwarding implementations for all interface methods and properties, except those you explicitly implement.
+
+#### Requirements
+
+- Class must be marked as `partial`
+- Class must implement the interface being delegated
+- Field/property type must be the interface or implement the interface
+
+#### Diagnostics
+
+- **TW1001**: Class must be partial for interface delegation
+- **TW1002**: Class does not implement the delegated interface
+- **TW1003**: Multiple fields delegate the same interface
+
+### File Name Rule Analyzer
+
+Enforces kebab-case naming convention for C# files.
+
+#### Configuration
+
+Configure exceptions in `.editorconfig`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.TWA001.excluded_files = Program.cs;Startup.cs;*.Designer.cs
+```
+
 ## Getting started
 
 To quickly get started I recommend reviewing the samples in this repo.
