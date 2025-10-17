@@ -23,22 +23,20 @@ namespace TimeWarp.SourceGenerators;
 /// public partial class DataService : ILogger, IDataProcessor&lt;string&gt;
 /// {
 ///     [Implements]
-///     private readonly ILogger _logger;
+///     private readonly ILogger Logger;
 ///
 ///     [Implements]
-///     private readonly IDataProcessor&lt;string&gt; _processor;
+///     private readonly IDataProcessor&lt;string&gt; Processor;
 ///
 ///     public DataService(ILogger logger, IDataProcessor&lt;string&gt; processor)
 ///     {
-///         _logger = logger;
-///         _processor = processor;
+///         Logger = logger;
+///         Processor = processor;
 ///     }
 /// }
 /// </code>
-/// The generator will create forwarding implementations for all ILogger methods/properties to _logger
-/// and all IDataProcessor&lt;string&gt; methods/properties to _processor.
+/// The generator will create forwarding implementations for all ILogger methods/properties to Logger
+/// and all IDataProcessor&lt;string&gt; methods/properties to Processor.
 /// </example>
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-public class ImplementsAttribute : Attribute
-{
-}
+public class ImplementsAttribute : Attribute { }
