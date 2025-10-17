@@ -56,6 +56,9 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      - name: 📁 Create artifacts directory
+        run: mkdir -p artifacts/packages
+
       - name: 🔨 Build
         run: |
           dotnet build source/timewarp-source-generators/timewarp-source-generators.csproj --configuration Release
