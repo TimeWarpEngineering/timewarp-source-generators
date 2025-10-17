@@ -267,12 +267,59 @@ namespace TimeWarp.SourceGenerators
       SemanticModel semanticModel)
   {
     var code = new List<string>();
+    var processedMembers = new HashSet<string>();
 
-    // Get all members of the interface
+    // Process the interface and all inherited interfaces
+    if (interfaceType is INamedTypeSymbol namedInterface)
+    {
+      ProcessInterfaceMembers(namedInterface, delegateMemberName, classSymbol, code, processedMembers);
+    }
+
+    return code;
+  }
+
+  private static void ProcessInterfaceMembers(
+      INamedTypeSymbol interfaceType,
+      string delegateMemberName,
+      INamedTypeSymbol classSymbol,
+      List<string> code,
+      HashSet<string> processedMembers)
+  {
+    // First, recursively process all base interfaces
+    foreach (INamedTypeSymbol baseInterface in interfaceType.AllInterfaces)
+    {
+      ProcessInterfaceMembersCore(baseInterface, delegateMemberName, classSymbol, code, processedMembers);
+    }
+
+    // Then process the current interface's own members
+    ProcessInterfaceMembersCore(interfaceType, delegateMemberName, classSymbol, code, processedMembers);
+  }
+
+  private static void ProcessInterfaceMembersCore(
+      INamedTypeSymbol interfaceType,
+      string delegateMemberName,
+      INamedTypeSymbol classSymbol,
+      List<string> code,
+      HashSet<string> processedMembers)
+  {
     ImmutableArray<ISymbol> interfaceMembers = interfaceType.GetMembers();
 
     foreach (ISymbol member in interfaceMembers)
     {
+      // Create a unique key for this member to avoid duplicates
+      string memberKey = $"{member.Name}_{member.Kind}";
+      if (member is IMethodSymbol method)
+      {
+        // Include return type and parameter types in key to handle overloads and different return types
+        string returnType = method.ReturnType.ToDisplayString();
+        string paramTypes = string.Join(",", method.Parameters.Select(p => p.Type.ToDisplayString()));
+        memberKey = $"{member.Name}_{method.MethodKind}_{returnType}_{paramTypes}";
+      }
+
+      // Skip if we've already processed this member
+      if (!processedMembers.Add(memberKey))
+        continue;
+
       // Skip if the class already implements this member explicitly
       ISymbol? existingImplementation = classSymbol.GetMembers(member.Name)
                 .FirstOrDefault(m => !m.IsImplicitlyDeclared);
@@ -282,8 +329,8 @@ namespace TimeWarp.SourceGenerators
 
       switch (member)
       {
-        case IMethodSymbol method when method.MethodKind == MethodKind.Ordinary:
-          code.Add(GenerateMethodDelegation(method, delegateMemberName));
+        case IMethodSymbol methodSymbol when methodSymbol.MethodKind == MethodKind.Ordinary:
+          code.Add(GenerateMethodDelegation(methodSymbol, delegateMemberName));
           break;
 
         case IPropertySymbol property:
@@ -295,8 +342,6 @@ namespace TimeWarp.SourceGenerators
           break;
       }
     }
-
-    return code;
   }
 
   private static string GenerateMethodDelegation(IMethodSymbol method, string delegateMemberName)
@@ -375,7 +420,7 @@ namespace TimeWarp.SourceGenerators
       builder.AppendLine();
     }
 
-    builder.AppendLine($"// Interface delegation for {className}");
+    builder.AppendLine($"// Interface delegation for {className} - YO YO YO MAMA v2 with inherited interfaces!");
     builder.AppendLine($"public partial class {className}");
     builder.AppendLine("{");
 

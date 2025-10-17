@@ -15,6 +15,9 @@
     <!-- Output packages to our local feed directory -->
     <PackageOutputPath>$(PackagesDirectory)</PackageOutputPath>
 
+    <!-- Use local NuGet cache instead of global -->
+    <RestorePackagesPath>$(RepositoryRoot).nuget-cache/</RestorePackagesPath>
+
     <!-- Suppress .NET preview SDK message -->
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
