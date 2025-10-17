@@ -320,12 +320,29 @@ namespace TimeWarp.SourceGenerators
     string propertyType = property.Type.ToDisplayString();
     string propertyName = property.Name;
 
-    string getter = property.GetMethod != null ? $" get => {delegateMemberName}.{propertyName};" : "";
-    string setter = property.SetMethod != null ? $" set => {delegateMemberName}.{propertyName} = value;" : "";
+    // Check if this is an indexer
+    if (property.IsIndexer)
+    {
+      string parameters = string.Join(", ", property.Parameters.Select(p =>
+              $"{p.Type.ToDisplayString()} {p.Name}"));
+      string arguments = string.Join(", ", property.Parameters.Select(p => p.Name));
+
+      string getter = property.GetMethod != null ? $" get => {delegateMemberName}[{arguments}];" : "";
+      string setter = property.SetMethod != null ? $" set => {delegateMemberName}[{arguments}] = value;" : "";
+
+      return $@"    public {propertyType} this[{parameters}]
+    {{
+{getter}{setter}
+    }}";
+    }
+
+    // Regular property
+    string regularGetter = property.GetMethod != null ? $" get => {delegateMemberName}.{propertyName};" : "";
+    string regularSetter = property.SetMethod != null ? $" set => {delegateMemberName}.{propertyName} = value;" : "";
 
     return $@"    public {propertyType} {propertyName}
     {{
-{getter}{setter}
+{regularGetter}{regularSetter}
     }}";
   }
 
