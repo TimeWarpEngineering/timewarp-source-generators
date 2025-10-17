@@ -47,7 +47,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.Packages.props') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
 
@@ -56,13 +56,9 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: 🔨 Build and Pack
+      - name: 🔨 Build
         run: |
           dotnet build source/timewarp-source-generators/timewarp-source-generators.csproj --configuration Release
-          dotnet pack source/timewarp-source-generators/timewarp-source-generators.csproj `
-            --configuration Release `
-            --no-build `
-            -p:NoWarn=NU5128
 
       # TODO: Enable tests when ready
       # - name: 🧪 Run Tests
@@ -75,13 +71,13 @@ jobs:
       - name: 🔍 Check if version already published (Releases only)
         if: github.event_name == 'release'
         run: |
-          $version = (Select-Xml -Path "Directory.Build.props" -XPath "//PackageVersion/text()").Node.Value
+          $version = (Select-Xml -Path "source/Directory.Build.props" -XPath "//Version/text()").Node.Value
           Write-Host "Checking if TimeWarp.SourceGenerators $version is already published on NuGet.org..."
-          
+
           $searchResult = dotnet package search TimeWarp.SourceGenerators --exact-match --prerelease --source https://api.nuget.org/v3/index.json
           if ($searchResult -match "TimeWarp\.SourceGenerators.*$version") {
             Write-Host "⚠️ WARNING: TimeWarp.SourceGenerators $version is already published to NuGet.org"
-            Write-Host "❌ This version cannot be republished. Please increment the version in Directory.Build.props"
+            Write-Host "❌ This version cannot be republished. Please increment the version in source/Directory.Build.props"
             exit 1
           } else {
             Write-Host "✅ TimeWarp.SourceGenerators $version is not yet published on NuGet.org"
@@ -90,7 +86,7 @@ jobs:
       - name: 🚀 Publish to NuGet.org (Releases only)
         if: github.event_name == 'release'
         run: |
-          dotnet nuget push source/timewarp-source-generators/bin/Release/TimeWarp.SourceGenerators.*.nupkg `
+          dotnet nuget push artifacts/packages/TimeWarp.SourceGenerators.*.nupkg `
             --api-key ${{ secrets.PUBLISH_TO_NUGET_ORG }} `
             --source https://api.nuget.org/v3/index.json `
             --skip-duplicate
@@ -100,7 +96,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Packages-${{ github.run_number }}
-          path: source/timewarp-source-generators/bin/Release/*.nupkg
+          path: artifacts/packages/*.nupkg
 
       - name: ✅ Job Status
         run: echo "This job's status is ${{ job.status }}."
