@@ -9,13 +9,15 @@
     <LangVersion>preview</LangVersion>
     <!-- Configure MSBuild to show detailed output including Info messages -->
     <MSBuildLoggerVerbosity>diagnostic</MSBuildLoggerVerbosity>
+    <!-- Smoke-test console intentionally uses System.Console; repo BannedSymbols target production CLIs -->
+    <NoWarn>$(NoWarn);RS0030</NoWarn>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <PackageReference Include="TimeWarp.SourceGenerators">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>build; analyzers</IncludeAssets>
-    </PackageReference>
+    <!-- ProjectReference as Analyzer so CI/local tests exercise in-tree generators -->
+    <ProjectReference Include="..\..\source\timewarp-source-generators\timewarp-source-generators.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>

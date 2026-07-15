@@ -3,6 +3,7 @@
 #endregion
 #region Design
 // Discovers the repository root dynamically using Git.FindRoot()
+// Builds the solution at the repo root in Release (source packs via GeneratePackageOnBuild)
 // Handler stores Command and Ct as fields so private methods are zero-parameter
 // Streams MSBuild output via Amuru RunAsync by default; --quiet uses CaptureAsync
 #endregion

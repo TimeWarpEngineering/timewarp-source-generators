@@ -12,6 +12,7 @@ global using System.Diagnostics;
 global using System.Runtime.CompilerServices;
 global using System.Runtime.InteropServices;
 global using System.Xml.Linq;
+global using System.Text.RegularExpressions;
 
 global using TimeWarp.Nuru;
 global using static TimeWarp.Nuru.Unit;

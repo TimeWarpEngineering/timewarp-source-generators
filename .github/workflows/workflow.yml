@@ -1,105 +1,64 @@
-name: CI/CD Pipeline
+name: CI/CD
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
     paths:
       - 'source/**'
       - 'tests/**'
+      - 'tools/**'
+      - 'msbuild/**'
       - '.github/workflows/**'
       - 'Directory.Build.props'
-      - '*.props'
-      - '*.targets'
+      - 'Directory.Packages.props'
+      - 'source/Directory.Build.props'
+      - 'nuget.config'
   pull_request:
-    branches:
-      - master
+    branches: [master]
     paths:
       - 'source/**'
       - 'tests/**'
+      - 'tools/**'
+      - 'msbuild/**'
       - '.github/workflows/**'
       - 'Directory.Build.props'
-      - '*.props'
-      - '*.targets'
+      - 'Directory.Packages.props'
+      - 'source/Directory.Build.props'
+      - 'nuget.config'
   release:
-    types: [published] # Triggered when a release is published via GitHub Releases UI or gh CLI
+    types: [published]
   workflow_dispatch:
 
-env:
-  DOTNET_NOLOGO: true
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  DOTNET_CLI_TELEMETRY_OPTOUT: true
-
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: pwsh
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - name: 🎉 Event Trigger
-        run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
-
-      - name: 📥 Check out repository code
-        uses: actions/checkout@v4
-
-      - name: 📦 Cache NuGet packages
-        uses: actions/cache@v4
+      - uses: actions/checkout@v4
         with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.Packages.props') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: 🛠️ Setup .NET
-        uses: actions/setup-dotnet@v4
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-
-      - name: 📁 Create artifacts directory
-        run: mkdir -p artifacts/packages
-
-      - name: 🔨 Build
-        run: |
-          dotnet build source/timewarp-source-generators/timewarp-source-generators.csproj --configuration Release
-
-      # TODO: Enable tests when ready
-      # - name: 🧪 Run Tests
-      #   run: |
-      #     cd tests/timewarp-source-generators-tests/
-      #     dotnet tool restore
-      #     dotnet restore
-      #     dotnet fixie --configuration Release
-
-      - name: 🔍 Check if version already published (Releases only)
+      - name: NuGet login (OIDC Trusted Publishing)
         if: github.event_name == 'release'
+        id: nuget-login
+        uses: nuget/login@v1
+        with:
+          user: TimeWarp.Enterprises
+      - name: Run CI Pipeline
         run: |
-          $version = (Select-Xml -Path "source/Directory.Build.props" -XPath "//Version/text()").Node.Value
-          Write-Host "Checking if TimeWarp.SourceGenerators $version is already published on NuGet.org..."
-
-          $searchResult = dotnet package search TimeWarp.SourceGenerators --exact-match --prerelease --source https://api.nuget.org/v3/index.json
-          if ($searchResult -match "TimeWarp\.SourceGenerators.*$version") {
-            Write-Host "⚠️ WARNING: TimeWarp.SourceGenerators $version is already published to NuGet.org"
-            Write-Host "❌ This version cannot be republished. Please increment the version in source/Directory.Build.props"
-            exit 1
-          } else {
-            Write-Host "✅ TimeWarp.SourceGenerators $version is not yet published on NuGet.org"
-          }
-
-      - name: 🚀 Publish to NuGet.org (Releases only)
-        if: github.event_name == 'release'
-        run: |
-          dotnet nuget push artifacts/packages/TimeWarp.SourceGenerators.*.nupkg `
-            --api-key ${{ secrets.PUBLISH_TO_NUGET_ORG }} `
-            --source https://api.nuget.org/v3/index.json `
-            --skip-duplicate
-
-      - name: 📤 Upload Artifacts
-        if: github.event_name == 'push' || github.event_name == 'release'
+          if [ "${{ github.event_name }}" == "release" ]; then
+            dotnet run --file tools/dev-cli/dev.cs -- workflow --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}"
+          else
+            dotnet run --file tools/dev-cli/dev.cs -- workflow
+          fi
+      - name: Upload Artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Packages-${{ github.run_number }}
           path: artifacts/packages/*.nupkg
-
-      - name: ✅ Job Status
-        run: echo "This job's status is ${{ job.status }}."
+          if-no-files-found: ignore
