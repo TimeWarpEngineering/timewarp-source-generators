@@ -43,14 +43,13 @@ TW0003 = kebab under a different scheme).
 
 ## Checklist
 
-- [ ] Apply TW0001–TW0006 mapping (or document deviation)
-- [ ] Rename **all** IDs in source (no TWA / TWG / TW100x leftovers)
-- [ ] AnalyzerReleases.Shipped.md / Unshipped.md
-- [ ] readme.md, documentation/, .editorconfig samples
-- [ ] Tests assert new IDs
-- [ ] Grep: no TWA001, TWA002, TW1001–1003, TWG001 in code
-- [ ] Commit
-
+- [x] Apply TW0001–TW0006 mapping (or document deviation)
+- [x] Rename **all** IDs in source (no TWA / TWG / TW100x leftovers)
+- [x] AnalyzerReleases.Shipped.md / Unshipped.md
+- [x] readme.md, documentation/, .editorconfig samples
+- [x] Tests assert new IDs (test-console `.editorconfig` uses TW0001/TW0002; no unit-test project asserts IDs)
+- [x] Grep: no TWA001, TWA002, TW1001–1003, TWG001 in code
+- [x] Commit
 ## Notes
 
 - Architecture already renamed TWPA → TWA (timewarp-architecture).
@@ -112,9 +111,51 @@ Pass: build green; zero old IDs on live product surface; Unshipped matches code.
 - Do not blind-sed `TW0003` in docs after rename (it correctly means MarkdownDocs load).
 - Change source + Unshipped together.
 
+## Results
+
+### Summary
+
+Renamed every live diagnostic ID in `TimeWarp.SourceGenerators` to contiguous **TW0001–TW0006**. Dropped TWA/TWG/TW1xxx so TimeWarp Architecture can own **TWA**. Single **TW** family for this package’s analyzers and generators.
+
+| Old | New | Component |
+|-----|-----|-----------|
+| TWA001 | TW0001 | FileNameRuleAnalyzer (+ `excluded_files` key) |
+| TWA002 | TW0002 | XmlDocsToMarkdownAnalyzer |
+| TWG001 | TW0003 | MarkdownDocsGenerator |
+| TW1001 | TW0004 | Interface delegation — partial |
+| TW1002 | TW0005 | Interface delegation — not implement |
+| TW1003 | TW0006 | Interface delegation — multiple fields |
+
+### Files changed
+
+**Source:** `file-name-rule-analyzer.cs`, `xml-docs-to-markdown-analyzer.cs`, `markdown-docs-generator.cs`, `interface-delegation-generator.cs`, `AnalyzerReleases.Unshipped.md`  
+**Config:** root `.editorconfig`, test-console `.editorconfig`  
+**Docs:** `readme.md`, `documentation/**` (overview, how-to, analyzer/SG refs, release tracking)  
+**Open kanban:** 015, 016, 017 (fix + interface draft)
+
+### Key decisions
+
+- Left `AnalyzerReleases.Shipped.md` empty (always-unshipped policy).
+- No dual-ID compatibility layer (intentional full rename).
+- File-name docs corrected from historical TW0003 scheme to **TW0001**.
+- `kanban/done/*` history left as archaeology; open tasks scrubbed.
+- Phantom TW1004 removed from interface-delegation draft task.
+
+### Verification
+
+- `dotnet build source/timewarp-source-generators/... -c Release` — **succeeded** (0 warnings/errors); package 1.0.0-beta.8 produced.
+- Grep old IDs on `source/`, `documentation/`, `readme.md`, `.editorconfig`, `tests/` — **zero matches**.
+- All six new IDs present in source + Unshipped.
+- Review (`72e360e`): 0 bugs; 1 suggestion (017 prose) fixed in `42f1108`.
+
+### Note
+
+Solution-wide restore of the test console can fail with NU1102 when CPM `Version=$(Version)` does not resolve for the test project (pre-existing; not introduced by this rename). Library project builds clean.
+
 ## Session
 
 - Created: 2026-07-15
 - Clarified: rename **ALL** IDs; do not leave TWA001/TWA002
 - Prefix locked: **TW** (recommend contiguous TW0001–TW0006)
 - Plan: 2026-07-15 (orchestrate-task phase 2–3)
+- Implemented + reviewed: 2026-07-15 (orchestrate-task phases 4–5)
