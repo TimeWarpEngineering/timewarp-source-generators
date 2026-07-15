@@ -42,19 +42,38 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
+      # Prefer NuGet Trusted Publishing (OIDC). Fall back to org API key when no trust
+      # policy exists yet for this package (common on first release under a new policy).
       - name: NuGet login (OIDC Trusted Publishing)
         if: github.event_name == 'release'
         id: nuget-login
+        continue-on-error: true
         uses: nuget/login@v1
         with:
           user: TimeWarp.Enterprises
+
       - name: Run CI Pipeline
+        env:
+          # OIDC key if login succeeded; otherwise org secrets (either name used historically)
+          NUGET_API_KEY_OIDC: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+          NUGET_API_KEY_SECRET: ${{ secrets.PUBLISH_TO_NUGET_ORG || secrets.NUGET_API_KEY }}
         run: |
           if [ "${{ github.event_name }}" == "release" ]; then
-            dotnet run --file tools/dev-cli/dev.cs -- workflow --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}"
+            API_KEY="${NUGET_API_KEY_OIDC:-}"
+            if [ -z "$API_KEY" ]; then
+              echo "OIDC Trusted Publishing unavailable; using org NuGet API key secret."
+              API_KEY="${NUGET_API_KEY_SECRET:-}"
+            fi
+            if [ -z "$API_KEY" ]; then
+              echo "::error::No NuGet API key from OIDC or secrets.PUBLISH_TO_NUGET_ORG / NUGET_API_KEY."
+              exit 1
+            fi
+            dotnet run --file tools/dev-cli/dev.cs -- workflow --api-key "$API_KEY"
           else
             dotnet run --file tools/dev-cli/dev.cs -- workflow
           fi
+
       - name: Upload Artifacts
         if: always()
         uses: actions/upload-artifact@v4
