@@ -105,6 +105,60 @@ Document which option was chosen in Results.
 - Version still lives in `source/Directory.Build.props` (`GeneratePackageOnBuild` →
   `artifacts/packages/`)
 
+### Implementation plan (2026-07-15)
+
+**Chosen approach: Option A** — full `dev workflow` ownership (peer consensus).  
+**Peer template:** timewarp-options-validation (single package + GeneratePackageOnBuild).
+
+#### Target
+
+```
+YAML (thin): checkout → setup-dotnet 10 → [release] nuget/login OIDC →
+  dotnet run --file tools/dev-cli/dev.cs -- workflow [--api-key]
+  → upload artifacts/packages/*.nupkg (always)
+
+PR/merge: clean → build → test console
+Release:  tag/version + NuGet not-published → clean → build → test → push
+```
+
+#### Key decisions
+
+| Topic | Decision |
+|-------|----------|
+| Option A vs B | **A** — extend workflow-command (in-process; no `./bin/dev`) |
+| Tests | Rewrite `dev test` to build+run test console; remove dead path with YAML rewrite |
+| Test console ref | **T1:** Analyzer `ProjectReference` (fix PackageReference/`Version=$(Version)` chicken-and-egg) |
+| Cache | Remove cache step; keep `RestorePackagesPath=.nuget-cache/` (no peer cache) |
+| Auth | OIDC only on `release`; retire `PUBLISH_TO_NUGET_ORG` |
+| Path filters | Add `tools/**`, `Directory.Packages.props`, `msbuild/**`, `source/Directory.Build.props`, `nuget.config`; drop `*.props`/`*.targets` |
+| Pack | No separate pack step — `GeneratePackageOnBuild` on Release build |
+
+#### Ordered steps
+
+1. Fix test console → Analyzer ProjectReference (+ drop self PackageVersion if unused)
+2. Rewrite `test-command.cs` → build+run console
+3. Rewrite `workflow-command.cs` → Option A (modes, tag/version, NuGet check, push)
+4. Optional: pin `build-command` to source project
+5. Rewrite `workflow.yml` thin peer pipeline
+6. Local verify: `dotnet run --file tools/dev-cli/dev.cs -- workflow`
+7. Commit
+
+#### Files
+
+- `.github/workflows/workflow.yml`
+- `tools/dev-cli/endpoints/workflow-command.cs`
+- `tools/dev-cli/endpoints/test-command.cs`
+- `tests/.../timewarp-source-generators-test-console.csproj`
+- `Directory.Packages.props` (self PackageVersion cleanup)
+- Optionally `build-command.cs`
+
+#### Risks
+
+- OIDC Trusted Publishing must exist for package on nuget.org (ops)
+- Do not shell `./bin/dev` from workflow (CI uses file-based run)
+- `dotnet test` alone is false-green today — must use console
+
 ## Session
 
 - Created: 2026-07-15 (post `ganda repo audit --fix` + workflow review)
+- Plan: 2026-07-15 (orchestrate-task phase 2–3)
