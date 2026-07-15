@@ -68,17 +68,16 @@ Document which option was chosen in Results.
 
 ## Checklist
 
-- [ ] Rewrite `.github/workflows/workflow.yml` to thin peer-style pipeline
-- [ ] Add OIDC permissions + `nuget/login@v1` for release
-- [ ] Fix path filters (`tools/**`, `Directory.Packages.props`, etc.)
-- [ ] Fix NuGet cache path vs `RestorePackagesPath`
-- [ ] Extend or document `dev workflow` for pack/push (option A or B)
-- [ ] Enable real test/verify step; remove dead test path
-- [ ] Drop legacy `PUBLISH_TO_NUGET_ORG` push when OIDC works
-- [ ] Validate PR path: build (+ tests) without publish
-- [ ] Validate release path: version check + pack + push (or dry-run notes)
-- [ ] Commit
-
+- [x] Rewrite `.github/workflows/workflow.yml` to thin peer-style pipeline
+- [x] Add OIDC permissions + `nuget/login@v1` for release
+- [x] Fix path filters (`tools/**`, `Directory.Packages.props`, etc.)
+- [x] Fix NuGet cache path vs `RestorePackagesPath` (removed cache step; kept RestorePackagesPath)
+- [x] Extend or document `dev workflow` for pack/push (option A or B) — **Option A**
+- [x] Enable real test/verify step; remove dead test path
+- [x] Drop legacy `PUBLISH_TO_NUGET_ORG` push when OIDC works
+- [x] Validate PR path: build (+ tests) without publish
+- [x] Validate release path: version check + pack + push (or dry-run notes)
+- [x] Commit
 ## Notes
 
 ### Current workflow issues (review 2026-07-15)
@@ -158,7 +157,53 @@ Release:  tag/version + NuGet not-published → clean → build → test → pus
 - Do not shell `./bin/dev` from workflow (CI uses file-based run)
 - `dotnet test` alone is false-green today — must use console
 
+## Results
+
+### Summary
+
+**Option A** delivered: thin GitHub Actions YAML + in-process `dev workflow` owns PR and release.
+
+| Mode | Pipeline |
+|------|----------|
+| PR / merge / local / `workflow_dispatch` | clean → build → test |
+| Release (event or `--mode release`) | tag match + NuGet not-published → clean → build → test → push |
+
+### Files changed
+
+- `.github/workflows/workflow.yml` — full rewrite (OIDC, path filters, no secret/cache/pwsh)
+- `tools/dev-cli/endpoints/workflow-command.cs` — Option A modes + release gates + push
+- `tools/dev-cli/endpoints/test-command.cs` — build+run test console
+- `tools/dev-cli/endpoints/build-command.cs` — Design note only
+- `tools/dev-cli/global-usings.cs` — Regex
+- `tests/.../timewarp-source-generators-test-console.csproj` — Analyzer ProjectReference (T1)
+- `Directory.Packages.props` — removed self PackageVersion
+- Regenerated test console `DataService.implements.g.cs` comment
+
+### Key decisions
+
+- Peer template: timewarp-options-validation
+- Clean via `IRepoCleanService` (no local CleanCommand type)
+- NuGet not-published via `INuGetPackageService.SearchAsync`
+- OIDC login only on `release` (not `workflow_dispatch`)
+- `workflow_dispatch` → Pr mode (use `--mode release` to publish)
+- Cache step removed; `RestorePackagesPath=.nuget-cache/` unchanged
+- Pack still `GeneratePackageOnBuild`
+- `RS0030` suppressed on smoke test console for intentional `System.Console`
+
+### Verification
+
+- `dotnet run --file tools/dev-cli/dev.cs -- workflow` → **exit 0** (clean → build nupkg → test console)
+- Review `e7bf005`: **approve**, 0 issues
+- Release path: code gates tag + NuGet + push; live OIDC requires nuget.org Trusted Publishing for this package (ops)
+
+### Ops follow-ups
+
+- Ensure NuGet.org Trusted Publishing is registered for `TimeWarp.SourceGenerators` + this GitHub repo
+- Remove obsolete GitHub secret `PUBLISH_TO_NUGET_ORG` when convenient
+- Bump `Version` before next release if `1.0.0-beta.8` is already on NuGet.org
+
 ## Session
 
 - Created: 2026-07-15 (post `ganda repo audit --fix` + workflow review)
 - Plan: 2026-07-15 (orchestrate-task phase 2–3)
+- Implemented + reviewed: 2026-07-15 (orchestrate-task phases 4–5)
