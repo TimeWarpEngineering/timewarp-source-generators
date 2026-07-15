@@ -1,62 +1,62 @@
-# Rename diagnostic prefixes off TWA to free Architecture TWA
+# Rename ALL diagnostic IDs off TWA / TW / TWG to one product prefix
 
 ## Description
 
-`timewarp-architecture` has renamed its diagnostic prefix **TWPA → TWA** (**T**ime**W**arp **A**rchitecture). Architecture IDs are now `TWA0001`–`TWA0010` (and will grow under `TWA####`).
+Rename **every** diagnostic ID in `TimeWarp.SourceGenerators` to a **single** product prefix.
+Nothing stays on **TWA**, **TW1xxx**, **TWG**, or stale **TW000x**.
 
-This package currently uses **TWA001** / **TWA002** (plus **TW1001**–**TW1003** and **TWG001**), which **collides** with Architecture’s product prefix. Rename this package’s diagnostics to a **distinct** prefix before either product freezes IDs on NuGet.
+Architecture owns **TWA** = TimeWarp Architecture (`TWA0001`–`TWA0010` and growing). This package
+must stop using TWA entirely so the prefix means one product only.
 
-## Context
+This is a deliberate full rename, not an optional collision fix. Technical non-overlap of
+`TWA001` vs `TWA0001` is irrelevant — we still rename **all** of them.
 
-| Product | Package | Intended prefix |
-|---------|---------|-----------------|
-| TimeWarp Architecture | `TimeWarp.Architecture.Analyzers` / `.Generators` | **TWA** = TimeWarp Architecture |
-| This repo | `TimeWarp.SourceGenerators` | **Not TWA** — free TWA for Architecture |
+## Target prefix (recommended)
 
-Suggested target prefix (pick one and document):
+**TWS** = TimeWarp Source-generators (or document another single prefix if preferred).
 
-- **TWS** = TimeWarp Source-generators / tools (recommended), or  
-- **TW** only, with exclusive number ranges owned by this package  
+One prefix for analyzers **and** generators that report diagnostics. No TWAA/TWAG role suffixes.
 
-Do **not** invent TWAA/TWAG role suffixes. Ecosystem convention is one product prefix + digits.
+### Full mapping (draft — adjust numbers if you want contiguous ranges)
 
-### Live IDs to rename (code today)
+| Current (leave none) | Suggested | Feature |
+|----------------------|-----------|---------|
+| TWA001 | **TWS0001** | FileNameRuleAnalyzer (kebab-case) |
+| TWA002 | **TWS0002** | XmlDocsToMarkdownAnalyzer |
+| TWG001 | **TWS0003** | MarkdownDocsGenerator (if it still reports) |
+| TW1001 | **TWS1001** | Interface delegation — class must be partial |
+| TW1002 | **TWS1002** | Interface delegation — doesn’t implement interface |
+| TW1003 | **TWS1003** | Interface delegation — multiple fields same interface |
 
-| Current | Feature |
-|---------|---------|
-| TWA001 | FileNameRuleAnalyzer (kebab-case) |
-| TWA002 | XmlDocsToMarkdownAnalyzer |
-| TW1001 | Interface delegation — class must be partial |
-| TW1002 | Interface delegation — class doesn’t implement interface |
-| TW1003 | Interface delegation — multiple fields for same interface |
-| TWG001 | MarkdownDocsGenerator (Unshipped table) |
+(Or renumber 1001–1003 into TWS0004–0006 — pick one scheme and stick to it.)
 
-Stale kanban/docs still mention TW0001–TW0004 / TW0003 — clean those to the new IDs while at it.
+Also scrub historical **TW0001–TW0004 / TW0003** mentions in kanban/docs so they don’t reintroduce confusion.
 
 ## Requirements
 
-- Single product prefix for this package (prefer **TWS####** for all rules, or document a single alternate).
-- Update: analyzer/generator source, AnalyzerReleases.*.md, readme, documentation, .editorconfig samples, tests.
-- No remaining `TWA####` IDs owned by this package.
-- Note Architecture collision and chosen mapping in readme or overview.
+- **Zero** remaining `TWA*`, `TW1*`, `TWG*`, or `TW000*` diagnostic IDs in **live code**.
+- Update: all DiagnosticId / descriptor IDs, AnalyzerReleases.*.md, readme, documentation,
+  .editorconfig samples, tests, any help links.
+- Document: **TWS** (or chosen prefix) = this package only; Architecture = **TWA**.
 - Build green after rename.
 
 ## Checklist
 
-- [ ] Lock new prefix (recommend TWS) and ID mapping table
-- [ ] Rename all DiagnosticId / descriptor IDs in source
-- [ ] Update AnalyzerReleases.Shipped.md / Unshipped.md
-- [ ] Update readme.md, documentation/, .editorconfig samples
-- [ ] Fix stale TW000x references in kanban notes if desired
-- [ ] Tests / manual verify diagnostics fire under new IDs
+- [ ] Lock prefix (TWS) and complete ID mapping table in Notes/Results
+- [ ] Rename **all** IDs in source (no TWA leftovers)
+- [ ] AnalyzerReleases.Shipped.md / Unshipped.md
+- [ ] readme.md, documentation/, .editorconfig samples
+- [ ] Tests assert new IDs
+- [ ] Grep repo: no TWA001, TWA002, TW1001–1003, TWG001 in code
 - [ ] Commit
 
 ## Notes
 
-- Architecture rename commit (timewarp-architecture): `refactor(analyzers): rename diagnostic prefix TWPA to TWA`.
-- Related: Architecture packages NuGet as `TimeWarp.Architecture.*` (task 092); this package stays `TimeWarp.SourceGenerators`.
+- Architecture already renamed TWPA → TWA (timewarp-architecture).
+- Full rename of this package is intentional product hygiene, not “only if IDs collide.”
 - Worktree: `/home/steve/worktrees/github.com/TimeWarpEngineering/timewarp-source-generators/Cramer-2026-06-30-dev`
 
 ## Session
 
-- Created: 2026-07-15 (after Architecture TWPA→TWA; free TWA for that product)
+- Created: 2026-07-15
+- Clarified: rename **ALL** IDs; do not leave TWA001/TWA002
