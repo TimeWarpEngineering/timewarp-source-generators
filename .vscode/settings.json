@@ -24,5 +24,7 @@
     "buildtransitive",
     "contentfiles",
     "nugets"
-  ]
+  ],
+  "window.title": "timewarp-source-generators · ${rootName}${separator}${activeEditorShort}",
+  "timewarp.blurImagePath": "assets/timewarp-source-generators-avatar.svg"
 }
