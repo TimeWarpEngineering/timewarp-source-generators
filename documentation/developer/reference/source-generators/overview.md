@@ -2,7 +2,7 @@
 
 ## Available Source Generators
 
-### MarkdownDocsGenerator (TWG001)
+### MarkdownDocsGenerator (TW0003)
 
 Generates XML documentation from markdown files for C# classes.
 

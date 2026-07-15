@@ -71,9 +71,9 @@ AnalyzerReleases.Unshipped.md:
 ### New Rules
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
-TWG001 | SourceGenerator | Info | MarkdownDocsGenerator  
-TWA001 | Naming | Info | FileNameRuleAnalyzer, disabled by default
-TWA002 | Documentation | Info | XmlDocsToMarkdownAnalyzer
+TW0001 | Naming | Info | FileNameRuleAnalyzer, disabled by default
+TW0002 | Documentation | Info | XmlDocsToMarkdownAnalyzer
+TW0003 | SourceGenerator | Info | MarkdownDocsGenerator
 
 AnalyzerReleases.Shipped.md:
 ## Release 1.0

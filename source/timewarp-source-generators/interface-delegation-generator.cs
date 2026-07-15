@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 public class InterfaceDelegationGenerator : IIncrementalGenerator
 {
   private static readonly DiagnosticDescriptor ClassNotPartialDescriptor = new(
-      id: "TW1001",
+      id: "TW0004",
       title: "Class must be partial for interface delegation",
       messageFormat: "Class '{0}' must be marked as partial to use [Implements] attribute",
       category: "InterfaceDelegation",
@@ -15,7 +15,7 @@ public class InterfaceDelegationGenerator : IIncrementalGenerator
   );
 
   private static readonly DiagnosticDescriptor InterfaceNotImplementedDescriptor = new(
-      id: "TW1002",
+      id: "TW0005",
       title: "Class does not implement the delegated interface",
       messageFormat: "Class '{0}' must implement interface '{1}' to delegate to field/property '{2}'",
       category: "InterfaceDelegation",
@@ -24,7 +24,7 @@ public class InterfaceDelegationGenerator : IIncrementalGenerator
   );
 
   private static readonly DiagnosticDescriptor DuplicateDelegationDescriptor = new(
-      id: "TW1003",
+      id: "TW0006",
       title: "Multiple fields delegate the same interface",
       messageFormat: "Interface '{0}' is delegated by multiple fields/properties in class '{1}'",
       category: "InterfaceDelegation",

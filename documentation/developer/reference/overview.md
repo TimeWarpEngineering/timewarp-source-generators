@@ -21,7 +21,7 @@ Complete reference for all source generators:
 ## API Reference
 
 ### DiagnosticDescriptor Properties
-- **Id**: Unique identifier (e.g., TW0003)
+- **Id**: Unique identifier (e.g., TW0001)
 - **Category**: Grouping for related rules
 - **Severity**: Default severity level
 - **IsEnabledByDefault**: Whether active without configuration

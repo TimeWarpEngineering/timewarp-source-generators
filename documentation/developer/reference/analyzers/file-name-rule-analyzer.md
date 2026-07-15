@@ -1,4 +1,4 @@
-# FileNameRuleAnalyzer (TWA001)
+# FileNameRuleAnalyzer (TW0001)
 
 ## Overview
 
@@ -6,7 +6,7 @@ The FileNameRuleAnalyzer enforces kebab-case naming conventions for C# source fi
 
 ## Rule Details
 
-- **Rule ID**: TWA001
+- **Rule ID**: TW0001
 - **Category**: Naming
 - **Default Severity**: Info (disabled by default)
 - **Message**: File '{0}' should use kebab-case naming convention (e.g., 'my-file.cs')
@@ -41,13 +41,13 @@ The analyzer is disabled by default to avoid breaking existing projects. To enab
 
 ```ini
 # Enable with warning severity
-dotnet_diagnostic.TWA001.severity = warning
+dotnet_diagnostic.TW0001.severity = warning
 
 # Or as an error to fail builds
-dotnet_diagnostic.TWA001.severity = error
+dotnet_diagnostic.TW0001.severity = error
 
 # Or as a suggestion for gentle nudging
-dotnet_diagnostic.TWA001.severity = suggestion
+dotnet_diagnostic.TW0001.severity = suggestion
 ```
 
 ### Exception Patterns
@@ -55,7 +55,7 @@ dotnet_diagnostic.TWA001.severity = suggestion
 Configure files that should be excluded from the rule:
 
 ```ini
-dotnet_diagnostic.TWA001.excluded_files = *.g.cs;*.Generated.cs;GlobalUsings.cs;Program.cs;Startup.cs
+dotnet_diagnostic.TW0001.excluded_files = *.g.cs;*.Generated.cs;GlobalUsings.cs;Program.cs;Startup.cs
 ```
 
 Default exceptions include:
@@ -88,10 +88,10 @@ In your root `.editorconfig`:
 ```ini
 [*.cs]
 # Enable kebab-case file naming for all C# files
-dotnet_diagnostic.TWA001.severity = warning
+dotnet_diagnostic.TW0001.severity = warning
 
 # But allow exceptions for specific patterns
-dotnet_diagnostic.TWA001.excluded_files = *.g.cs;*.Generated.cs;*.designer.cs;Program.cs;Startup.cs;GlobalUsings.cs;AssemblyInfo.cs
+dotnet_diagnostic.TW0001.excluded_files = *.g.cs;*.Generated.cs;*.designer.cs;Program.cs;Startup.cs;GlobalUsings.cs;AssemblyInfo.cs
 ```
 
 ### Gradual Adoption
@@ -100,11 +100,11 @@ For existing projects, start with suggestion severity:
 
 ```ini
 [*.cs]
-dotnet_diagnostic.TWA001.severity = suggestion
+dotnet_diagnostic.TW0001.severity = suggestion
 
 # Only enforce in new feature folders
 [Features/**.cs]
-dotnet_diagnostic.TWA001.severity = warning
+dotnet_diagnostic.TW0001.severity = warning
 ```
 
 ## Suppressing Violations
@@ -112,9 +112,9 @@ dotnet_diagnostic.TWA001.severity = warning
 For specific files that need exceptions beyond the configured patterns:
 
 ```csharp
-#pragma warning disable TWA001 // File name should use kebab-case
+#pragma warning disable TW0001 // File name should use kebab-case
 // File: LegacyAPIClient.cs
-#pragma warning restore TWA001
+#pragma warning restore TW0001
 ```
 
 Or in the project file:
@@ -122,7 +122,7 @@ Or in the project file:
 ```xml
 <ItemGroup>
   <Compile Update="LegacyAPIClient.cs">
-    <AnalyzerSuppression>TWA001</AnalyzerSuppression>
+    <AnalyzerSuppression>TW0001</AnalyzerSuppression>
   </Compile>
 </ItemGroup>
 ```

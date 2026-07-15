@@ -183,10 +183,10 @@ public partial class Service : IDataProcessor<string>
 
 ### Diagnostic Codes
 
-- **TW1001**: Class is not marked as partial
-- **TW1002**: Field/property type does not match any interface on the class
-- **TW1003**: Multiple fields marked with [Implements] for the same interface
-- **TW1004**: Field marked with [Implements] but class does not implement the interface
+- **TW0004**: Class is not marked as partial
+- **TW0005**: Field/property type does not match any interface on the class
+- **TW0006**: Multiple fields marked with [Implements] for the same interface
+
 
 ## Benefits
 
