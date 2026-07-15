@@ -1,10 +1,10 @@
 # Create XML Docs to Markdown Code Fix Provider
 
 ## Description
-Create a code fix provider for the XmlDocsToMarkdownAnalyzer (TW0004) that extracts XML documentation from C# code and converts it to markdown files compatible with the MarkdownDocsGenerator.
+Create a code fix provider for the XmlDocsToMarkdownAnalyzer (TW0002) that extracts XML documentation from C# code and converts it to markdown files compatible with the MarkdownDocsGenerator.
 
 ## Acceptance Criteria
-- [ ] Code fix provider responds to TW0004 diagnostics
+- [ ] Code fix provider responds to TW0002 diagnostics
 - [ ] Extracts all XML documentation elements from type and members
 - [ ] Converts XML to markdown following MarkdownDocsGenerator format
 - [ ] Removes XML documentation from source code
@@ -54,7 +54,7 @@ Since code fix providers run in IDE/compiler context:
 ### Code Structure
 - Use existing temporary file: `xml-docs-to-markdown-code-fix-provider.cs.temp`
 - Implement `CodeFixProvider` base class
-- Register for `TW0004` diagnostic ID
+- Register for `TW0002` diagnostic ID
 - Handle type and member documentation
 
 ## Technical Details
@@ -65,7 +65,7 @@ Since code fix providers run in IDE/compiler context:
 
 ## Dependencies
 - Requires project configuration for code fix providers
-- XmlDocsToMarkdownAnalyzer (TW0004) must be working
+- XmlDocsToMarkdownAnalyzer (TW0002) must be working
 - Understanding of MarkdownDocsGenerator format
 
 ## References

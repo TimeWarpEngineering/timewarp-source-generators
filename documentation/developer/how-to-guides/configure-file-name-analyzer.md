@@ -1,6 +1,6 @@
 # How to Configure the File Name Analyzer
 
-This guide walks you through configuring the TW0003 file name analyzer to enforce kebab-case naming in your project.
+This guide walks you through configuring the TW0001 file name analyzer to enforce kebab-case naming in your project.
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ Add the following to your `.editorconfig`:
 
 ```ini
 [*.cs]
-dotnet_diagnostic.TW0003.severity = warning
+dotnet_diagnostic.TW0001.severity = warning
 ```
 
 Severity options:
@@ -27,13 +27,13 @@ Severity options:
 Add patterns for files that should be excluded:
 
 ```ini
-dotnet_diagnostic.TW0003.excluded_files = *.g.cs;*.Generated.cs;Program.cs
+dotnet_diagnostic.TW0001.excluded_files = *.g.cs;*.Generated.cs;Program.cs
 ```
 
 ## Step 3: Test the Configuration
 
 1. Build your project
-2. Check for TW0003 warnings on non-kebab-case files
+2. Check for TW0001 warnings on non-kebab-case files
 3. Verify exceptions are working
 
 ## Step 4: Gradual Adoption
@@ -43,11 +43,11 @@ For existing projects, start with specific folders:
 ```ini
 # Global setting - suggestion only
 [*.cs]
-dotnet_diagnostic.TW0003.severity = suggestion
+dotnet_diagnostic.TW0001.severity = suggestion
 
 # Strict for new features
 [Features/**.cs]
-dotnet_diagnostic.TW0003.severity = error
+dotnet_diagnostic.TW0001.severity = error
 ```
 
 ## Step 5: Fix Violations

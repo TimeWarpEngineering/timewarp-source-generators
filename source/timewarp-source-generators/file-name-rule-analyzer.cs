@@ -3,7 +3,7 @@ namespace TimeWarp.SourceGenerators;
 [Generator]
 public class FileNameRuleAnalyzer : IIncrementalGenerator
 {
-  public const string DiagnosticId = "TWA001";
+  public const string DiagnosticId = "TW0001";
   private const string Category = "Naming";
 
   private static readonly DiagnosticDescriptor Rule = new(
@@ -99,7 +99,7 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
 
     // Try to get configured exceptions from .editorconfig
     if (options.TryGetValue(
-      "dotnet_diagnostic.TWA001.excluded_files",
+      "dotnet_diagnostic.TW0001.excluded_files",
       out string? configuredExceptions) && !string.IsNullOrEmpty(configuredExceptions))
     {
       // Split by semicolon and trim whitespace

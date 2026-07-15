@@ -6,7 +6,7 @@
 Code fix providers cannot be in the same assembly as source generators due to RS1038 error. The Microsoft.CodeAnalysis.Workspaces assembly (required for code fixes) is not provided during command line compilation scenarios.
 
 ## Description
-Create a code fix provider for the FileNameRuleAnalyzer (TW0003) that automatically renames files from PascalCase or other naming conventions to kebab-case format.
+Create a code fix provider for the FileNameRuleAnalyzer (TW0001) that automatically renames files from PascalCase or other naming conventions to kebab-case format.
 
 ## Acceptance Criteria
 - [ ] Code fix provider offers to rename file to kebab-case when diagnostic is reported
@@ -18,13 +18,13 @@ Create a code fix provider for the FileNameRuleAnalyzer (TW0003) that automatica
 - [ ] Provides preview of the new file name before applying
 
 ## Technical Details
-- Diagnostic ID: TW0003
+- Diagnostic ID: TW0001
 - Fix Provider: FileNameRuleCodeFixProvider
 - Should integrate with existing FileNameRuleAnalyzer
 
 ## Implementation Steps
 1. Create FileNameRuleCodeFixProvider class
-2. Register the code fix for TW0003 diagnostic
+2. Register the code fix for TW0001 diagnostic
 3. Implement PascalCase to kebab-case conversion logic
 4. Handle file renaming through Roslyn workspace APIs
 5. Ensure all project references are updated
@@ -40,7 +40,7 @@ Create a code fix provider for the FileNameRuleAnalyzer (TW0003) that automatica
 - Already kebab-case: `my-test.cs` → no change
 
 ## Dependencies
-- Requires FileNameRuleAnalyzer (TW0003) to be working
+- Requires FileNameRuleAnalyzer (TW0001) to be working
 - Should follow existing code fix provider patterns in the codebase
 
 ## Implementation Progress

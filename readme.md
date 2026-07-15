@@ -64,9 +64,9 @@ The generator will automatically create forwarding implementations for all inter
 
 #### Diagnostics
 
-- **TW1001**: Class must be partial for interface delegation
-- **TW1002**: Class does not implement the delegated interface
-- **TW1003**: Multiple fields delegate the same interface
+- **TW0004**: Class must be partial for interface delegation
+- **TW0005**: Class does not implement the delegated interface
+- **TW0006**: Multiple fields delegate the same interface
 
 ### File Name Rule Analyzer
 
@@ -78,8 +78,10 @@ Configure exceptions in `.editorconfig`:
 
 ```ini
 [*.cs]
-dotnet_diagnostic.TWA001.excluded_files = Program.cs;Startup.cs;*.Designer.cs
+dotnet_diagnostic.TW0001.excluded_files = Program.cs;Startup.cs;*.Designer.cs
 ```
+
+Diagnostic IDs in this package use the **TW** prefix (TimeWarp.SourceGenerators). The **TWA** prefix is reserved for TimeWarp Architecture (a different product).
 
 ## Getting started
 

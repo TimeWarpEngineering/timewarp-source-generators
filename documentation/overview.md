@@ -17,7 +17,7 @@ Technical documentation for developers using or contributing to the project.
 - **MarkdownDocsGenerator** - Generates markdown from XML docs
 
 ### Analyzers
-- **TWA001** - File name kebab-case enforcement
+- **TW0001** - File name kebab-case enforcement
 
 ## Configuration
 
@@ -25,7 +25,7 @@ All configuration through `.editorconfig`:
 
 ```ini
 # Example: Enable kebab-case file names
-dotnet_diagnostic.TW0003.severity = warning
+dotnet_diagnostic.TW0001.severity = warning
 ```
 
 ## Philosophy

@@ -2,11 +2,11 @@
 
 ## Available Analyzers
 
-### TWA001 - File Name Rule Analyzer
+### TW0001 - File Name Rule Analyzer
 
 Enforces kebab-case naming convention for C# source files.
 
-- **Rule ID**: TWA001
+- **Rule ID**: TW0001
 - **Category**: Naming  
 - **Default Severity**: Info (disabled)
 - **Configuration**: `.editorconfig`
@@ -19,10 +19,10 @@ All analyzers are configured through `.editorconfig`:
 
 ```ini
 # Enable an analyzer
-dotnet_diagnostic.TWA001.severity = warning
+dotnet_diagnostic.TW0001.severity = warning
 
 # Configure exceptions
-dotnet_diagnostic.TWA001.excluded_files = *.g.cs;*.Generated.cs
+dotnet_diagnostic.TW0001.excluded_files = *.g.cs;*.Generated.cs
 ```
 
 ## Analyzer Categories
@@ -34,15 +34,15 @@ dotnet_diagnostic.TWA001.excluded_files = *.g.cs;*.Generated.cs
 
 1. **File-level pragma**:
    ```csharp
-   #pragma warning disable TWA001
+   #pragma warning disable TW0001
    ```
 
 2. **Project-wide**:
    ```xml
-   <NoWarn>TWA001</NoWarn>
+   <NoWarn>TW0001</NoWarn>
    ```
 
 3. **EditorConfig**:
    ```ini
-   dotnet_diagnostic.TWA001.severity = none
+   dotnet_diagnostic.TW0001.severity = none
    ```
