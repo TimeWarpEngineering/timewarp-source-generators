@@ -58,8 +58,63 @@ TW0003 = kebab under a different scheme).
 - Full rename is intentional product hygiene, not “only if IDs collide.”
 - Worktree: `/home/steve/worktrees/github.com/TimeWarpEngineering/timewarp-source-generators/Cramer-2026-06-30-dev`
 
+### Implementation plan (2026-07-15)
+
+**Confirmed:** TWG001 still reports on generator load — rename to TW0003, do not drop.
+
+#### Live source
+
+| File | Change |
+|------|--------|
+| `file-name-rule-analyzer.cs` | TWA001→TW0001; also `dotnet_diagnostic.TW0001.excluded_files` config key |
+| `xml-docs-to-markdown-analyzer.cs` | TWA002→TW0002 |
+| `markdown-docs-generator.cs` | TWG001→TW0003 |
+| `interface-delegation-generator.cs` | TW1001→TW0004, TW1002→TW0005, TW1003→TW0006 |
+| `AnalyzerReleases.Unshipped.md` | Replace all six rows with TW0001–TW0006 |
+| `AnalyzerReleases.Shipped.md` | Leave empty (always-unshipped policy) |
+
+#### Config / docs / open kanban
+
+1. Root + test-console `.editorconfig` (TWA001/TWA002 → TW0001/TW0002)
+2. `readme.md` + TW vs TWA product-prefix note
+3. `documentation/**` — especially `configure-file-name-analyzer.md` (old TW0003=kebab → **TW0001**)
+4. Open tasks 015, 016, 017 (fix + interface draft) — scrub wrong scheme IDs
+5. Leave `kanban/done/*` history as-is (optional one-line notes only)
+
+#### Order
+
+1. Source descriptors + Unshipped (same change set — RS2008)
+2. EditorConfig + readme
+3. documentation/
+4. Open kanban scrub
+5. Build + grep verify
+6. Commit
+
+#### Verification
+
+```bash
+dotnet build timewarp-source-generators.slnx -c Release
+dotnet build tests/timewarp-source-generators-test-console/ -c Release
+rg -n 'TWA00[12]|TWG001|TW100[1-3]' source/ documentation/ readme.md .editorconfig tests/
+rg -n 'TW000[1-6]' source/timewarp-source-generators/
+```
+
+Pass: build green; zero old IDs on live product surface; Unshipped matches code.
+
+#### Out of scope
+
+- Renaming 017 folder name; implementing 015/016 code-fixes; unit-test project for diagnostics;
+  severity/behavior changes; Unshipped→Shipped move; dual-ID compatibility layer.
+
+#### Gotchas
+
+- Config key is a literal string separate from `DiagnosticId` — both must change.
+- Do not blind-sed `TW0003` in docs after rename (it correctly means MarkdownDocs load).
+- Change source + Unshipped together.
+
 ## Session
 
 - Created: 2026-07-15
 - Clarified: rename **ALL** IDs; do not leave TWA001/TWA002
 - Prefix locked: **TW** (recommend contiguous TW0001–TW0006)
+- Plan: 2026-07-15 (orchestrate-task phase 2–3)
