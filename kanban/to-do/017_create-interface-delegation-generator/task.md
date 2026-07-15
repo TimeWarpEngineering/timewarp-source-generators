@@ -183,9 +183,9 @@ public partial class Service : IDataProcessor<string>
 
 ### Diagnostic Codes
 
-- **TW0004**: Class is not marked as partial
-- **TW0005**: Field/property type does not match any interface on the class
-- **TW0006**: Multiple fields marked with [Implements] for the same interface
+- **TW0004**: Class must be partial for interface delegation
+- **TW0005**: Class does not implement the delegated interface
+- **TW0006**: Multiple fields delegate the same interface
 
 
 ## Benefits
