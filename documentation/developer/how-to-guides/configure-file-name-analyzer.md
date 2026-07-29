@@ -1,6 +1,8 @@
 # How to Configure the File Name Analyzer
 
-This guide walks you through configuring the TW0001 file name analyzer to enforce kebab-case naming in your project.
+This guide walks you through configuring the **TW0001** file name analyzer to enforce kebab-case naming in your project.
+
+> **ID reminder:** The rule ID is **TW0001** (`dotnet_diagnostic.TW0001.*`). Do **not** use Architecture IDs such as `TWA001` / `TWA*` — those belong to TimeWarp Architecture, not this package.
 
 ## Prerequisites
 
@@ -68,3 +70,5 @@ Add more exception patterns or reduce severity to `suggestion`.
 ### Analyzer Not Running
 - Clean and rebuild the project
 - Check that the package is properly referenced
+- Confirm severity uses **`dotnet_diagnostic.TW0001.severity`**, not `TWA001` / `TWA*`
+- If you previously configured `dotnet_diagnostic.TWA001.*` or `#pragma warning disable TWA001`, switch those keys to **TW0001** — Architecture `TWA*` IDs do not control this package’s analyzer

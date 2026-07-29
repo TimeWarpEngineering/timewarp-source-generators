@@ -1,5 +1,7 @@
 # Analyzers Reference
 
+All analyzer diagnostic IDs from this package use the **TW** prefix (e.g. **TW0001**–**TW0006**). They are **not** TimeWarp Architecture `TWA*` IDs — do not configure or suppress these rules with `TWA001` / `TWA*`.
+
 ## Available Analyzers
 
 ### TW0001 - File Name Rule Analyzer

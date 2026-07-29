@@ -11,6 +11,8 @@ The FileNameRuleAnalyzer enforces kebab-case naming conventions for C# source fi
 - **Default Severity**: Info (disabled by default)
 - **Message**: File '{0}' should use kebab-case naming convention (e.g., 'my-file.cs')
 
+> **Diagnostic ID (SSOT):** This rule is **TW0001** from TimeWarp.SourceGenerators. It is **not** a TimeWarp Architecture analyzer (`TWA*`). Do **not** enable or suppress it with `TWA001` / `dotnet_diagnostic.TWA001.*` — use `dotnet_diagnostic.TW0001.*` and `#pragma warning disable TW0001`.
+
 ## Kebab-Case Pattern
 
 Valid kebab-case file names must:

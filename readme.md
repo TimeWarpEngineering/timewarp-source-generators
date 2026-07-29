@@ -81,7 +81,14 @@ Configure exceptions in `.editorconfig`:
 dotnet_diagnostic.TW0001.excluded_files = Program.cs;Startup.cs;*.Designer.cs
 ```
 
-Diagnostic IDs in this package use the **TW** prefix (TimeWarp.SourceGenerators). The **TWA** prefix is reserved for TimeWarp Architecture (a different product).
+### Diagnostic ID prefixes (SSOT)
+
+| Prefix | Package |
+|--------|---------|
+| **TW** | **TimeWarp.SourceGenerators** (this package) — shipped diagnostics **TW0001**–**TW0006** |
+| **TWA** | **TimeWarp Architecture** only — not used by this package |
+
+Do **not** enable, suppress, or configure this package’s rules with Architecture IDs such as `TWA001` / `TWA*`. File-name kebab-case is **TW0001** (`dotnet_diagnostic.TW0001.*`, `#pragma warning disable TW0001`). Architecture `TWA*` keys do not apply here.
 
 ## Getting started
 
