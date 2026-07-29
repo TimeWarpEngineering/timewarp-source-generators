@@ -9,15 +9,17 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
   private static readonly DiagnosticDescriptor Rule = new(
     DiagnosticId,
     "File name should use kebab-case",
-    "File '{0}' should use kebab-case naming convention (e.g., 'my-file.cs')",
+    "File '{0}' should use kebab-case naming convention (e.g., 'my-file.cs' or 'my-type.my-partial.cs')",
     Category,
     DiagnosticSeverity.Info,
     isEnabledByDefault: false,
-    description: "C# file names should use kebab-case format with hyphens separating words, all lowercase."
+    description: "C# file names should use kebab-case format with hyphens separating words, all lowercase. Multi-dot basenames are allowed when every segment is kebab-case (e.g., 'my-type.my-partial.cs')."
   );
 
-  // Regex pattern for valid kebab-case file names
-  private static readonly Regex KebabCasePattern = new(@"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*\.cs$", RegexOptions.Compiled);
+  // Regex: single- or multi-dot basenames where every segment is kebab-case, then .cs
+  private static readonly Regex KebabCasePattern = new(
+    @"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.[a-z][a-z0-9]*(?:-[a-z0-9]+)*)*\.cs$",
+    RegexOptions.Compiled);
 
   // Default exception patterns
   private static readonly string[] DefaultExceptions =

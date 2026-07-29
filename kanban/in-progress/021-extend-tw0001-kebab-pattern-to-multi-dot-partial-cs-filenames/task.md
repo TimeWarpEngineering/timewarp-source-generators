@@ -53,12 +53,12 @@ state partials alone).
 
 ## Checklist
 
-- [ ] Implement multi-dot kebab validation in `file-name-rule-analyzer.cs`
-- [ ] Unit / console tests for pass and fail cases
-- [ ] Update analyzer docs + configure how-to examples
-- [ ] AnalyzerReleases if required by Roslyn release tracking
-- [ ] Version bump + release notes
-- [ ] Note consumers: timewarp-architecture can enable `dotnet_diagnostic.TW0001` after pin bump
+- [x] Implement multi-dot kebab validation in `file-name-rule-analyzer.cs`
+- [x] Unit / console tests for pass and fail cases
+- [x] Update analyzer docs + configure how-to examples
+- [x] AnalyzerReleases if required by Roslyn release tracking
+- [x] Version bump + release notes
+- [x] Note consumers: timewarp-architecture can enable `dotnet_diagnostic.TW0001` after pin bump
 
 ## Notes
 
@@ -152,3 +152,11 @@ Optional Notes line on TW0001 only; stay Unshipped; no new rule id.
 
 - Created: 2026-07-29 — follow-up after architecture task 133 deferred TW0001 enable
 - Orchestration: Grok Build session (2026-07-29) — plan finalized, implementing
+- Implementation (2026-07-29):
+  - Updated `KebabCasePattern` to multi-dot kebab segments + message/description polish
+  - Test console fixtures: `application-state.close-modal.cs`, `weather-forecasts-state.fetch-weather-forecasts.cs` (+ program.cs refs)
+  - Docs: file-name-rule-analyzer, configure how-to, analyzers overview, documentation overview, readme light touch
+  - AnalyzerReleases.Unshipped notes line for TW0001 multi-dot
+  - Version `1.0.0-beta.9`; created `documentation/releases.md` with consumer enablement callout
+  - Build/test green; manual fail spot-check: `application-state.CloseModal.cs` → TW0001 error, then deleted
+  - Left uncommitted for orchestrator; task not moved

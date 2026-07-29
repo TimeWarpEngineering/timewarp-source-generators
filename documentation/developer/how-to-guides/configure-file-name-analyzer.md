@@ -58,6 +58,20 @@ Rename files to kebab-case:
 - `UserService.cs` → `user-service.cs`
 - `IDataProcessor.cs` → `i-data-processor.cs`
 
+**Multi-dot partials** (e.g. state/action files) are valid when **every** segment is kebab-case.
+Only rename non-kebab segments; do not collapse multi-dot names into a single stem:
+
+| Invalid | Valid |
+|---------|--------|
+| `ApplicationState.CloseModal.cs` | `application-state.close-modal.cs` |
+| `application-state.CloseModal.cs` | `application-state.close-modal.cs` |
+| `application_state.close_modal.cs` | `application-state.close-modal.cs` |
+
+Valid multi-dot examples (no rename needed):
+- `application-state.close-modal.cs`
+- `counter-state.increment-counter.cs`
+- `weather-forecasts-state.fetch-weather-forecasts.cs`
+
 ## Troubleshooting
 
 ### Too Many Violations
