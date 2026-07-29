@@ -78,7 +78,7 @@ if (processor.Validate("test"))
 ```
 
 ## See Also
-- [TestClass](TestClass.md)
+- [TestClass](test-class.md)
 
 ## References
 - See @System.IDisposable for similar interface pattern

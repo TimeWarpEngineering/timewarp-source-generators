@@ -11,7 +11,7 @@ Generates XML documentation from markdown files for C# classes.
 - **File Matching**: 
   - Supports both PascalCase and kebab-case naming conventions
   - For kebab-case source files (e.g., `test-class.cs`), matches kebab-case markdown files (e.g., `test-class.md`)
-  - For PascalCase source files (e.g., `TestClass.cs`), matches PascalCase markdown files (e.g., `TestClass.md`)
+  - For PascalCase source files (e.g., `PascalCaseTest.cs`), matches class-name markdown or kebab-case of the class name (e.g., `pascal-case-test.md`)
   - Always falls back to class name matching for backward compatibility
 - **Templates**: See [XMLDoc Templates](#xmldoc-templates)
 

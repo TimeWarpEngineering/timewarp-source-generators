@@ -26,17 +26,14 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <!-- Persist the source generator (and other) files to disk -->
+    <!-- Persist generator output under obj/ (audit-pruned; not committed) -->
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-    <!-- 👇 The "base" path for the source generators -->
-    <GeneratedFolder>generated</GeneratedFolder>
-    <!-- 👇 Write the output for each target framework to a different sub-folder -->
-    <CompilerGeneratedFilesOutputPath>$(GeneratedFolder)</CompilerGeneratedFilesOutputPath>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- 👇 Exclude everything in the base folder -->
-    <Compile Remove="$(GeneratedFolder)/**/*.cs" />
+    <!-- Avoid double-compile if anything still lands under the output path -->
+    <Compile Remove="$(CompilerGeneratedFilesOutputPath)/**/*.cs" Condition="'$(CompilerGeneratedFilesOutputPath)' != ''" />
   </ItemGroup>
 
 </Project>
