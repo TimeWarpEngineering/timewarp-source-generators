@@ -151,7 +151,7 @@ Optional Notes line on TW0001 only; stay Unshipped; no new rule id.
 ## Session
 
 - Created: 2026-07-29 — follow-up after architecture task 133 deferred TW0001 enable
-- Orchestration: Grok Build session (2026-07-29) — plan finalized, implementing
+- Orchestration: Grok Build session (2026-07-29) — plan → implement → review → done
 - Implementation (2026-07-29):
   - Updated `KebabCasePattern` to multi-dot kebab segments + message/description polish
   - Test console fixtures: `application-state.close-modal.cs`, `weather-forecasts-state.fetch-weather-forecasts.cs` (+ program.cs refs)
@@ -159,4 +159,58 @@ Optional Notes line on TW0001 only; stay Unshipped; no new rule id.
   - AnalyzerReleases.Unshipped notes line for TW0001 multi-dot
   - Version `1.0.0-beta.9`; created `documentation/releases.md` with consumer enablement callout
   - Build/test green; manual fail spot-check: `application-state.CloseModal.cs` → TW0001 error, then deleted
-  - Left uncommitted for orchestrator; task not moved
+- Review (2026-07-29): effort 1 general, round 1, disposition **clean** (0 open)
+
+## Results
+
+### What was implemented
+
+TW0001 `FileNameRuleAnalyzer` now accepts multi-dot kebab-case `.cs` basenames when **every**
+dot-separated segment is kebab-case (e.g. `application-state.close-modal.cs`). Single-stem kebab
+and default exceptions (`*.razor.cs`, `*.g.cs`, …) are unchanged. Diagnostic id remains **TW0001**.
+
+### Files changed
+
+| Path | Role |
+|------|------|
+| `source/timewarp-source-generators/file-name-rule-analyzer.cs` | Multi-dot `KebabCasePattern` + message/description |
+| `source/Directory.Build.props` | Version `1.0.0-beta.8` → `1.0.0-beta.9` |
+| `source/timewarp-source-generators/AnalyzerReleases.Unshipped.md` | TW0001 notes |
+| `documentation/releases.md` | Created; beta.9 + consumer enablement |
+| `documentation/developer/reference/analyzers/file-name-rule-analyzer.md` | Multi-dot docs |
+| `documentation/developer/how-to-guides/configure-file-name-analyzer.md` | Examples |
+| `documentation/developer/reference/analyzers/overview.md` | TW0001 one-liner |
+| `documentation/overview.md`, `readme.md` | Light touch |
+| `tests/timewarp-source-generators-test-console/application-state.close-modal.cs` | Pass fixture |
+| `tests/timewarp-source-generators-test-console/weather-forecasts-state.fetch-weather-forecasts.cs` | Pass fixture |
+| `tests/timewarp-source-generators-test-console/program.cs` | Fixture references |
+
+### Key decisions / deviations
+
+- Used task-suggested multi-dot regex as-is; optional diagnostic message polish applied.
+- Fail coverage: console pass fixtures + documented matrix + manual one-shot (no permanent invalid fixtures), matching repo culture.
+- No new rule id; Unshipped notes only.
+
+### Test outcomes
+
+| Check | Result |
+|-------|--------|
+| `./bin/dev build` | PASS; package `1.0.0-beta.9` |
+| `./bin/dev test` | PASS (multi-dot fixtures compile under TW0001=error) |
+| Manual fail: `application-state.CloseModal.cs` | TW0001 error, then deleted; rebuild green |
+
+### Review (Phase 4b)
+
+| Item | Value |
+|------|--------|
+| Effort / roster | 1 — general only |
+| Rounds | 1 |
+| Final counts | bug/suggestion/nit: all 0 open, 0 fixed, 0 wontfix |
+| Disposition | **clean** |
+| Paths | `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md` |
+
+### Consumers
+
+timewarp-architecture / TimeWarp.State template consumers can pin **≥ 1.0.0-beta.9** and enable
+`dotnet_diagnostic.TW0001.severity = warning|error` without false positives on multi-dot
+state/action partials. Actual NuGet publish is a separate release step.
