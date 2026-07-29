@@ -68,6 +68,11 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
     if (string.IsNullOrEmpty(filePath))
       return;
 
+    // Skip build intermediates and toolchain output (gRPC stubs, SDK attributes, etc.).
+    // Those basenames are not authored product paths and must not block TW0001 enablement.
+    if (IsBuildOutputOrGeneratedPath(filePath))
+      return;
+
     string fileName = Path.GetFileName(filePath);
 
     // Skip if not a C# file
@@ -92,6 +97,30 @@ public class FileNameRuleAnalyzer : IIncrementalGenerator
       var diagnostic = Diagnostic.Create(Rule, location, fileName);
       context.ReportDiagnostic(diagnostic);
     }
+  }
+
+  /// <summary>
+  /// True when the path is under bin/obj (or common generated-output roots), not source.
+  /// </summary>
+  private static bool IsBuildOutputOrGeneratedPath(string filePath)
+  {
+    // Normalize so both Windows and Unix separators match.
+    string normalized = filePath.Replace('\\', '/');
+
+    // Path segments: /obj/, /bin/, and common emitted-generator output folders.
+    if (normalized.Contains("/obj/", StringComparison.OrdinalIgnoreCase)
+        || normalized.Contains("/bin/", StringComparison.OrdinalIgnoreCase)
+        || normalized.Contains("/artifacts/generated/", StringComparison.OrdinalIgnoreCase))
+    {
+      return true;
+    }
+
+    // TemporaryGeneratedFile_*.cs and similar toolchain temps (basename also covered by exceptions).
+    string fileName = Path.GetFileName(normalized);
+    if (fileName.StartsWith("TemporaryGeneratedFile_", StringComparison.OrdinalIgnoreCase))
+      return true;
+
+    return false;
   }
 
   private string[] GetConfiguredExceptions(AnalyzerConfigOptionsProvider configOptions, SyntaxTree tree)
