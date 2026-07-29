@@ -1,19 +1,29 @@
-# Adopt package-owned diagnostic ID prefix distinct from Architecture TWA
+# Document TW diagnostic prefix SSOT (no rename)
 
 ## Description
 
-Roslyn diagnostic IDs for **this package** (`TimeWarp.SourceGenerators`) must never collide with
-**TimeWarp.Architecture** analyzers (`TWA0001`–`TWA00xx`, plus generator ids `TWE*` / `SG*` in that
-monorepo).
+Roslyn diagnostic IDs for **this package** (`TimeWarp.SourceGenerators`) already use **`TW0001`–`TW0006`**.
+They do **not** collide with **TimeWarp.Architecture** analyzers (`TWA0001`–`TWA00xx`, plus `TWE*` / `SG*`
+in that monorepo): different ID strings, different packages.
 
-Consumers (Ganda docs, architecture AGENTS, older notes) have mixed references:
-- **`TWA001`** — wrong / historical for the kebab-case file-name rule (Architecture owns `TWA*`)
-- **`TW0001`** — what this repo **actually ships today** for `FileNameRuleAnalyzer`
+Historical confusion was **documentation**, not shipping:
 
-This task freezes a **package-owned prefix SSOT**, renames all shipped ids if needed, and updates
-docs / AnalyzerReleases / editorconfig keys so consumers configure the correct id.
+- **`TWA001`** / **`TWA*`** — wrong when used for this package’s kebab-case rule (Architecture owns `TWA*`)
+- **`TW0001`** — what this package **actually ships** for `FileNameRuleAnalyzer`
 
-### Current inventory (this branch)
+### Decision (locked)
+
+**Keep `TW*`.** No diagnostic ID rename.
+
+Rationale:
+
+- No actual Roslyn ID collision with Architecture `TWA*`
+- Rename would be a breaking change for suppressions / `dotnet_diagnostic.TW000*.*` editorconfig keys with no functional benefit
+- Rejected alternatives: `TWG` (opaque), `TWS` (ambiguous), `TWSG` (clear but churn-only)
+
+This task is **docs + SSOT cleanup only** in this repo, plus notes for external follow-ups.
+
+### Current inventory (shipped — do not rename)
 
 | Id | Owner type | Rule |
 |----|------------|------|
@@ -22,81 +32,64 @@ docs / AnalyzerReleases / editorconfig keys so consumers configure the correct i
 | **TW0003** | `MarkdownDocsGenerator` | markdown docs gen / kebab file matching |
 | **TW0004** | `InterfaceDelegationGenerator` | class must be partial |
 | **TW0005** | `InterfaceDelegationGenerator` | class must implement delegated interface |
-| **TW0006** | `InterfaceDelegationGenerator` | multiple fields delegate same interface |
+| **TW0006** | `InterfaceDelegationGenerator` | multiple fields delegate the same interface |
 
-Editorconfig custom key today: `dotnet_diagnostic.TW0001.excluded_files`.
-
-### Why not `TWG`
-
-`TWG` was a throwaway suggestion (“TimeWarp Generators”) and **does not read as a product name**.
-Do **not** adopt it.
-
-### Prefix options (pick one before implement)
-
-| Prefix | Expansion | Pros | Cons |
-|--------|-----------|------|------|
-| **`TW`** (status quo) | TimeWarp (generic) | Already on all 6 rules; no consumer break if we only document | Too short; other future `TimeWarp.*` packages may want `TW*`; looks unrelated to package id |
-| **`TWSG`** (recommended if renaming) | **T**ime**W**arp **S**ource **G**enerators | Matches NuGet / project name; unambiguous next to Architecture `TWA*` | Breaking rename of all ids + editorconfig keys; slightly long |
-| **`TWS`** | TimeWarp Source…? | Shorter | Ambiguous (State? Software? Source?) — **reject** |
-
-**Recommendation:** Prefer **`TWSG0001`…** if we want the id to **name the package** without colliding with Architecture. If we want **zero churn**, keep **`TW0001`…** and treat this task as **docs + external ref cleanup only** (Ganda `file-naming.md` still says `TWA001` in places).
-
-Decide on the task before coding; record the choice in Notes.
+Editorconfig custom key: `dotnet_diagnostic.TW0001.excluded_files`.
 
 ## Requirements
 
-- One documented SSOT for the package diagnostic prefix (readme + analyzer reference docs).
-- All analyzer/generator diagnostic ids use that prefix consistently (code, `AnalyzerReleases.*`, docs, tests, sample `.editorconfig`).
-- Distinct from Architecture: **no `TWA*` ids** in this package.
-- If renaming: bump package version with release notes listing old → new id map (breaking for suppressions / editorconfig).
-- External follow-ups (out of this repo, linked only):
+- Document SSOT: **`TW*` = TimeWarp.SourceGenerators**; **`TWA*` = TimeWarp Architecture only**
+- Explicit callout: do **not** configure or refer to this package’s rules as `TWA001` / `TWA*`
+- Grep this repo for stale `TWA001` / wrong prefix wording; fix readme, how-tos, reference docs, overview, spikes, kanban notes if needed
+- Confirm code + `AnalyzerReleases.*` already use only `TW0001`–`TW0006` (no code change expected)
+- External follow-ups (**out of this repo**, track elsewhere or as links only):
   - timewarp-ganda `documentation/developer/standards/file-naming.md` (TWA001 wording)
   - timewarp-architecture AGENTS / task 133 notes if they still say SourceGenerators `TWA001` or opaque `TWG`
 
 ## Checklist
 
 ### Decision
-- [ ] Choose prefix: keep **`TW`** *or* rename to **`TWSG`** (or other explicit expansion written in Notes)
-- [ ] Write old→new id table in Notes / release notes draft
+- [x] Choose prefix: **keep `TW`** (no rename to `TWSG` / `TWG` / `TWS`)
+- [x] Record decision in Notes (this file)
 
-### Implementation (if rename)
-- [ ] Update diagnostic ids in:
-  - `file-name-rule-analyzer.cs` (+ `dotnet_diagnostic.*.excluded_files` key)
-  - `xml-docs-to-markdown-analyzer.cs`
-  - `markdown-docs-generator.cs`
-  - `interface-delegation-generator.cs`
-- [ ] Update `AnalyzerReleases.Unshipped.md` / Shipped as appropriate for Roslyn release tracking
-- [ ] Grep repo for `TW000` / `TWA001` / old ids; fix docs, readme, how-tos, spikes, tests
-- [ ] Package version bump + changelog / release note
-
-### Implementation (if keep `TW`)
-- [ ] Document in readme: **`TW*` = TimeWarp.SourceGenerators**; **not** Architecture `TWA*`
-- [ ] Explicit “do not use TWA001 for this package” callout
-- [ ] Still fix any internal stale `TWA001` / `TW0003` history inconsistencies if present
+### Docs cleanup (this repo)
+- [ ] Readme: SSOT that **`TW*` = TimeWarp.SourceGenerators**, not Architecture `TWA*`
+- [ ] Explicit “do not use TWA001 for this package” callout where consumers would look (readme and/or file-name analyzer docs)
+- [ ] Grep for `TWA001` / stale wrong-prefix wording; fix how-tos, reference docs, overview, spikes
+- [ ] Confirm no `TWA*` diagnostic ids on the shipped surface (code + AnalyzerReleases)
 
 ### Verify
-- [ ] Package builds; sample / test console still reports expected ids
-- [ ] No `TWA` diagnostic ids remain in this package’s shipped surface
+- [ ] Docs are consistent: all references to this package’s rules use `TW0001`–`TW0006`
+- [ ] No code/id rename performed
+
+### Out of scope (do not do here)
+- [ ] ~~Rename diagnostic ids~~
+- [ ] ~~Package version bump for breaking id change~~
+- [ ] Fix ganda / architecture repos (external only)
 
 ## Notes
 
+### Decision log
+
+| Date | Choice | Why |
+|------|--------|-----|
+| 2026-07-29 | **Keep `TW*`**; docs-only | No real conflict with Architecture `TWA*`; rename is churn without benefit. Confusion was external/historical `TWA001` wording for the kebab rule. |
+
 ### Collision context
 
-Architecture monorepo:
+| Prefix | Owner | Meaning |
+|--------|-------|---------|
+| **TW** | TimeWarp.SourceGenerators (this package) | Package diagnostics `TW0001`–`TW0006` |
+| **TWA** | TimeWarp Architecture | Convention analyzers (`TWA0001` …) |
+| **TWE** / **SG** | Architecture monorepo generators | Different package; not this repo |
 
-| Prefix | Meaning |
-|--------|---------|
-| **TWA** | TimeWarp **Architecture** convention analyzers (`TWA0001` partial-class shape, …) |
-| **TWE** / **SG** | Architecture **generators** / resilience diagnostics (different package) |
-
-SourceGenerators package must stay off that namespace. Historical confusion: Ganda docs and some
-notes called the kebab rule **`TWA001`** even though this package uses **`TW0001`**.
+Roslyn treats `TW0001` and `TWA0001` as distinct IDs. Suppressions and editorconfig keys do not cross-apply.
 
 ### Origin of the ask
 
 timewarp-architecture task **133** (kebab gaps / enforcement) and audit research flagged wiring
 `FileNameRuleAnalyzer` and warned about Architecture `TWA*` collision. Suggested rename target
-**`TWG`** was a poor acronym — superseded by this decision table.
+**`TWG`** was a poor acronym and is **rejected**. Prefix-option table is closed: keep **`TW`**.
 
 ### Related
 
