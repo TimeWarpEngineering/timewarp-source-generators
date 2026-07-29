@@ -164,4 +164,43 @@ Consumer docs clearly own TW* for this package and forbid treating rules as TWA0
 ## Session
 - Orchestrator: grok (2026-07-29)
 - Plan: plan agent 019fac34-2cd2-7d13-bc11-5dda239b039e (2026-07-29)
-- Implementer: grok build subagent (2026-07-29) — docs-only SSOT; checklist complete; task left in-progress for orchestrator commit/move
+- Implementer: grok build subagent 019fac36-0b8c-7330-a335-289def7d172f (2026-07-29) — docs-only SSOT; checklist complete
+- Review round-1 general: 019fac37-8b2d-7153-8464-85667b963777 (2026-07-29) — zero findings; disposition clean
+
+## Results
+
+### What was implemented
+Documented package-owned diagnostic prefix SSOT for TimeWarp.SourceGenerators: **`TW*`** (`TW0001`–`TW0006`) is this package; **`TWA*`** is TimeWarp Architecture only. Explicit consumer callouts not to enable/suppress this package’s rules as `TWA001` / `TWA*`. File-name kebab-case remains **`TW0001`**.
+
+### Files changed
+| File | Change |
+|------|--------|
+| `readme.md` | Diagnostic ID prefixes (SSOT) table + do-not-use TWA001 |
+| `documentation/developer/reference/analyzers/file-name-rule-analyzer.md` | TW0001 vs TWA* callout |
+| `documentation/developer/how-to-guides/configure-file-name-analyzer.md` | ID reminder + TWA001 troubleshooting |
+| `documentation/overview.md` | Light TW* vs TWA* sentence |
+| `documentation/developer/reference/analyzers/overview.md` | Prefix note (TW*, not TWA*) |
+| `kanban/.../020-.../task.md` + `review/` | Plan, checklist, review kitchen |
+
+### Key decisions / deviations
+- **Keep `TW*`** — no rename to TWSG/TWG/TWS (locked before implement)
+- No code changes; no package version bump
+- External repos (ganda `file-naming.md`, architecture AGENTS/task 133) noted only — out of scope
+- Historical `kanban/done/**` left as archives
+
+### Test outcomes
+- Grep: zero `TWA*` / `TWG` / `TW100x` diagnostic IDs in `source/`, `tests/`, `.editorconfig`
+- AnalyzerReleases.Unshipped.md: TW0001–TW0006 only
+- Config examples: `dotnet_diagnostic.TW0001.*` only
+- Build: N/A (docs-only)
+
+### Phase 4b review
+- **Effort:** 1 (general only)
+- **Rounds:** 1
+- **Counts (final):** 0 open / 0 fixed / 0 wontfix (all severities)
+- **Disposition:** `clean` (`review/disposition.md`)
+- **Paths:** `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md`
+
+### External follow-ups (not done here)
+1. timewarp-ganda `documentation/developer/standards/file-naming.md` — may still say TWA001 → should be TW0001
+2. timewarp-architecture AGENTS / task 133 — if still claiming SourceGenerators TWA001 or TWG rename
