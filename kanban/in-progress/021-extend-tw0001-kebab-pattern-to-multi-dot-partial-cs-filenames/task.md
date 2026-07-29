@@ -84,6 +84,71 @@ application-state.CloseModal.cs
 application_state.close_modal.cs
 ```
 
+### Implementation plan (2026-07-29)
+
+**Goal:** Accept basenames where every dot-separated segment is kebab-case, then `.cs`.
+No change to diagnostic id, default severity, or exception list semantics.
+
+#### 1. Pattern change
+
+**File:** `source/timewarp-source-generators/file-name-rule-analyzer.cs`
+
+```csharp
+private static readonly Regex KebabCasePattern = new(
+  @"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.[a-z][a-z0-9]*(?:-[a-z0-9]+)*)*\.cs$",
+  RegexOptions.Compiled);
+```
+
+- Optional: tweak diagnostic message/description to mention multi-dot partials.
+- Exceptions already run **before** pattern — multi-dot does not break `*.razor.cs` / `*.g.cs`.
+- Leave `MarkdownDocsGenerator` kebab stem alone (out of scope).
+
+#### 2. Tests
+
+No unit-test project. Console smoke with TW0001=error:
+
+- Add pass fixtures under `tests/timewarp-source-generators-test-console/`:
+  - `application-state.close-modal.cs`
+  - `weather-forecasts-state.fetch-weather-forecasts.cs`
+- Keep single-stem regression files.
+- Fail matrix (document + manual one-shot): Pascal/snake/mixed multi-dot must still fail;
+  empty segments (`a..b.cs`) fail.
+
+#### 3. Docs
+
+- `documentation/developer/reference/analyzers/file-name-rule-analyzer.md` — multi-dot pattern + examples
+- `documentation/developer/how-to-guides/configure-file-name-analyzer.md` — examples
+- `documentation/developer/reference/analyzers/overview.md` — one-line TW0001 note
+- Light touch: `documentation/overview.md` / `readme.md` if useful
+
+#### 4. AnalyzerReleases
+
+Optional Notes line on TW0001 only; stay Unshipped; no new rule id.
+
+#### 5. Version + release notes
+
+- `source/Directory.Build.props`: `1.0.0-beta.8` → `1.0.0-beta.9`
+- Create `documentation/releases.md` with beta.9 notes + consumer enablement callout
+  (architecture/templates can enable TW0001 after pin ≥ beta.9)
+
+#### 6. Sequence
+
+1. Regex (+ optional message)
+2. Test-console multi-dot pass files; build green
+3. Manual fail spot-check then remove temp invalid file
+4. Docs
+5. Optional Unshipped note
+6. Version + releases.md
+7. Checklist + session
+
+#### Acceptance
+
+- Multi-dot kebab clean; single-stem still passes; invalid multi-dot fails
+- Default exceptions preserved; id stays TW0001; version ≥ beta.9 with notes
+
+**No blocking ambiguities** — proceed with defaults above.
+
 ## Session
 
 - Created: 2026-07-29 — follow-up after architecture task 133 deferred TW0001 enable
+- Orchestration: Grok Build session (2026-07-29) — plan finalized, implementing
