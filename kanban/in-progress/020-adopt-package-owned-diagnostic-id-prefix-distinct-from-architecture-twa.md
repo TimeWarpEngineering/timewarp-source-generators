@@ -53,14 +53,14 @@ Editorconfig custom key: `dotnet_diagnostic.TW0001.excluded_files`.
 - [x] Record decision in Notes (this file)
 
 ### Docs cleanup (this repo)
-- [ ] Readme: SSOT that **`TW*` = TimeWarp.SourceGenerators**, not Architecture `TWA*`
-- [ ] Explicit “do not use TWA001 for this package” callout where consumers would look (readme and/or file-name analyzer docs)
-- [ ] Grep for `TWA001` / stale wrong-prefix wording; fix how-tos, reference docs, overview, spikes
-- [ ] Confirm no `TWA*` diagnostic ids on the shipped surface (code + AnalyzerReleases)
+- [x] Readme: SSOT that **`TW*` = TimeWarp.SourceGenerators**, not Architecture `TWA*`
+- [x] Explicit “do not use TWA001 for this package” callout where consumers would look (readme and/or file-name analyzer docs)
+- [x] Grep for `TWA001` / stale wrong-prefix wording; fix how-tos, reference docs, overview, spikes
+- [x] Confirm no `TWA*` diagnostic ids on the shipped surface (code + AnalyzerReleases)
 
 ### Verify
-- [ ] Docs are consistent: all references to this package’s rules use `TW0001`–`TW0006`
-- [ ] No code/id rename performed
+- [x] Docs are consistent: all references to this package’s rules use `TW0001`–`TW0006`
+- [x] No code/id rename performed
 
 ### Out of scope (do not do here)
 - [ ] ~~Rename diagnostic ids~~
@@ -98,6 +98,23 @@ timewarp-architecture task **133** (kebab gaps / enforcement) and audit research
 - timewarp-flow ADR-0013 (kebab adoption; mentions source-generator enforcement)
 
 ## Implementation Notes
+
+### Landed (2026-07-29)
+
+Docs-only SSOT cleanup complete. No code/id rename; no package version bump.
+
+**Files changed:**
+1. `readme.md` — Expanded TW vs TWA one-liner into **Diagnostic ID prefixes (SSOT)** subsection (table + do-not-use TWA001)
+2. `documentation/developer/reference/analyzers/file-name-rule-analyzer.md` — TW0001 SSOT callout after Rule Details
+3. `documentation/developer/how-to-guides/configure-file-name-analyzer.md` — ID reminder + troubleshooting for misconfigured TWA001
+4. `documentation/overview.md` — Light TW* vs TWA* SSOT sentence
+5. `documentation/developer/reference/analyzers/overview.md` — Prefix note that all package analyzer IDs are TW*, not TWA*
+
+**Verify greps (pass):**
+- Zero `TWA*`/`TWG`/`TW100x` diagnostic ids in `source/`, `tests/`, `.editorconfig`
+- AnalyzerReleases.Unshipped.md lists only TW0001–TW0006
+- Config examples use `dotnet_diagnostic.TW0001.*` only; TWA mentions in docs are intentional anti-confusion callouts
+- Spikes: nothing to fix
 
 ### Implementation plan (docs-only; 2026-07-29)
 
@@ -147,3 +164,4 @@ Consumer docs clearly own TW* for this package and forbid treating rules as TWA0
 ## Session
 - Orchestrator: grok (2026-07-29)
 - Plan: plan agent 019fac34-2cd2-7d13-bc11-5dda239b039e (2026-07-29)
+- Implementer: grok build subagent (2026-07-29) — docs-only SSOT; checklist complete; task left in-progress for orchestrator commit/move
