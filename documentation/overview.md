@@ -17,7 +17,7 @@ Technical documentation for developers using or contributing to the project.
 - **MarkdownDocsGenerator** - Generates markdown from XML docs
 
 ### Analyzers
-- **TW0001** - File name kebab-case enforcement
+- **TW0001** - File name kebab-case enforcement (single- and multi-dot basenames)
 
 Diagnostic IDs from this package use the **TW** prefix (`TW0001`–`TW0006`). The **TWA** prefix is reserved for TimeWarp Architecture and is not used here.
 

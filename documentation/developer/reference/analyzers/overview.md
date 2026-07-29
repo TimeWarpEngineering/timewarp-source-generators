@@ -6,7 +6,7 @@ All analyzer diagnostic IDs from this package use the **TW** prefix (e.g. **TW00
 
 ### TW0001 - File Name Rule Analyzer
 
-Enforces kebab-case naming convention for C# source files.
+Enforces kebab-case naming convention for C# source files (including multi-segment kebab basenames such as `application-state.close-modal.cs`).
 
 - **Rule ID**: TW0001
 - **Category**: Naming  

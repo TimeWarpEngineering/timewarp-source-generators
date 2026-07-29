@@ -9,7 +9,7 @@ The FileNameRuleAnalyzer enforces kebab-case naming conventions for C# source fi
 - **Rule ID**: TW0001
 - **Category**: Naming
 - **Default Severity**: Info (disabled by default)
-- **Message**: File '{0}' should use kebab-case naming convention (e.g., 'my-file.cs')
+- **Message**: File '{0}' should use kebab-case naming convention (e.g., 'my-file.cs' or 'my-type.my-partial.cs')
 
 > **Diagnostic ID (SSOT):** This rule is **TW0001** from TimeWarp.SourceGenerators. It is **not** a TimeWarp Architecture analyzer (`TWA*`). Do **not** enable or suppress it with `TWA001` / `dotnet_diagnostic.TWA001.*` — use `dotnet_diagnostic.TW0001.*` and `#pragma warning disable TW0001`.
 
@@ -21,12 +21,23 @@ Valid kebab-case file names must:
 - Separate words with hyphens (-)
 - Not contain consecutive hyphens
 - End with `.cs` extension
+- **Multi-dot basenames** are allowed when **every** segment between dots is itself kebab-case
+  (common for partials such as state/action files)
+
+Pattern (conceptual):
+
+```text
+^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.[a-z][a-z0-9]*(?:-[a-z0-9]+)*)*\.cs$
+```
 
 ### Valid Examples
 - `user-service.cs`
 - `data-processor.cs`
 - `my-component.cs`
 - `api-client-v2.cs`
+- `application-state.close-modal.cs` (multi-dot partial)
+- `counter-state.increment-counter.cs` (multi-dot partial)
+- `weather-forecasts-state.fetch-weather-forecasts.cs` (multi-dot partial)
 
 ### Invalid Examples
 - `UserService.cs` (PascalCase)
@@ -34,6 +45,9 @@ Valid kebab-case file names must:
 - `user_service.cs` (snake_case)
 - `user--service.cs` (consecutive hyphens)
 - `-user-service.cs` (starts with hyphen)
+- `ApplicationState.CloseModal.cs` (Pascal multi-dot)
+- `application-state.CloseModal.cs` (mixed multi-dot; one Pascal segment)
+- `application_state.close_modal.cs` (snake_case segments)
 
 ## Configuration
 

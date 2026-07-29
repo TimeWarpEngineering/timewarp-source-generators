@@ -84,6 +84,14 @@ public class MarkdownDocsGenerator : IIncrementalGenerator
                   Path.GetFileNameWithoutExtension(md.Path).Equals(className, StringComparison.OrdinalIgnoreCase));
         }
 
+        // Also try kebab-case of the class name (PascalCase source + kebab markdown)
+        if (matchingMd == null)
+        {
+          string kebabClassName = ConvertToKebabCase(className);
+          matchingMd = markdownTexts.FirstOrDefault(md =>
+                  Path.GetFileNameWithoutExtension(md.Path).Equals(kebabClassName, StringComparison.OrdinalIgnoreCase));
+        }
+
         if (matchingMd != null)
         {
           var markdownContent = matchingMd.GetText()?.ToString() ?? string.Empty;

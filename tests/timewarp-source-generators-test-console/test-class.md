@@ -159,7 +159,7 @@ int succeeded = processor.TryProcessBatch(inputs, results);
 ```
 
 ## See Also
-- [IDataProcessor<T>](IDataProcessor.md)
+- [IDataProcessor<T>](i-data-processor.md)
 
 ## Inheritance
 Implements @IDataProcessor<string> interface.

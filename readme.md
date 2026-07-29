@@ -70,7 +70,7 @@ The generator will automatically create forwarding implementations for all inter
 
 ### File Name Rule Analyzer
 
-Enforces kebab-case naming convention for C# files.
+Enforces kebab-case naming for C# files, including multi-dot partials (e.g. `application-state.close-modal.cs`) when every segment is kebab-case.
 
 #### Configuration
 
