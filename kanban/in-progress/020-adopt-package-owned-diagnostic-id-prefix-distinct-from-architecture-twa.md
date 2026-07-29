@@ -99,4 +99,51 @@ timewarp-architecture task **133** (kebab gaps / enforcement) and audit research
 
 ## Implementation Notes
 
-_(empty until work starts)_
+### Implementation plan (docs-only; 2026-07-29)
+
+**Scope:** Docs + SSOT cleanup only. Keep `TW0001`–`TW0006`. No rename, no package version bump, no code changes.
+
+#### Current-state findings
+- Shipped surface already correct: source analyzers/generators + AnalyzerReleases.Unshipped.md use only TW0001–TW0006. No TWA* in live code.
+- readme.md has partial SSOT one-liner; missing explicit “do not use TWA001” callout.
+- File-name how-to/reference, overview, analyzers overview: IDs correct (TW0001) but no SSOT/anti-TWA001 callout.
+- Spikes: nothing to fix.
+- kanban/done/* historical TWA001/TW0003 wording: leave as archive (do not rewrite).
+
+#### Files to edit
+1. **readme.md** — Expand partial SSOT into Diagnostic ID prefixes subsection: table TW* = this package vs TWA* = Architecture only; explicit do-not-use TWA001 for this package; FileNameRule = TW0001.
+2. **documentation/developer/reference/analyzers/file-name-rule-analyzer.md** — Callout: rule is TW0001, not TWA*.
+3. **documentation/developer/how-to-guides/configure-file-name-analyzer.md** — Reinforce TW0001 editorconfig keys; troubleshooting if someone configured TWA001.
+4. **documentation/overview.md** — Light SSOT sentence.
+5. **documentation/developer/reference/analyzers/overview.md** — Short prefix note (recommended).
+6. **This task file** — Checklist + Implementation Notes as work lands.
+
+#### Do not touch
+- source/** diagnostic IDs, AnalyzerReleases (confirm only)
+- Package version
+- kanban/done/** historical archives
+- External repos (ganda file-naming.md, architecture AGENTS/task 133) — note only
+
+#### External follow-ups (out of repo)
+1. timewarp-ganda documentation/developer/standards/file-naming.md may still say TWA001 → should be TW0001
+2. timewarp-architecture AGENTS / task 133 if they still claim SourceGenerators TWA001 or TWG rename
+
+#### Verify greps (pass criteria)
+- Zero TWA*/TWG/TW100x diagnostic ids in source/ and AnalyzerReleases
+- Config examples use dotnet_diagnostic.TW0001 not TWA001
+- Readme + file-name how-to/reference state TW* vs TWA* SSOT and do-not-use TWA001
+- No code/id rename; no version bump
+
+#### Sequence
+1. Confirm shipped surface via grep
+2. Strengthen readme SSOT
+3. Add callouts to file-name reference, configure how-to, overview, analyzers overview
+4. Repo-wide grep cleanup pass
+5. Update task checklist; external items remain out of scope
+
+#### Definition of done
+Consumer docs clearly own TW* for this package and forbid treating rules as TWA001/TWA*; shipped surface confirmed TW0001–TW0006 only; task checklist complete for in-repo items.
+
+## Session
+- Orchestrator: grok (2026-07-29)
+- Plan: plan agent 019fac34-2cd2-7d13-bc11-5dda239b039e (2026-07-29)
