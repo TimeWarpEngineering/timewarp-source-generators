@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Dev CLI">
-    <PackageVersion Include="TimeWarp.Nuru" Version="3.0.0-beta.71" />
-    <PackageVersion Include="TimeWarp.Nuru.DevCli" Version="3.0.0-beta.71" />
+    <PackageVersion Include="TimeWarp.Nuru" Version="3.0.0-beta.76" />
+    <PackageVersion Include="TimeWarp.Nuru.DevCli" Version="3.0.0-beta.76" />
     <PackageVersion Include="TimeWarp.Amuru" Version="1.0.0" />
     <PackageVersion Include="TimeWarp.Amuru.Tools" Version="1.0.0-beta.2" />
     <PackageVersion Include="TimeWarp.Terminal" Version="1.0.0" />
