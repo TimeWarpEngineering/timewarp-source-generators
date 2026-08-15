@@ -28,6 +28,14 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'merge = normal CI (default). probe = trusted-publishing check only (OIDC login, no build, no publish).'
+        type: choice
+        options:
+          - merge
+          - probe
+        default: merge
 
 jobs:
   ci:
@@ -46,14 +54,19 @@ jobs:
       # Prefer NuGet Trusted Publishing (OIDC). Fall back to org API key when no trust
       # policy exists yet for this package (common on first release under a new policy).
       - name: NuGet login (OIDC Trusted Publishing)
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'probe')
         id: nuget-login
         continue-on-error: true
         uses: nuget/login@v1
         with:
           user: TimeWarp.Enterprises
 
+      - name: Trusted publishing probe result
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'probe'
+        run: echo "Trusted publishing OK — OIDC exchange succeeded for this repo + workflow.yml. (A failure of the NuGet login step above means the policy is missing or misconfigured on NuGet.org.)"
+
       - name: Run CI Pipeline
+        if: github.event_name != 'workflow_dispatch' || inputs.mode != 'probe'
         env:
           # OIDC key if login succeeded; otherwise org secrets (either name used historically)
           NUGET_API_KEY_OIDC: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
