@@ -29,18 +29,20 @@ Same collision pattern as the 021→023 / 022→024 renumbers after a stale-mast
 - [x] Re-id interface-delegation 017 → **026** (stay to-do; note former id)
 - [x] Close 022 → done (Results)
 - [x] Confirm `ganda kanban path/show 017` is unique
+- [x] `ganda kanban done 025` after publish (column move lands via PR; cannot publish from done)
 
 ## Notes
 
 - Existing 017s were unclaimed; this task is the only claim.
 - Path skip already lives in `file-name-rule-analyzer.cs` (`IsBuildOutputOrGeneratedPath`). Not re-implemented here.
 - 026 stays a reserved stub on `refs/ganda/claims` until someone picks up the published kitchen (`claim 026` then converts the stub; title is ignored when the kitchen exists).
-- This kitchen stays in **to-do** so `ganda kanban publish 025` can land the sibling moves.
+- Sibling moves published from to-do; this kitchen then moved to **done** (publish cannot run from done).
 
 ## Session
 
 - Created: 1277286 (2026-08-26)
 - Cockpit: Grok `01a03b95-a63c-7423-b3e5-ccb1746483e7` (2026-08-26)
+- Done-column pickup: 1285505 (2026-08-26)
 
 ## Results
 
@@ -56,7 +58,7 @@ Board-only close-out on `task/025-deduplicate-kanban-017-and-close-shipped-lefto
 
 ```bash
 ganda kanban board timewarp-source-generators --show-done
-# Expect: in-progress empty; to-do includes 026 (not 017); done includes 017 and 022
+# Expect: in-progress empty; to-do includes 026 (not 017 or 025); done includes 017, 022, and 025
 
 ganda kanban path 017 --repo timewarp-source-generators
 # Expect: .../kanban/done/017-fix-tw0001-analyzer-ignoring-generated-files
