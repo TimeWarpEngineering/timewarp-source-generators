@@ -1,7 +1,5 @@
 # Create Interface Delegation Source Generator
 
-## Status: TO DO
-
 ## Overview
 
 Create a source generator that implements Delphi-style interface delegation for C#. This allows classes to automatically delegate interface implementations to fields or properties, eliminating boilerplate forwarding code.
@@ -255,6 +253,8 @@ public partial class CompositeHandler : IHandler
 
 ## Notes
 
+- Former id **017**. Hand-created Oct 2025 while in-progress **017** already existed (TW0001 obj/bin skip). `ganda kanban show 017` returned this card. Renumbered to **026** by task **025** (reserved stub, then published kitchen).
+- Generator source already exists on master (`interface-delegation-generator.cs`, TW0004–0006, test-console `data-service.cs`). This card stays to-do until remaining work is verified and Results are written. Do not treat presence of the files as done.
 - The type inference approach eliminates redundancy compared to `[Implements(typeof(IInterface))]`
 - Follows the same pattern as existing generators in this project
 - Should work with C# 8.0+ (nullable reference types supported)

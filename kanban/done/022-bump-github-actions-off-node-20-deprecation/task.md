@@ -38,6 +38,27 @@ Bump official actions in `.github/workflows/workflow.yml` to majors that declare
 
 `upload-artifact@v5` still uses node20 — skip to **v6**.
 
+Shipped in PR [#35](https://github.com/TimeWarpEngineering/timewarp-source-generators/pull/35) with the TW0001 obj/bin skip. Card left in to-do; closed by task **025**.
+
 ## Session
 
 - Created: 2026-07-29 — CI deprecation notice after beta.9 release
+- Shipped: 2026-07-29 (PR #35)
+- Board close-out: Grok `01a03b95-a63c-7423-b3e5-ccb1746483e7` via task 025 (2026-08-26)
+
+## Results
+
+### What was implemented
+
+First-party Actions in `.github/workflows/workflow.yml` pin Node 24 majors: `actions/checkout@v6`, `actions/setup-dotnet@v5`, `actions/upload-artifact@v6`.
+
+### Test outcomes
+
+PR #35 CI succeeded.
+
+### How to validate
+
+```bash
+rg 'actions/(checkout|setup-dotnet|upload-artifact)@' .github/workflows/workflow.yml
+# Expect: checkout@v6, setup-dotnet@v5, upload-artifact@v6
+```
