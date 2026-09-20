@@ -1,5 +1,3 @@
-using TimeWarp.SourceGenerators.TestConsole;
-
 // Test kebab-case file matching
 var kebabTest = new KebabCaseTest();
 Console.WriteLine($"Kebab-case test: {kebabTest.GetTestMessage()}");

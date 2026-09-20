@@ -3,6 +3,7 @@
     <Project Path="source/timewarp-source-generators/timewarp-source-generators.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/timewarp-source-generators-analyzer-tests/timewarp-source-generators-analyzer-tests.csproj" />
     <Project Path="tests/timewarp-source-generators-test-console/timewarp-source-generators-test-console.csproj" />
   </Folder>
 </Solution>

@@ -8,3 +8,4 @@ TW0003 | SourceGenerator | Info | MarkdownDocsGenerator - Enhanced to support ke
 TW0004 | InterfaceDelegation | Error | Class must be partial for interface delegation
 TW0005 | InterfaceDelegation | Error | Class does not implement the delegated interface
 TW0006 | InterfaceDelegation | Error | Multiple fields delegate the same interface
+TW0007 | Usage | Warning | GlobalUsingsRuleAnalyzer, disabled by default; visits every using including file-scoped namespace-first; default filename kebab global-usings.cs

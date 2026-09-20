@@ -277,17 +277,15 @@ dotnet_diagnostic.CS1591.severity = none
 dotnet_diagnostic.TW0001.severity = none  # Set to warning/error to enforce kebab-case file naming
 dotnet_diagnostic.TW0001.excluded_files = *.g.cs;*.Generated.cs;*.generated.cs;*.designer.cs;*.Designer.cs;*.razor.cs;Directory.Build.props;Directory.Build.targets;Directory.Packages.props;AssemblyInfo.cs;*.AssemblyAttributes.cs;AnalyzerReleases.Shipped.md;AnalyzerReleases.Unshipped.md
 
+# TW0007 file-level usings → kebab global-usings.cs (disabled by default; enable per repo)
+dotnet_diagnostic.TW0007.severity = none
+dotnet_diagnostic.TW0007.filename = global-usings.cs
+
 #### Analyzer settings ####
 dotnet_code_quality.null_check_validation_methods = NotNull
 
 # CA1308: Normalize strings to uppercase
 dotnet_diagnostic.ca1308.severity = none
-
-# Global Usings Analyzer
-
-dotnet_diagnostic.globalusingsanalyzer0001.filename = GlobalUsings.cs
-dotnet_diagnostic.globalusingsanalyzer0002.enabled = true
-dotnet_diagnostic.globalusingsanalyzer0003.severity = warning
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # ganda repo audit (https://github.com/TimeWarpEngineering/timewarp-ganda)
