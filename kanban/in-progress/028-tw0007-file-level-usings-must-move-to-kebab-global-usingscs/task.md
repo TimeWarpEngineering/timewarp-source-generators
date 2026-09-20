@@ -47,6 +47,7 @@ Ganda 284 currently audits the NuGet package. After TW0007 ships, 284 must check
 
 - Created: cockpit grok 2026-09-20 (plan 1 after 284 PR #162)
 - Implementer: grok 2026-09-20 (ganda task-work implement)
+- Review oracle: grok 2026-09-20 (ganda task-work review, effort 1 general)
 
 ## Results
 
@@ -103,3 +104,19 @@ ls artifacts/packages/TimeWarp.SourceGenerators.1.0.0-beta.11.nupkg
 **Expect:** pack id `TimeWarp.SourceGenerators` version `1.0.0-beta.11`. `rg -i 'BDSoftware|GlobalUsingsAnalyzer' Directory.Packages.props` is empty.
 
 **Not in scope:** Ganda 284 audit rewrite; TimeWarp.State using sweep; code-fix.
+
+### Review disposition
+
+**Outcome:** clean (0 open findings)
+**Effort / roster:** 1 — general only
+**Rounds:** 1
+**Final counts:** bug 0 / suggestion 0 / nit 0 (all open=0, fixed=0, wontfix=0)
+
+Round 1 general review of `b7a6221` vs `origin/master` raised no issues. Analyzer visits every `UsingDirectiveSyntax` including namespace-first; skips, kebab default, opt-in warning, Unshipped row, docs, and 11/11 tests match the brief. No wontfix; no escalations.
+
+**Review paths**
+
+- `kanban/in-progress/028-tw0007-file-level-usings-must-move-to-kebab-global-usingscs/review/review-framework.md`
+- `kanban/in-progress/028-tw0007-file-level-usings-must-move-to-kebab-global-usingscs/review/round-1/general.md`
+- `kanban/in-progress/028-tw0007-file-level-usings-must-move-to-kebab-global-usingscs/review/round-1/merged.md`
+- `kanban/in-progress/028-tw0007-file-level-usings-must-move-to-kebab-global-usingscs/review/disposition.md`
