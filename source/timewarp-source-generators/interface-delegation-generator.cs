@@ -1,7 +1,5 @@
 namespace TimeWarp.SourceGenerators;
 
-using System.Collections.Immutable;
-
 [Generator]
 public class InterfaceDelegationGenerator : IIncrementalGenerator
 {

@@ -1,6 +1,6 @@
 # Analyzers Reference
 
-All analyzer diagnostic IDs from this package use the **TW** prefix (e.g. **TW0001**–**TW0006**). They are **not** TimeWarp Architecture `TWA*` IDs — do not configure or suppress these rules with `TWA001` / `TWA*`.
+All analyzer diagnostic IDs from this package use the **TW** prefix (e.g. **TW0001**–**TW0007**). They are **not** TimeWarp Architecture `TWA*` IDs — do not configure or suppress these rules with `TWA001` / `TWA*`.
 
 ## Available Analyzers
 
@@ -14,6 +14,17 @@ Enforces kebab-case naming convention for C# source files (including multi-segme
 - **Configuration**: `.editorconfig`
 
 [Full Reference](./file-name-rule-analyzer.md)
+
+### TW0007 - Global Usings Rule Analyzer
+
+Reports file-level `using` directives (including namespace-first file-scoped usings) that should move to kebab-case `global-usings.cs`.
+
+- **Rule ID**: TW0007
+- **Category**: Usage
+- **Default Severity**: Warning (disabled)
+- **Configuration**: `.editorconfig` (`filename`, `excluded_files`)
+
+[Full Reference](./global-usings-rule-analyzer.md)
 
 ## Common Configuration
 
@@ -30,6 +41,7 @@ dotnet_diagnostic.TW0001.excluded_files = *.g.cs;*.Generated.cs
 ## Analyzer Categories
 
 - **Naming**: File and identifier naming conventions
+- **Usage**: Using-directive placement (TW0007)
 - **SourceGenerator**: Diagnostics from source generators
 
 ## Suppression Methods

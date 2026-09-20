@@ -2,7 +2,7 @@
 // Run the test suite
 #endregion
 #region Design
-// Builds and runs the test-console project in Release (no Fixie/dotnet test suite yet)
+// Builds and runs test-console then the TW0007 analyzer-tests console in Release
 // Fails on non-zero exit from build or run
 // Handler stores Command and Ct as fields so private methods are zero-parameter
 // Streams output via Amuru RunAsync by default; --quiet uses CaptureAsync
@@ -18,14 +18,16 @@ internal sealed class TestCommand : ICommand<Unit>
 
   internal sealed class Handler : ICommandHandler<TestCommand, Unit>
   {
-    private const string TestProjectRelativePath =
-      "tests/timewarp-source-generators-test-console/timewarp-source-generators-test-console.csproj";
+    private static readonly string[] TestProjectRelativePaths =
+    [
+      "tests/timewarp-source-generators-test-console/timewarp-source-generators-test-console.csproj",
+      "tests/timewarp-source-generators-analyzer-tests/timewarp-source-generators-analyzer-tests.csproj"
+    ];
 
     private readonly ITerminal Terminal;
     private TestCommand Command = null!;
     private CancellationToken Ct;
     private string RepoRoot = null!;
-    private string TestProjectPath = null!;
 
     public Handler(ITerminal terminal)
     {
@@ -56,15 +58,37 @@ internal sealed class TestCommand : ICommand<Unit>
       }
 
       RepoRoot = root;
-      TestProjectPath = Path.Combine(RepoRoot, TestProjectRelativePath);
       Terminal.WriteLine("Running test suite...");
       return true;
     }
 
     private async Task<bool> BuildTestProjectAsync()
     {
-      Terminal.WriteLine($"Building {TestProjectRelativePath} (Release)...");
-      CommandResult command = DotNet.Build(TestProjectPath)
+      foreach (string relativePath in TestProjectRelativePaths)
+      {
+        if (!await BuildOneAsync(relativePath))
+          return false;
+      }
+
+      return true;
+    }
+
+    private async Task<bool> RunTestProjectAsync()
+    {
+      foreach (string relativePath in TestProjectRelativePaths)
+      {
+        if (!await RunOneAsync(relativePath))
+          return false;
+      }
+
+      return true;
+    }
+
+    private async Task<bool> BuildOneAsync(string relativePath)
+    {
+      string testProjectPath = Path.Combine(RepoRoot, relativePath);
+      Terminal.WriteLine($"Building {relativePath} (Release)...");
+      CommandResult command = DotNet.Build(testProjectPath)
         .WithConfiguration("Release")
         .WithWorkingDirectory(RepoRoot)
         .WithNoValidation()
@@ -73,11 +97,12 @@ internal sealed class TestCommand : ICommand<Unit>
       return await ExecuteAsync(command, "Test project build failed!");
     }
 
-    private async Task<bool> RunTestProjectAsync()
+    private async Task<bool> RunOneAsync(string relativePath)
     {
-      Terminal.WriteLine($"Running {TestProjectRelativePath} (Release)...");
+      string testProjectPath = Path.Combine(RepoRoot, relativePath);
+      Terminal.WriteLine($"Running {relativePath} (Release)...");
       CommandResult command = DotNet.Run()
-        .WithProject(TestProjectPath)
+        .WithProject(testProjectPath)
         .WithConfiguration("Release")
         .WithNoBuild()
         .WithWorkingDirectory(RepoRoot)

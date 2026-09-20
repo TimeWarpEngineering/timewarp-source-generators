@@ -81,11 +81,23 @@ Configure exceptions in `.editorconfig`:
 dotnet_diagnostic.TW0001.excluded_files = Program.cs;Startup.cs;*.Designer.cs
 ```
 
+### Global Usings Rule Analyzer (TW0007)
+
+Reports file-level `using` directives that should move to kebab-case `global-usings.cs`, including usings **after** a file-scoped `namespace X;` (the gap in BDSoftware GlobalUsingsAnalyzer 1.4.0). Disabled by default.
+
+```ini
+[*.cs]
+dotnet_diagnostic.TW0007.severity = warning
+dotnet_diagnostic.TW0007.filename = global-usings.cs
+```
+
+See [configure-global-usings-analyzer.md](./documentation/developer/how-to-guides/configure-global-usings-analyzer.md).
+
 ### Diagnostic ID prefixes (SSOT)
 
 | Prefix | Package |
 |--------|---------|
-| **TW** | **TimeWarp.SourceGenerators** (this package) — shipped diagnostics **TW0001**–**TW0006** |
+| **TW** | **TimeWarp.SourceGenerators** (this package) — shipped diagnostics **TW0001**–**TW0007** |
 | **TWA** | **TimeWarp Architecture** only — not used by this package |
 
 Do **not** enable, suppress, or configure this package’s rules with Architecture IDs such as `TWA001` / `TWA*`. File-name kebab-case is **TW0001** (`dotnet_diagnostic.TW0001.*`, `#pragma warning disable TW0001`). Architecture `TWA*` keys do not apply here.

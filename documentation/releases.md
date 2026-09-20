@@ -1,5 +1,27 @@
 # Release Notes
 
+## 1.0.0-beta.11
+
+### TW0007 (GlobalUsingsRuleAnalyzer)
+
+- New analyzer: file-level `using` directives must move to kebab **`global-usings.cs`**.
+- Visits every `UsingDirectiveSyntax` (compilation unit **and** file-scoped / block namespace), so namespace-first TimeWarp files are covered.
+- Skips `global using`, `using static`, aliases, generated/build-output paths, the configured global-usings file, and `excluded_files`.
+- Disabled by default (`isEnabledByDefault: false`). Enable with `dotnet_diagnostic.TW0007.severity = warning|error`.
+- Replaces third-party GlobalUsingsAnalyzer (BDSoftware); do not add that package.
+
+### Consumers
+
+- Pin **≥ 1.0.0-beta.11** and set `.editorconfig`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.TW0007.severity = warning
+dotnet_diagnostic.TW0007.filename = global-usings.cs
+```
+
+- Ganda audit check rewrite (Ganda 284) should retarget to this package + TW0007 after this NuGet ships.
+
 ## 1.0.0-beta.10
 
 ### TW0001 (FileNameRuleAnalyzer)

@@ -74,6 +74,7 @@ Rule ID | Category | Severity | Notes
 TW0001 | Naming | Info | FileNameRuleAnalyzer, disabled by default
 TW0002 | Documentation | Info | XmlDocsToMarkdownAnalyzer
 TW0003 | SourceGenerator | Info | MarkdownDocsGenerator
+TW0007 | Usage | Warning | GlobalUsingsRuleAnalyzer, disabled by default
 
 AnalyzerReleases.Shipped.md:
 ## Release 1.0

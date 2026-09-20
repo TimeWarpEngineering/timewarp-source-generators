@@ -11,11 +11,13 @@ Understanding the design decisions and philosophy:
 ### [How-to Guides](./how-to-guides/overview.md)
 Step-by-step instructions:
 - [Configure File Name Analyzer](./how-to-guides/configure-file-name-analyzer.md)
+- [Configure Global Usings Analyzer](./how-to-guides/configure-global-usings-analyzer.md)
 
 ### [Reference](./reference/overview.md)
 Detailed technical documentation:
 - [Analyzers](./reference/analyzers/overview.md)
   - [File Name Rule Analyzer](./reference/analyzers/file-name-rule-analyzer.md)
+  - [Global Usings Rule Analyzer](./reference/analyzers/global-usings-rule-analyzer.md)
 - [Source Generators](./reference/source-generators/overview.md)
   - XMLDoc Templates
 

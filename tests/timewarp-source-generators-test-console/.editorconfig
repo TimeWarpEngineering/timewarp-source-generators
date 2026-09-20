@@ -8,3 +8,6 @@ dotnet_diagnostic.TW0001.severity = error  # Set to warning/error to enforce keb
 dotnet_diagnostic.TW0001.excluded_files = PascalCaseTest.cs 
 # Enable TW0002 - XML documentation to markdown analyzer
 dotnet_diagnostic.TW0002.severity = suggestion
+# Enable TW0007 - file-level usings must live in kebab global-usings.cs
+dotnet_diagnostic.TW0007.severity = error
+dotnet_diagnostic.TW0007.filename = global-usings.cs
