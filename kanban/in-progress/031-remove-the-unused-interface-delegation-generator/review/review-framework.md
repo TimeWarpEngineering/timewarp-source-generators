@@ -2,11 +2,11 @@
 
 ## Budget (by-diff)
 
-- Lines changed: 699
-- Effort: 2
+- Lines changed: 102
+- Effort: 1
 - TCB hits: none
 - Roster axes: general
-- Turn cap: 120 (--max-turns; cursor uncapped)
+- Turn cap: 80 (--max-turns; cursor uncapped)
 
 ## Round 1 framing
 
@@ -25,3 +25,11 @@
 - Do not invent issues to fill space; zero issues is a valid outcome
 - Address the diff and surrounding call sites; re-verify falsifiable claims against the repo
 - Prior rounds are immutable; new work goes in `round-(N+1)/`
+
+## Round 2 framing
+
+**Date:** 2026-11-09
+**Diff scope:** delta `ed94ce5..3d0563a` (fix pass for M1; product change `source/Directory.Build.props`)
+**Effort:** 1 — roster axes: general
+**Reviewer roster:** general
+**Session IDs:** review oracle reviewer-claude (claude-opus-5-5, headless `ganda task work`), round 2
