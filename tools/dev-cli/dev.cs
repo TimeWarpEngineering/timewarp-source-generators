@@ -9,6 +9,11 @@
 //
 // Run `./bin/dev --help` for available commands.
 //
+// Telemetry (tools/dev-cli/telemetry.md):
+//   UseTelemetry service name is the literal "timewarp-source-generators-dev".
+//   Export follows OTEL_EXPORTER_OTLP_ENDPOINT. Unset exports nothing.
+//   TRACEPARENT / TRACESTATE join a parent process's trace.
+//
 // To bootstrap:
 //   dotnet run tools/dev-cli/dev.cs -- self-install
 //   direnv allow
@@ -19,12 +24,21 @@
 // Entry point for the dev CLI
 #endregion
 #region Design
-// Thin wrapper around TimeWarp.Nuru to execute development commands
+// Thin wrapper around TimeWarp.Nuru to execute development commands.
+// UseTelemetry is on so a CI job or a ganda walk that shells out to dev
+// exports one command span per route, including the DevCli routes. The OTLP
+// endpoint stays unset here: a non-literal OtlpEndpoint is ignored, and an
+// unset OTEL_EXPORTER_OTLP_ENDPOINT exports nothing. ServiceName is the
+// literal timewarp-source-generators-dev. OTEL_SERVICE_NAME overrides it.
+// This repo has no ActivitySource of its own, so none is registered.
+// IncomingTraceContext restores TRACEPARENT before RunAsync because
+// TelemetryBehavior parents its span to Activity.Current.
 #endregion
 
 NuruApp app = NuruApp.CreateBuilder()
   .WithName("dev")
   .WithDescription("Development CLI for timewarp-source-generators")
+  .UseTelemetry(options => options.ServiceName = "timewarp-source-generators-dev")
   .ConfigureServices(services =>
   {
     services.AddSingleton<IRepoCleanService, RepoCleanService>();
@@ -37,4 +51,5 @@ NuruApp app = NuruApp.CreateBuilder()
   .DiscoverEndpoints()
   .Build();
 
+using IDisposable? incomingTrace = IncomingTraceContext.Restore();
 return await app.RunAsync(args);
