@@ -34,7 +34,7 @@ The `field` keyword is a contextual keyword. Inside a property accessor it names
 - It is available when the language version includes the feature
 - The backing field does not need a separate declaration
 - It works with get, set, and init accessors
-- For a non-nullable reference type, `field ?? ""` satisfies definite assignment
+- For a non-nullable reference type, `field ?? ""` means the getter never returns null, so nullable analysis does not warn (CS8618)
 
 ## References
 

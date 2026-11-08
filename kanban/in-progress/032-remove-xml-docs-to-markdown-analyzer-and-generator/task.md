@@ -15,6 +15,15 @@ Live docs and package tags stop advertising the sidecar. `kanban/done/**` stays
 as history. Architecture and state keep their old TW0002 notes. `./bin/dev build`
 and `./bin/dev test` pass. This walk stops after product work and Results.
 
+Review round 1 asked for three doc corrections, and this pass makes them.
+The overviews say the package generates no source: TW0001 runs as an
+incremental generator that only reports diagnostics, and TW0007 is a
+diagnostic analyzer. The release-tracking concept page records that TW0002
+and TW0003 were removed unshipped and must not be reused.
+`AnalyzerReleases.Unshipped.md` stays a table the release-tracking analyzer
+accepts. The partial-property page says `field ?? ""` keeps the getter from
+returning null, so nullable analysis does not warn. Build and test still pass.
+
 ## Description
 
 Keep XML documentation in the C# file. A separate markdown file is the wrong
@@ -92,6 +101,13 @@ stays `TimeWarp.SourceGenerators`.
 - [x] `./bin/dev build` and `./bin/dev test` pass
 - [x] `## Results` and `### How to validate`
 - [x] Stop after product work and Results. Do not `kanban done`. Do not `gh pr create`
+- [x] Say the package generates no source, and name how TW0001 and TW0007 run
+- [x] Record retired TW0002 and TW0003 on the release-tracking concept page
+- [x] Reword the `field ?? ""` note as nullable analysis
+
+## Review
+
+- Round 1: M1, M2, and M3 are fixed on this pass. The host runs review round 2.
 
 ## Notes
 
@@ -101,9 +117,11 @@ stays `TimeWarp.SourceGenerators`.
 ### How to validate
 
 ```bash
-rg -n "XmlDocsToMarkdown|MarkdownDocsGenerator|TW0002|TW0003" \
-  source tests readme.md documentation docs
+rg -n "does not ship a source generator|satisfies definite assignment" documentation
 # Expect: no hits
+
+rg -n "TW0002|TW0003" source tests readme.md documentation
+# Expect: only the Retired ids note in analyzer-release-tracking.md
 
 ./bin/dev build
 ./bin/dev test
@@ -121,14 +139,20 @@ Task 016 was already archived on origin-home (`5e02ad4`). Its draft stays under 
 
 Spikes under `spikes/partial-properties-csharp13/` still describe the old generator. They are not live docs and were left in place.
 
+The review fix pass corrects three doc issues. The four overview pages now use the same wording: the package generates no source, TW0001 runs as an incremental generator that only reports diagnostics, and TW0007 is a diagnostic analyzer. `documentation/developer/conceptual/analyzer-release-tracking.md` records that TW0002 and TW0003 were removed unshipped in task 032 and must not be reused. `AnalyzerReleases.Unshipped.md` is still only the live-rule table. The partial-property note says `field ?? ""` keeps the getter from returning null, so nullable analysis does not warn (CS8618).
+
+After that wording change, the stale-phrase search printed nothing. The shared sentence is in all four overview pages. TW0002 and TW0003 appear only on the Retired ids line. `./bin/dev build` succeeded with 0 warnings and 0 errors. `./bin/dev test` printed the four console lines and reported Passed 11, Failed 0. `ganda repo audit` passed 36, failed 0, skipped 3.
+
 ### How to validate
 
 Smoke:
 
 ```bash
-rg -n "XmlDocsToMarkdown|MarkdownDocsGenerator|TW0002|TW0003" \
-  source tests readme.md documentation
-# docs/ is removed with the code-fix setup page
+rg -n "does not ship a source generator|satisfies definite assignment" documentation
+
+rg -n "This package generates no source" documentation
+
+rg -n "TW0002|TW0003" source tests readme.md documentation
 
 ./bin/dev build
 ./bin/dev test
@@ -136,10 +160,17 @@ rg -n "XmlDocsToMarkdown|MarkdownDocsGenerator|TW0002|TW0003" \
 
 Expect:
 
-- The search prints no hits.
+- The first search prints no hits.
+- The shared generator sentence appears in `documentation/overview.md`, `documentation/developer/reference/overview.md`, `documentation/developer/reference/source-generators/overview.md`, and `documentation/developer/conceptual/overview.md`.
+- TW0002 and TW0003 appear only in the Retired ids note in `documentation/developer/conceptual/analyzer-release-tracking.md`.
 - Build succeeds with 0 warnings and 0 errors.
 - The console prints the kebab-case, close-modal, fetch-weather, and PascalCase lines.
 - Analyzer tests report Passed 11, Failed 0.
+
+### Review
+
+- Round 1 (effort 3, roster: general): bug 0, suggestion 2 fixed, nit 1 fixed. M1, M2, and M3 are addressed in this pass. Round 2 has not run.
+- Ledger: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`. There is no `review/disposition.md` yet. The host opens round 2.
 
 ## Session
 
@@ -147,3 +178,6 @@ Expect:
 - Trigger: Steve, after merging PR #40, said task 016's code fix and the analyzer are unwanted because XML docs belong in the source file
 - Implementation: grok `01a1bc51-a208-7a53-a024-65c8ebeb9160` (2026-11-09)
 - Implement oracle: implemented by implementer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1bc51-a208-7a53-a024-65c8ebeb9160, max-turns 500, Done — 2026-11-08T18:16:14Z
+- Review oracle round 1: reviewer-claude (claude, model claude-opus-5-5), session b2d23b6c-a334-41ff-b78e-8d293fc9912e, effort 3, roster general, turn cap 200. Three open findings; a fix pass was requested (2026-11-09).
+- Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session b2d23b6c-a334-41ff-b78e-8d293fc9912e, max-turns 200, artifacts general.md, merged.md — 2026-11-08T18:19:25Z
+- Fix pass: grok `01a1bc62-faed-7b43-aeec-072e78b6d596` (2026-11-09). Marked round-1 M1, M2, and M3 fixed.

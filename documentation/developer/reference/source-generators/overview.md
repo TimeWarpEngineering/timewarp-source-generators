@@ -1,5 +1,5 @@
 # Source Generators Reference
 
-This package does not ship a source generator. XML documentation stays in the C# file.
+This package generates no source. TW0001 runs as an incremental generator that only reports diagnostics, and TW0007 is a diagnostic analyzer. XML documentation stays in the C# file.
 
-Live diagnostics are **TW0001** (kebab-case file names) and **TW0007** (file-level usings). See the [analyzers reference](../analyzers/overview.md).
+See the [analyzers reference](../analyzers/overview.md).

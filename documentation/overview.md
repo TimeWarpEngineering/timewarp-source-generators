@@ -17,7 +17,7 @@ Technical documentation for developers using or contributing to the project.
 - **TW0001** - File name kebab-case enforcement (single- and multi-dot basenames)
 - **TW0007** - File-level usings belong in kebab-case `global-usings.cs`
 
-This package does not ship a source generator. XML documentation stays in the C# file.
+This package generates no source. TW0001 runs as an incremental generator that only reports diagnostics, and TW0007 is a diagnostic analyzer. XML documentation stays in the C# file.
 
 Diagnostic IDs from this package use the **TW** prefix (**TW0001** and **TW0007**). The **TWA** prefix is reserved for TimeWarp Architecture and is not used here.
 

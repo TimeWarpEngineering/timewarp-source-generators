@@ -79,6 +79,10 @@ AnalyzerReleases.Shipped.md:
 (empty - we keep everything unshipped)
 ```
 
+### Retired ids
+
+TW0002 (XmlDocsToMarkdownAnalyzer) and TW0003 (MarkdownDocsGenerator) were removed unshipped in task 032. Do not reuse them. `AnalyzerReleases.Unshipped.md` stays a table of live rules. The release-tracking analyzer accepts that table.
+
 ## When to Use Traditional Tracking
 
 Consider moving to traditional shipped/unshipped tracking when:
