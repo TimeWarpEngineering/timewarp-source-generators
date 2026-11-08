@@ -108,7 +108,7 @@ stays `TimeWarp.SourceGenerators`.
 ## Review
 
 - Round 1: M1, M2, and M3 are fixed on this pass. The host runs review round 2.
-
+- Round 2: Done
 ## Notes
 
 - Claim on-create self-install failed again (`MSB3030`, missing `dev.xml`).
@@ -169,8 +169,11 @@ Expect:
 
 ### Review
 
-- Round 1 (effort 3, roster: general): bug 0, suggestion 2 fixed, nit 1 fixed. M1, M2, and M3 are addressed in this pass. Round 2 has not run.
-- Ledger: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`. There is no `review/disposition.md` yet. The host opens round 2.
+- Round 1 (effort 3, roster: general): bug 0, suggestion 2 fixed, nit 1 fixed. M1, M2, and M3 are addressed in this pass.
+- Round 2 (effort 1, roster: general; delta `8211895..3185140`, docs only): M1, M2, and M3 are confirmed fixed, and there are no new findings. `./bin/dev build` had 0 warnings and 0 errors. `./bin/dev test` reported Passed 11, Failed 0.
+- Final counts: bug 0; suggestion 2 fixed; nit 1 fixed; 0 open; 0 wontfix.
+- Disposition: **clean**. There are no exceptions and no escalations.
+- Ledger: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/round-2/general.md`, `review/round-2/merged.md`, `review/disposition.md`.
 
 ## Session
 
@@ -181,3 +184,4 @@ Expect:
 - Review oracle round 1: reviewer-claude (claude, model claude-opus-5-5), session b2d23b6c-a334-41ff-b78e-8d293fc9912e, effort 3, roster general, turn cap 200. Three open findings; a fix pass was requested (2026-11-09).
 - Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session b2d23b6c-a334-41ff-b78e-8d293fc9912e, max-turns 200, artifacts general.md, merged.md — 2026-11-08T18:19:25Z
 - Fix pass: grok `01a1bc62-faed-7b43-aeec-072e78b6d596` (2026-11-09). Marked round-1 M1, M2, and M3 fixed.
+- Review oracle round 2: reviewer-claude (claude, model claude-opus-5-5), session 1c7e1c84-7b5d-467c-8c76-e7672f636eb0, effort 1, roster general, turn cap 80. No open findings. Disposition: clean (2026-11-09).

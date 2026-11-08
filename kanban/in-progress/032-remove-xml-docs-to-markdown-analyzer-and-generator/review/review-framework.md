@@ -2,11 +2,11 @@
 
 ## Budget (by-diff)
 
-- Lines changed: 1755
-- Effort: 3
+- Lines changed: 164
+- Effort: 1
 - TCB hits: none
 - Roster axes: general
-- Turn cap: 200 (--max-turns; cursor uncapped)
+- Turn cap: 80 (--max-turns; cursor uncapped)
 
 ## Framework — task 032
 
@@ -17,6 +17,12 @@
 **Effort:** 3 (by-diff budget); roster axes: general
 **Reviewer roster:** general
 **Session IDs:** reviewer-claude `b2d23b6c-a334-41ff-b78e-8d293fc9912e`
+
+### Round 2
+
+- **Diff scope:** delta `8211895..3185140` (fix pass, docs only)
+- **Effort:** 1 (by-diff budget above); roster: general
+- **Session IDs:** reviewer-claude `1c7e1c84-7b5d-467c-8c76-e7672f636eb0`
 
 ### Ground rules
 
