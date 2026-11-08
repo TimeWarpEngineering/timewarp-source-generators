@@ -14,7 +14,7 @@ on:
       - 'source/Directory.Build.props'
       - 'nuget.config'
   pull_request:
-    branches: [master]
+    branches: [master, 'feature/**']
     paths:
       - 'source/**'
       - 'tests/**'
