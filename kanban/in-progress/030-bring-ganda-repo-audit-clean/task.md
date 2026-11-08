@@ -77,6 +77,10 @@ These rows reported Fixable YES. Commit the `--fix` output. Do not hand-revert i
 - [x] Archive task 027 once this kitchen owns the journal ignore (one `.gitignore` edit)
 - [x] Stop after product work and Results. Do not `kanban done`. Do not `gh pr create`
 
+## Review
+
+- Round 1: Done
+
 ## Notes
 
 - Predecessor: task **024** brought the audit clean on Nuru / DevCli **3.0.0-beta.76**. This task is the next drift.
@@ -126,6 +130,14 @@ Task 027 is archived on master (`09a725d`). This walk did not run `ganda kanban 
 
 CI installs the net11 RC next to net10 so `dotnet run --file tools/dev-cli/dev.cs` can restore Amuru 3. .NET 11 was still `11.0.0-rc.3` on 2026-11-08.
 
+### Review disposition
+
+- **Disposition:** clean. Rounds: 1. Effort 3, roster: general.
+- **Final counts:** bug 0, suggestion 0, nit 0 (0 open, 0 fixed, 0 wontfix).
+- **Live checks by the reviewer:** `ganda repo audit` exit 0 (Passed 36, Failed 0, Skipped 3). `./bin/dev build` reported 0 warnings and 0 errors. `./bin/dev test` passed 11/11. `check-version` lists `TimeWarp.SourceGenerators`. The generator split is confirmed as a pure move.
+- **Follow-up (not a finding):** after .NET 11 GA, change the CI SDK line `11.0.100-rc.3.26522.148` to `11.0.x`.
+- **Paths:** `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md`.
+
 ### How to validate
 
 **Smoke**
@@ -158,3 +170,5 @@ wc -l source/timewarp-source-generators/markdown-docs-generator.cs source/timewa
 - Trigger: Steve asked to create a task to fix `ganda repo audit` on timewarp-source-generators
 - Implementation: grok `01a1bbe3-2e77-79f0-ae81-48feae04ec9c` (2026-11-08)
 - Implement oracle: implemented by implementer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1bbe3-2e77-79f0-ae81-48feae04ec9c, max-turns 500, Done — 2026-11-08T16:21:32Z
+- Review oracle: tw-implementation-review round 1, Claude (claude-opus-5-5), ganda task work headless, effort 3, roster general, turn cap 200. Disposition clean — 2026-11-08
+- Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session 96240dfd-27eb-43b9-ac1e-aea0e6bdce7d, max-turns 200, artifacts general.md, merged.md, disposition.md — 2026-11-08T16:24:11Z
