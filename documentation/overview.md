@@ -19,7 +19,7 @@ Technical documentation for developers using or contributing to the project.
 ### Analyzers
 - **TW0001** - File name kebab-case enforcement (single- and multi-dot basenames)
 
-Diagnostic IDs from this package use the **TW** prefix (`TW0001`–`TW0006`). The **TWA** prefix is reserved for TimeWarp Architecture and is not used here.
+Diagnostic IDs from this package use the **TW** prefix (**TW0001**, **TW0002**, **TW0003**, and **TW0007**). The **TWA** prefix is reserved for TimeWarp Architecture and is not used here.
 
 ## Configuration
 

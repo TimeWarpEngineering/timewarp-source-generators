@@ -24,50 +24,6 @@ If you like or are using this project please give it a star. Thank you!
 
 ## Features
 
-### Interface Delegation Generator
-
-Implements Delphi-style interface delegation for C#. Mark fields or properties with `[Implements]` to automatically generate forwarding methods for interface members.
-
-#### Usage
-
-```csharp
-public partial class DataService : ILogger, IDataProcessor<string>
-{
-    [Implements]
-    private readonly ILogger Logger;
-
-    [Implements]
-    private readonly IDataProcessor<string> Processor;
-
-    public DataService(ILogger logger, IDataProcessor<string> processor)
-    {
-        Logger = logger;
-        Processor = processor;
-    }
-
-    // Optionally override specific methods
-    public string Process(string input)
-    {
-        // Custom implementation
-        return Processor.Process(input.ToUpper());
-    }
-}
-```
-
-The generator will automatically create forwarding implementations for all interface methods and properties, except those you explicitly implement.
-
-#### Requirements
-
-- Class must be marked as `partial`
-- Class must implement the interface being delegated
-- Field/property type must be the interface or implement the interface
-
-#### Diagnostics
-
-- **TW0004**: Class must be partial for interface delegation
-- **TW0005**: Class does not implement the delegated interface
-- **TW0006**: Multiple fields delegate the same interface
-
 ### File Name Rule Analyzer
 
 Enforces kebab-case naming for C# files, including multi-dot partials (e.g. `application-state.close-modal.cs`) when every segment is kebab-case.
@@ -97,7 +53,7 @@ See [configure-global-usings-analyzer.md](./documentation/developer/how-to-guide
 
 | Prefix | Package |
 |--------|---------|
-| **TW** | **TimeWarp.SourceGenerators** (this package) — shipped diagnostics **TW0001**–**TW0007** |
+| **TW** | **TimeWarp.SourceGenerators** (this package) — shipped diagnostics **TW0001**, **TW0002**, **TW0003**, and **TW0007** |
 | **TWA** | **TimeWarp Architecture** only — not used by this package |
 
 Do **not** enable, suppress, or configure this package’s rules with Architecture IDs such as `TWA001` / `TWA*`. File-name kebab-case is **TW0001** (`dotnet_diagnostic.TW0001.*`, `#pragma warning disable TW0001`). Architecture `TWA*` keys do not apply here.

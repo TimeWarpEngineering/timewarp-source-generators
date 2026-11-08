@@ -1,6 +1,6 @@
 # Analyzers Reference
 
-All analyzer diagnostic IDs from this package use the **TW** prefix (e.g. **TW0001**–**TW0007**). They are **not** TimeWarp Architecture `TWA*` IDs — do not configure or suppress these rules with `TWA001` / `TWA*`.
+All analyzer diagnostic IDs from this package use the **TW** prefix (**TW0001**, **TW0002**, **TW0003**, and **TW0007**). They are **not** TimeWarp Architecture `TWA*` IDs — do not configure or suppress these rules with `TWA001` / `TWA*`.
 
 ## Available Analyzers
 
