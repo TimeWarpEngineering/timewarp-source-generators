@@ -65,11 +65,25 @@ Smoke: from the repo root, point `OTEL_EXPORTER_OTLP_ENDPOINT` at an HTTP protob
 
 Expect: the command exits 0 and prints `Build completed successfully!` with 0 warnings. The collector receives a `/v1/traces` payload whose service name is `timewarp-source-generators-dev`, whose span name is `build`, whose activity source is `TimeWarp.Nuru.Behavior`, and whose bytes include that trace id and parent span id. A `nuru.behavior.commands.duration` metric for `build` arrives on `/v1/metrics`. With `OTEL_EXPORTER_OTLP_ENDPOINT` unset, the same command exports nothing.
 
+### Review
+
+- Rounds: 1. Effort 2 (by-diff, 222 lines). Roster: general.
+- Final counts: bug 0, suggestion 0, nit 0 (0 open, 0 fixed, 0 wontfix).
+- Disposition: **clean**. No wontfix or escalations.
+- Reviewer checks: `incoming-trace-context.cs` is identical to the timewarp-nuru reference; no repo `ActivitySource`; `dotnet build tools/dev-cli/dev.cs` passed; `./bin/dev --capabilities` exited 0; a local OTLP listener received the `check-version` span and duration metric (service `timewarp-source-generators-dev`, source `TimeWarp.Nuru.Behavior`) carrying the `TRACEPARENT` trace id and parent span id.
+- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md`.
+
 ## Session
 
 - Created: b3be0249-1852-425a-9e90-5a7e56049503 (2026-11-08)
 - Implementation: 01a1bc72-7aef-7672-80f6-714e4eb5efc4 (2026-11-09). Audit --fix wrote the gitignored VS Code window title. No repo ActivitySource to register. XML docs are off for the dev CLI so AOT publish does not look for dev.xml.
 - Implement oracle: implemented by implementer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1bc72-7aef-7672-80f6-714e4eb5efc4, max-turns 500, Done — 2026-11-08T18:48:54Z
+- Review oracle: claude (claude-opus-5-5), headless `ganda task work`, effort 2, roster general, round 1, disposition clean — 2026-11-09
+- Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session a58bf2f9-5cc9-461e-b2e4-89ad290c4896, max-turns 120, artifacts general.md, merged.md, disposition.md — 2026-11-08T18:51:58Z
+
+## Review
+
+- Round 1: Done
 
 ## Notes
 
