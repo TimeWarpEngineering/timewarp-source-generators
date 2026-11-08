@@ -1,5 +1,9 @@
 # Remove the unused interface delegation generator
 
+## Goal (implementer restatement)
+
+Take the unused Delphi-style interface delegation generator out of this package. Delete the generator, the handwritten attribute (the generator's emitted copy goes with the generator), the three diagnostic rows, and the test-console sample that exists only for that feature. Leave the markdown-docs sample (`i-data-processor.cs` and `test-class.cs`) in place. Docs should name the diagnostics that remain — TW0001, TW0002, TW0003, and TW0007 — and should no longer offer delegation. Those three retired ids stay unused. Done cards that record the old assignment stay untouched. Archive task 026, the unfinished create card, instead of building the generator. `./bin/dev build` and `./bin/dev test` pass. Stop after Results: no `ganda kanban done`, no pull request.
+
 ## Description
 
 `InterfaceDelegationGenerator` (`[Implements]`, diagnostics **TW0004**–**TW0006**)
@@ -54,14 +58,14 @@ Out of this repo (do not edit them here):
 
 ## Checklist
 
-- [ ] Delete the generator and the handwritten attribute
-- [ ] Drop TW0004–TW0006 from `AnalyzerReleases.Unshipped.md` and do not reuse them
-- [ ] Delete `data-service.cs`, `i-logger.cs`, and `console-logger.cs`
-- [ ] Remove the readme section and fix the id range in `documentation/overview.md`
-- [ ] Archive task 026
-- [ ] `./bin/dev build` and `./bin/dev test` pass
-- [ ] `## Results` and `### How to validate`
-- [ ] Stop after product work and Results. Do not `kanban done`. Do not `gh pr create`
+- [x] Delete the generator and the handwritten attribute
+- [x] Drop TW0004–TW0006 from `AnalyzerReleases.Unshipped.md` and do not reuse them
+- [x] Delete `data-service.cs`, `i-logger.cs`, and `console-logger.cs`
+- [x] Remove the readme section and fix the id range in `documentation/overview.md`
+- [x] Archive task 026
+- [x] `./bin/dev build` and `./bin/dev test` pass
+- [x] `## Results` and `### How to validate`
+- [x] Stop after product work and Results. Do not `kanban done`. Do not `gh pr create`
 
 ## Notes
 
@@ -87,7 +91,36 @@ rg -n "InterfaceDelegationGenerator|ImplementsAttribute|\\[Implements\\]|TW0004|
 ./bin/dev test
 ```
 
+## Results
+
+Removed the unused interface delegation generator, its handwritten attribute, and the test-console sample that existed only for that feature (`data-service.cs`, `i-logger.cs`, `console-logger.cs`). `i-data-processor.cs` and `test-class.cs` stay for the markdown-docs sample. The three diagnostic rows are gone from `AnalyzerReleases.Unshipped.md` and were not reassigned. The readme no longer documents the generator. `documentation/overview.md`, the readme prefix table, and the analyzer reference overview name the live ids: TW0001, TW0002, TW0003, and TW0007. `kanban/done/**` was not edited.
+
+Task 026 is archived. `ganda kanban archive 026` ran from origin-home, committed on `task/026-create-interface-delegation-generator`, and landed on master as `0e4b3f5`. This branch does not contain that land. The claim on 026 remains.
+
+`./bin/dev build` succeeded with 0 warnings and 0 errors. `./bin/dev test` passed: the test console printed the kebab-case, multi-dot, and PascalCase messages, and the analyzer suite reported Passed 11, Failed 0. `ganda repo audit` passes all checks. `ganda repo audit --fix` wrote a gitignored `.vscode/settings.json` window title so the window-icon check passes. The post-fix self-install still fails with the known MSB3030 missing `dev.xml`; `./bin/dev build` is the build that passed.
+
+Out of this repo, still describing the removed feature: `hub` `profile/README.md` and `timewarp-software` `public/packages/timewarp.sourcegenerators/index.md`.
+
+### How to validate
+
+**Smoke:**
+
+```bash
+rg -n "InterfaceDelegationGenerator|ImplementsAttribute|\[Implements\]|TW0004|TW0005|TW0006" \
+  source tests readme.md documentation
+./bin/dev build
+./bin/dev test
+```
+
+**Expect:**
+
+- The search prints nothing.
+- Build succeeds with 0 warnings and 0 errors.
+- Test console prints the kebab-case, multi-dot, and PascalCase messages. Analyzer tests report Passed 11, Failed 0.
+
 ## Session
 
 - Created: grok `01a1bbd2-4185-7452-8535-389eb11a4f8f` (2026-11-08)
 - Trigger: Steve asked whether any repo uses the interface delegation generator, and to create a removal task if not
+- Implementation: grok `01a1bc11-9829-7471-9676-451eab200c95` (2026-11-08)
+- Implement oracle: implemented by implementer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1bc11-9829-7471-9676-451eab200c95, max-turns 500, Done — 2026-11-08T17:03:06Z
