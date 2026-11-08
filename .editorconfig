@@ -23,6 +23,7 @@ tab_width = 2
 # New line preferences
 end_of_line = lf
 insert_final_newline = true
+charset = utf-8
 
 # ReSharper properties
 resharper_html_attribute_indent = single_indent
@@ -32,7 +33,6 @@ resharper_check_namespace_highlighting= none
 
 # Development files
 [*.{cs,csx,cshtml,csproj,razor,sln,props,targets,json,yml,gitignore}]
-charset = "utf-8"
 trim_trailing_whitespace = true
 
 #### .NET Coding Conventions ####
@@ -291,6 +291,11 @@ dotnet_diagnostic.ca1308.severity = none
 # ganda repo audit (https://github.com/TimeWarpEngineering/timewarp-ganda)
 # ═══════════════════════════════════════════════════════════════════════════════
 [ganda.audit]
+# This repo is the TimeWarp.SourceGenerators package. A root PackageReference
+# would consume the published package from the project that produces it.
+# TW0007 is implemented and tested here (task 028). Task 030.
+global-usings-analyzer.severity = off
+
 # kebab-path-names prune (additive, basename match):
 # .nuget-cache = local package cache (gitignored; package basenames are not ours)
 # generated / .generated / build = generator/build outputs

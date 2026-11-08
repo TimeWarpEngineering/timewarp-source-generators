@@ -1,0 +1,11 @@
+<Project>
+  <!--
+    Nearest Directory.Build.props wins. Import the repo root, then retarget.
+    The audit pin TimeWarp.Amuru 3.0.0-beta.1 is net11.0 only, and these hooks
+    compile inside the repo so they inherit that pin. Task 030.
+  -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+  </PropertyGroup>
+</Project>

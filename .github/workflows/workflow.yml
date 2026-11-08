@@ -14,7 +14,7 @@ on:
       - 'source/Directory.Build.props'
       - 'nuget.config'
   pull_request:
-    branches: [master]
+    branches: [master, 'feature/**']
     paths:
       - 'source/**'
       - 'tests/**'
@@ -49,7 +49,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '10.0.x'
+          # Dev CLI targets net11 because the audit pin TimeWarp.Amuru 3.0.0-beta.1 is net11-only.
+          # Net10 stays installed so the test projects still build. Task 030.
+          dotnet-version: |
+            10.0.x
+            11.0.100-rc.3.26522.148
 
       # Prefer NuGet Trusted Publishing (OIDC). Fall back to org API key when no trust
       # policy exists yet for this package (common on first release under a new policy).
