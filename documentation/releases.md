@@ -1,5 +1,13 @@
 # Release Notes
 
+## 1.0.0-beta.12
+
+The package ships analyzers only. It generates no source.
+
+- Removed the interface delegation generator, `[Implements]`, and diagnostics **TW0004**, **TW0005**, and **TW0006**. Those ids stay retired.
+- Removed **TW0002** `XmlDocsToMarkdownAnalyzer` and **TW0003** `MarkdownDocsGenerator`. XML documentation stays in the C# file. Those ids stay retired.
+- Live diagnostics are **TW0001** and **TW0007**.
+
 ## 1.0.0-beta.11
 
 ### TW0007 (GlobalUsingsRuleAnalyzer)
