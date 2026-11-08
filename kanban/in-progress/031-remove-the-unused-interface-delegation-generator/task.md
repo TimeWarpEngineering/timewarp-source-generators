@@ -123,3 +123,4 @@ rg -n "InterfaceDelegationGenerator|ImplementsAttribute|\[Implements\]|TW0004|TW
 - Created: grok `01a1bbd2-4185-7452-8535-389eb11a4f8f` (2026-11-08)
 - Trigger: Steve asked whether any repo uses the interface delegation generator, and to create a removal task if not
 - Implementation: grok `01a1bc11-9829-7471-9676-451eab200c95` (2026-11-08)
+- Implement oracle: implemented by implementer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1bc11-9829-7471-9676-451eab200c95, max-turns 500, Done — 2026-11-08T17:03:06Z
