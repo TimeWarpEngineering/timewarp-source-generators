@@ -2,7 +2,7 @@
 
 ## Goal (implementer restatement)
 
-Take the unused Delphi-style interface delegation generator out of this package. Delete the generator, the handwritten attribute (the generator's emitted copy goes with the generator), the three diagnostic rows, and the test-console sample that exists only for that feature. Leave the markdown-docs sample (`i-data-processor.cs` and `test-class.cs`) in place. Docs should name the diagnostics that remain — TW0001, TW0002, TW0003, and TW0007 — and should no longer offer delegation. Those three retired ids stay unused. Done cards that record the old assignment stay untouched. Archive task 026, the unfinished create card, instead of building the generator. `./bin/dev build` and `./bin/dev test` pass. Stop after Results: no `ganda kanban done`, no pull request.
+Take the unused Delphi-style interface delegation generator out of this package. Delete the generator, the handwritten attribute (the generator's emitted copy goes with the generator), the three diagnostic rows, and the test-console sample that exists only for that feature. Leave the markdown-docs sample (`i-data-processor.cs` and `test-class.cs`) in place. Docs should name the diagnostics that remain — TW0001, TW0002, TW0003, and TW0007 — and should no longer offer delegation. Those three retired ids stay unused. Done cards that record the old assignment stay untouched. Archive task 026, the unfinished create card, instead of building the generator. The NuGet metadata must stop advertising the removed feature: drop `Delegate` and `Interface Delegation` from `PackageTags` in `source/Directory.Build.props`, leaving `TimeWarp; Source Generator; SourceGenerators; Analyzers`. `./bin/dev build` and `./bin/dev test` pass. Stop after Results: no `ganda kanban done`, no pull request.
 
 ## Description
 
@@ -66,6 +66,11 @@ Out of this repo (do not edit them here):
 - [x] `./bin/dev build` and `./bin/dev test` pass
 - [x] `## Results` and `### How to validate`
 - [x] Stop after product work and Results. Do not `kanban done`. Do not `gh pr create`
+- [x] Drop `Delegate` and `Interface Delegation` from `PackageTags` (review M1)
+
+## Review
+
+- Round 1: M1 (suggestion, `PackageTags`) fixed on this pass. Re-review is the host's round 2. Disposition waits for that round.
 
 ## Notes
 
@@ -87,6 +92,10 @@ rg -n "InterfaceDelegationGenerator|ImplementsAttribute|\\[Implements\\]|TW0004|
   source tests readme.md documentation
 # Expect: no hits
 
+rg -n "PackageTags" source/Directory.Build.props
+# Expect: TimeWarp; Source Generator; SourceGenerators; Analyzers
+# Expect: no Delegate and no Interface Delegation
+
 ./bin/dev build
 ./bin/dev test
 ```
@@ -95,9 +104,13 @@ rg -n "InterfaceDelegationGenerator|ImplementsAttribute|\\[Implements\\]|TW0004|
 
 Removed the unused interface delegation generator, its handwritten attribute, and the test-console sample that existed only for that feature (`data-service.cs`, `i-logger.cs`, `console-logger.cs`). `i-data-processor.cs` and `test-class.cs` stay for the markdown-docs sample. The three diagnostic rows are gone from `AnalyzerReleases.Unshipped.md` and were not reassigned. The readme no longer documents the generator. `documentation/overview.md`, the readme prefix table, and the analyzer reference overview name the live ids: TW0001, TW0002, TW0003, and TW0007. `kanban/done/**` was not edited.
 
+Review round 1 M1: `source/Directory.Build.props` `PackageTags` no longer includes `Delegate` or `Interface Delegation`. The tags are `TimeWarp; Source Generator; SourceGenerators; Analyzers`, which matches the analyzers and generators that remain. Round-1 `merged.md` marks M1 fixed. Round 2 has not run, so `review/disposition.md` is not written yet.
+
 Task 026 is archived. `ganda kanban archive 026` ran from origin-home, committed on `task/026-create-interface-delegation-generator`, and landed on master as `0e4b3f5`. This branch does not contain that land. The claim on 026 remains.
 
 `./bin/dev build` succeeded with 0 warnings and 0 errors. `./bin/dev test` passed: the test console printed the kebab-case, multi-dot, and PascalCase messages, and the analyzer suite reported Passed 11, Failed 0. `ganda repo audit` passes all checks. `ganda repo audit --fix` wrote a gitignored `.vscode/settings.json` window title so the window-icon check passes. The post-fix self-install still fails with the known MSB3030 missing `dev.xml`; `./bin/dev build` is the build that passed.
+
+This fix pass re-ran the same gates after the tag edit. `./bin/dev build` succeeded again with 0 warnings and 0 errors and packed `artifacts/packages/TimeWarp.SourceGenerators.1.0.0-beta.11.nupkg`. That package's nuspec `<tags>` are `TimeWarp Source Generator SourceGenerators Analyzers`. `./bin/dev test` printed the same three console lines and reported Passed 11, Failed 0. `ganda repo audit` passed 36, failed 0, skipped 3. `--fix` was not needed.
 
 Out of this repo, still describing the removed feature: `hub` `profile/README.md` and `timewarp-software` `public/packages/timewarp.sourcegenerators/index.md`.
 
@@ -108,13 +121,15 @@ Out of this repo, still describing the removed feature: `hub` `profile/README.md
 ```bash
 rg -n "InterfaceDelegationGenerator|ImplementsAttribute|\[Implements\]|TW0004|TW0005|TW0006" \
   source tests readme.md documentation
+rg -n "PackageTags" source/Directory.Build.props
 ./bin/dev build
 ./bin/dev test
 ```
 
 **Expect:**
 
-- The search prints nothing.
+- The first search prints nothing.
+- `PackageTags` is `TimeWarp; Source Generator; SourceGenerators; Analyzers` and does not contain `Delegate` or `Interface Delegation`.
 - Build succeeds with 0 warnings and 0 errors.
 - Test console prints the kebab-case, multi-dot, and PascalCase messages. Analyzer tests report Passed 11, Failed 0.
 
@@ -124,3 +139,6 @@ rg -n "InterfaceDelegationGenerator|ImplementsAttribute|\[Implements\]|TW0004|TW
 - Trigger: Steve asked whether any repo uses the interface delegation generator, and to create a removal task if not
 - Implementation: grok `01a1bc11-9829-7471-9676-451eab200c95` (2026-11-08)
 - Implement oracle: implemented by implementer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1bc11-9829-7471-9676-451eab200c95, max-turns 500, Done — 2026-11-08T17:03:06Z
+- Review oracle round 1: reviewer-claude (claude, model claude-opus-5-5, headless), effort 2, roster general, max-turns 120 — 2026-11-09. 1 open suggestion (M1, `PackageTags`); fix pass requested. Artifacts: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`. Disposition pending.
+- Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session b43eebda-0c0e-4425-9aef-df8caa30455e, max-turns 120, artifacts general.md, merged.md — 2026-11-08T17:05:28Z
+- Fix pass (implement-fix-2): grok, session 01a1bc1f-4702-7842-9c8b-3dad4d40b2ce (2026-11-09). M1 fixed in `source/Directory.Build.props`. Round 2 not run.
