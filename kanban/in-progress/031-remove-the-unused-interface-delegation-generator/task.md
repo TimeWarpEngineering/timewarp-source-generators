@@ -71,7 +71,7 @@ Out of this repo (do not edit them here):
 ## Review
 
 - Round 1: M1 (suggestion, `PackageTags`) fixed on this pass. Re-review is the host's round 2. Disposition waits for that round.
-
+- Round 2: Done
 ## Notes
 
 - Search commands (2026-11-08):
@@ -112,6 +112,8 @@ Task 026 is archived. `ganda kanban archive 026` ran from origin-home, committed
 
 This fix pass re-ran the same gates after the tag edit. `./bin/dev build` succeeded again with 0 warnings and 0 errors and packed `artifacts/packages/TimeWarp.SourceGenerators.1.0.0-beta.11.nupkg`. That package's nuspec `<tags>` are `TimeWarp Source Generator SourceGenerators Analyzers`. `./bin/dev test` printed the same three console lines and reported Passed 11, Failed 0. `ganda repo audit` passed 36, failed 0, skipped 3. `--fix` was not needed.
 
+**Review disposition: clean.** Two rounds, roster general (round 1 effort 2, round 2 effort 1). Final counts: bug 0, suggestion 1 fixed (M1, `PackageTags`), nit 0; 0 open, 0 wontfix. Round 2 re-ran `./bin/dev build` (0 warnings, 0 errors) and `./bin/dev test` (Passed 11, Failed 0). Artifacts: `review/review-framework.md`, `review/round-2/merged.md`, `review/disposition.md`.
+
 Out of this repo, still describing the removed feature: `hub` `profile/README.md` and `timewarp-software` `public/packages/timewarp.sourcegenerators/index.md`.
 
 ### How to validate
@@ -141,4 +143,5 @@ rg -n "PackageTags" source/Directory.Build.props
 - Implement oracle: implemented by implementer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1bc11-9829-7471-9676-451eab200c95, max-turns 500, Done — 2026-11-08T17:03:06Z
 - Review oracle round 1: reviewer-claude (claude, model claude-opus-5-5, headless), effort 2, roster general, max-turns 120 — 2026-11-09. 1 open suggestion (M1, `PackageTags`); fix pass requested. Artifacts: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`. Disposition pending.
 - Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session b43eebda-0c0e-4425-9aef-df8caa30455e, max-turns 120, artifacts general.md, merged.md — 2026-11-08T17:05:28Z
-- Fix pass (implement-fix-2): grok, session 01a1bc1f-4702-7842-9c8b-3dad4d40b2ce (2026-11-09). M1 fixed in `source/Directory.Build.props`. Round 2 not run.
+- Fix pass (implement-fix-2): grok, session 01a1bc1f-4702-7842-9c8b-3dad4d40b2ce (2026-11-09). M1 fixed in `source/Directory.Build.props`.
+- Review oracle round 2: reviewer-claude (claude, model claude-opus-5-5, headless), effort 1, roster general, max-turns 80 — 2026-11-09. M1 verified fixed, no new findings. Disposition clean. Artifacts: `review/round-2/general.md`, `review/round-2/merged.md`, `review/disposition.md`.
