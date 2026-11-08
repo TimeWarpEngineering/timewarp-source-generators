@@ -1,8 +1,8 @@
 namespace TimeWarp.SourceGenerators.TestConsole;
 
-public partial class KebabCaseTest
+public class KebabCaseTest
 {
-    public partial string GetTestMessage()
+    public string GetTestMessage()
     {
         return "This message is from a kebab-case source file!";
     }

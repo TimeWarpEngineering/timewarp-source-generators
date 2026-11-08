@@ -14,26 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- ProjectReference as Analyzer so CI/local tests exercise in-tree generators -->
+    <!-- ProjectReference as Analyzer so CI/local tests exercise the in-tree analyzers -->
     <ProjectReference Include="..\..\source\timewarp-source-generators\timewarp-source-generators.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Include markdown files as AdditionalFiles -->
-    <AdditionalFiles Include="**/*.md" />
-  </ItemGroup>
-
-  <PropertyGroup>
-    <!-- Persist generator output under obj/ (audit-pruned; not committed) -->
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)generated</CompilerGeneratedFilesOutputPath>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <!-- Avoid double-compile if anything still lands under the output path -->
-    <Compile Remove="$(CompilerGeneratedFilesOutputPath)/**/*.cs" Condition="'$(CompilerGeneratedFilesOutputPath)' != ''" />
   </ItemGroup>
 
 </Project>

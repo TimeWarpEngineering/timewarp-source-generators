@@ -19,7 +19,6 @@ Detailed technical documentation:
   - [File Name Rule Analyzer](./reference/analyzers/file-name-rule-analyzer.md)
   - [Global Usings Rule Analyzer](./reference/analyzers/global-usings-rule-analyzer.md)
 - [Source Generators](./reference/source-generators/overview.md)
-  - XMLDoc Templates
 
 ### [Roadmap](./roadmap.md)
 Future plans and feature ideas
@@ -34,5 +33,5 @@ Future plans and feature ideas
 
 1. **Kebab-case everywhere** - All files and directories use kebab-case
 2. **Opt-in by default** - Features start disabled
-3. **Performance first** - Built with incremental generators
+3. **Performance first** - Diagnostic analyzers stay narrow and opt-in
 4. **Flexible configuration** - Full control via `.editorconfig`

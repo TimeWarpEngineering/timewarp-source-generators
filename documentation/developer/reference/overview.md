@@ -13,10 +13,7 @@ Complete reference for all code analyzers:
 - Suppression methods
 
 ### [Source Generators](./source-generators/overview.md)
-Complete reference for all source generators:
-- Generated output structure
-- XMLDoc templates
-- Implementation patterns
+This package generates no source. TW0001 runs as an incremental generator that only reports diagnostics, and TW0007 is a diagnostic analyzer. XML documentation stays in the C# file.
 
 ## API Reference
 

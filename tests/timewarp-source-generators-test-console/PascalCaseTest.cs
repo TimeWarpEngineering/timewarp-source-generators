@@ -1,8 +1,8 @@
 namespace TimeWarp.SourceGenerators.TestConsole;
 
-public partial class PascalCaseTest
+public class PascalCaseTest
 {
-    public partial string GetPascalMessage()
+    public string GetPascalMessage()
     {
         return "This message is from a PascalCase source file!";
     }

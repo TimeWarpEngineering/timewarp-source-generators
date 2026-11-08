@@ -72,14 +72,16 @@ AnalyzerReleases.Unshipped.md:
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
 TW0001 | Naming | Info | FileNameRuleAnalyzer, disabled by default
-TW0002 | Documentation | Info | XmlDocsToMarkdownAnalyzer
-TW0003 | SourceGenerator | Info | MarkdownDocsGenerator
 TW0007 | Usage | Warning | GlobalUsingsRuleAnalyzer, disabled by default
 
 AnalyzerReleases.Shipped.md:
 ## Release 1.0
 (empty - we keep everything unshipped)
 ```
+
+### Retired ids
+
+TW0002 (XmlDocsToMarkdownAnalyzer) and TW0003 (MarkdownDocsGenerator) were removed unshipped in task 032. Do not reuse them. `AnalyzerReleases.Unshipped.md` stays a table of live rules. The release-tracking analyzer accepts that table.
 
 ## When to Use Traditional Tracking
 

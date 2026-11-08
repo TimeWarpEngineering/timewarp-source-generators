@@ -11,8 +11,8 @@ Understanding why we keep all analyzer rules in "unshipped" status and the benef
 
 ## Core Concepts
 
-### Incremental Generation
-All analyzers and generators use `IIncrementalGenerator` for optimal performance.
+### Analyzers
+This package generates no source. TW0001 runs as an incremental generator that only reports diagnostics, and TW0007 is a diagnostic analyzer. XML documentation stays in the C# file.
 
 ### Opt-in Design
 Features are disabled by default to avoid breaking existing code.
