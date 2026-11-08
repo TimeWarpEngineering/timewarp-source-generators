@@ -80,6 +80,7 @@ Expect: the command exits 0 and prints `Build completed successfully!` with 0 wa
 - Implement oracle: implemented by implementer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1bc72-7aef-7672-80f6-714e4eb5efc4, max-turns 500, Done — 2026-11-08T18:48:54Z
 - Review oracle: claude (claude-opus-5-5), headless `ganda task work`, effort 2, roster general, round 1, disposition clean — 2026-11-09
 - Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session a58bf2f9-5cc9-461e-b2e4-89ad290c4896, max-turns 120, artifacts general.md, merged.md, disposition.md — 2026-11-08T18:51:58Z
+- Installed ganda changed during this walk: was 50245520 bytes 6960d933b0215f2d5776a313661be767146c85b1b1580b012d28042e019026ce; now 50404368 bytes 4cddea1b1ea98bf485ebbf9a8de534c3316dead53097be626514fa4b1b7831a0
 
 ## Review
 
