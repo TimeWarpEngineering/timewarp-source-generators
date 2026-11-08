@@ -13,10 +13,7 @@ Complete reference for all code analyzers:
 - Suppression methods
 
 ### [Source Generators](./source-generators/overview.md)
-Complete reference for all source generators:
-- Generated output structure
-- XMLDoc templates
-- Implementation patterns
+This package does not ship a source generator. XML documentation stays in the C# file.
 
 ## API Reference
 

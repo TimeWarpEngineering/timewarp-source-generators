@@ -1,5 +1,20 @@
 # Remove XML docs to markdown analyzer and generator
 
+## Goal (implementer restatement)
+
+XML documentation stays in the C# file. A sibling markdown file is the wrong
+place for it, so the whole sidecar goes: the TW0002 analyzer that tells people
+to move comments out, and the TW0003 generator that turns a sibling `.md` into
+generated XML docs. The unfinished code fix (task 016) and the constructor and
+event extension (task 013) are not built. Those tasks are archived. The draft
+code fix is not compiled.
+
+After this change the package id is still `TimeWarp.SourceGenerators`. It ships
+analyzers TW0001 and TW0007. TW0002 and TW0003 are retired and are not reused.
+Live docs and package tags stop advertising the sidecar. `kanban/done/**` stays
+as history. Architecture and state keep their old TW0002 notes. `./bin/dev build`
+and `./bin/dev test` pass. This walk stops after product work and Results.
+
 ## Description
 
 Keep XML documentation in the C# file. A separate markdown file is the wrong
@@ -69,14 +84,14 @@ stays `TimeWarp.SourceGenerators`.
 
 ## Checklist
 
-- [ ] Delete the analyzer and both generator files
-- [ ] Drop TW0002 and TW0003 from the release-tracking files and do not reuse them
-- [ ] Archive tasks 016 and 013
-- [ ] Delete the code-fix setup doc and the markdown-docs-only test files
-- [ ] Update live docs and package tags
-- [ ] `./bin/dev build` and `./bin/dev test` pass
-- [ ] `## Results` and `### How to validate`
-- [ ] Stop after product work and Results. Do not `kanban done`. Do not `gh pr create`
+- [x] Delete the analyzer and both generator files
+- [x] Drop TW0002 and TW0003 from the release-tracking files and do not reuse them
+- [x] Archive tasks 016 and 013
+- [x] Delete the code-fix setup doc and the markdown-docs-only test files
+- [x] Update live docs and package tags
+- [x] `./bin/dev build` and `./bin/dev test` pass
+- [x] `## Results` and `### How to validate`
+- [x] Stop after product work and Results. Do not `kanban done`. Do not `gh pr create`
 
 ## Notes
 
@@ -94,7 +109,40 @@ rg -n "XmlDocsToMarkdown|MarkdownDocsGenerator|TW0002|TW0003" \
 ./bin/dev test
 ```
 
+## Results
+
+XML documentation stays in the C# file. The TW0002 analyzer, both TW0003 generator files, the code-fix setup doc, the XMLDoc template pages, and the markdown-only test fixtures are deleted. Release tracking lists TW0001 and TW0007. Those retired ids are not reused. Package tags are `TimeWarp; Analyzers`. The packed nuspec tags are `TimeWarp Analyzers`. The package id is still `TimeWarp.SourceGenerators`.
+
+Task 016 was already archived on origin-home (`5e02ad4`). Its draft stays under `kanban/archived/016-create-xml-docs-to-markdown-code-fix/` and is not part of a project. Task 013 was archived from origin-home with `ganda kanban archive 013` and landed as `6d2a467`. This branch does not edit that file. `kanban/done/**` was not edited.
+
+`KebabCaseTest.GetTestMessage` and `PascalCaseTest.GetPascalMessage` were implementing partials whose other half came from the generator. They are ordinary methods so the TW0001 console smoke still compiles. The test console no longer passes markdown in as additional files.
+
+`./bin/dev build` succeeded with 0 warnings and 0 errors and packed `artifacts/packages/TimeWarp.SourceGenerators.1.0.0-beta.11.nupkg`. `./bin/dev test` printed the four console lines and reported Passed 11, Failed 0. `ganda repo audit` then passed 36, failed 0, skipped 3. `--fix` wrote the local ignored VS Code window title. The post-fix dev-cli self-install failed with the known `MSB3030` missing `dev.xml`. `./bin/dev --version` still runs.
+
+Spikes under `spikes/partial-properties-csharp13/` still describe the old generator. They are not live docs and were left in place.
+
+### How to validate
+
+Smoke:
+
+```bash
+rg -n "XmlDocsToMarkdown|MarkdownDocsGenerator|TW0002|TW0003" \
+  source tests readme.md documentation
+# docs/ is removed with the code-fix setup page
+
+./bin/dev build
+./bin/dev test
+```
+
+Expect:
+
+- The search prints no hits.
+- Build succeeds with 0 warnings and 0 errors.
+- The console prints the kebab-case, close-modal, fetch-weather, and PascalCase lines.
+- Analyzer tests report Passed 11, Failed 0.
+
 ## Session
 
 - Created: grok `01a1bbd2-4185-7452-8535-389eb11a4f8f` (2026-11-09)
 - Trigger: Steve, after merging PR #40, said task 016's code fix and the analyzer are unwanted because XML docs belong in the source file
+- Implementation: grok `01a1bc51-a208-7a53-a024-65c8ebeb9160` (2026-11-09)

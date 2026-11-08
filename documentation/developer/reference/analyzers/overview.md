@@ -1,6 +1,6 @@
 # Analyzers Reference
 
-All analyzer diagnostic IDs from this package use the **TW** prefix (**TW0001**, **TW0002**, **TW0003**, and **TW0007**). They are **not** TimeWarp Architecture `TWA*` IDs — do not configure or suppress these rules with `TWA001` / `TWA*`.
+All analyzer diagnostic IDs from this package use the **TW** prefix (**TW0001** and **TW0007**). They are **not** TimeWarp Architecture `TWA*` IDs — do not configure or suppress these rules with `TWA001` / `TWA*`.
 
 ## Available Analyzers
 
@@ -42,7 +42,6 @@ dotnet_diagnostic.TW0001.excluded_files = *.g.cs;*.Generated.cs
 
 - **Naming**: File and identifier naming conventions
 - **Usage**: Using-directive placement (TW0007)
-- **SourceGenerator**: Diagnostics from source generators
 
 ## Suppression Methods
 

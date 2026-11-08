@@ -13,13 +13,13 @@ Technical documentation for developers using or contributing to the project.
 
 ## What's Included
 
-### Source Generators
-- **MarkdownDocsGenerator** - Generates markdown from XML docs
-
 ### Analyzers
 - **TW0001** - File name kebab-case enforcement (single- and multi-dot basenames)
+- **TW0007** - File-level usings belong in kebab-case `global-usings.cs`
 
-Diagnostic IDs from this package use the **TW** prefix (**TW0001**, **TW0002**, **TW0003**, and **TW0007**). The **TWA** prefix is reserved for TimeWarp Architecture and is not used here.
+This package does not ship a source generator. XML documentation stays in the C# file.
+
+Diagnostic IDs from this package use the **TW** prefix (**TW0001** and **TW0007**). The **TWA** prefix is reserved for TimeWarp Architecture and is not used here.
 
 ## Configuration
 

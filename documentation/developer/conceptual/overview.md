@@ -11,8 +11,8 @@ Understanding why we keep all analyzer rules in "unshipped" status and the benef
 
 ## Core Concepts
 
-### Incremental Generation
-All analyzers and generators use `IIncrementalGenerator` for optimal performance.
+### Analyzers
+The package ships Roslyn diagnostic analyzers. XML documentation stays in the C# file.
 
 ### Opt-in Design
 Features are disabled by default to avoid breaking existing code.

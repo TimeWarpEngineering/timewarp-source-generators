@@ -14,7 +14,6 @@ Learn how to enable TW0007 so file-level usings move to kebab-case `global-using
 
 ## Coming Soon
 
-- Configure source generators
 - Create custom analyzer rules
 - Integrate with CI/CD pipelines
 - Migrate from PascalCase to kebab-case

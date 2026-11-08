@@ -14,7 +14,7 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <PackageProjectUrl>https://timewarpengineering.github.io/timewarp-source-generators/</PackageProjectUrl>
-    <PackageTags>TimeWarp; Source Generator; SourceGenerators; Analyzers</PackageTags>
+    <PackageTags>TimeWarp; Analyzers</PackageTags>
     <PackageReleaseNotes>For detailed release notes and changelog, please visit: https://github.com/TimeWarpEngineering/timewarp-source-generators/releases</PackageReleaseNotes>
     <ContentTargetFolders>contentFiles</ContentTargetFolders>
   </PropertyGroup>
