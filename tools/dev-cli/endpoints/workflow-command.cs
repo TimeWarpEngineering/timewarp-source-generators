@@ -46,11 +46,11 @@ internal sealed class WorkflowCommand : ICommand<Unit>
       NuGetPackageService = nuGetPackageService;
     }
 
-    public async ValueTask<Unit> Handle(WorkflowCommand command, CancellationToken ct)
+    public async Task<Unit> Handle(WorkflowCommand command, CancellationToken ct)
     {
       Ct = ct;
 
-      if (!FindRepoRoot()) return Value;
+      if (!FindRepoRoot()) return Unit.Value;
 
       CiMode mode = DetermineMode(command.Mode);
       Terminal.WriteLine($"Starting CI workflow (mode: {mode})...");
@@ -67,7 +67,7 @@ internal sealed class WorkflowCommand : ICommand<Unit>
       if (Environment.ExitCode == 0)
         Terminal.WriteLine("\nWorkflow completed successfully!".Green());
 
-      return Value;
+      return Unit.Value;
     }
 
     private bool FindRepoRoot()
@@ -135,7 +135,7 @@ internal sealed class WorkflowCommand : ICommand<Unit>
       await PushPackageAsync(version, apiKey);
     }
 
-    private async ValueTask<Unit> CleanAsync()
+    private async Task<Unit> CleanAsync()
     {
       Terminal.WriteLine("Cleaning repository artifacts...");
       CleanResult result = await RepoCleanService.CleanAsync(Ct);
@@ -143,10 +143,10 @@ internal sealed class WorkflowCommand : ICommand<Unit>
       (
         $"Clean complete: {result.ObjDirectoriesDeleted} obj, {result.BinDirectoriesDeleted} bin, {result.RootBinFilesCleaned} root-bin items."
       );
-      return Value;
+      return Unit.Value;
     }
 
-    private async Task<bool> RunStepAsync(string title, Func<ValueTask<Unit>> step)
+    private async Task<bool> RunStepAsync(string title, Func<Task<Unit>> step)
     {
       Terminal.WriteLine($"\n=== {title} ===");
       await step();

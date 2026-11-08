@@ -2,6 +2,9 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
   <PropertyGroup>
+    <!-- TimeWarp.Amuru 3.0.0-beta.1 (repo audit pin) targets net11.0 only. Task 030. -->
+    <TargetFramework>net11.0</TargetFramework>
+
     <!-- Suppress warnings that don't apply to CLI tools -->
     <NoWarn>$(NoWarn);CA1031;CA1303;CA1508;CA1515;CA1849;CA2007;CA2016;CA2000;CA1034;CA5399;IDE0065;IL2026;IL2104;IL3050;IL3053;RCS1046;IDE0005;IDE0022;IDE0046;IDE0052;IDE0055;IDE0058;IDE0066;IDE0078;IDE0160;IDE0211;IDE0290</NoWarn>
 

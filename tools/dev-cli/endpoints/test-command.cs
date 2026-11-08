@@ -34,17 +34,17 @@ internal sealed class TestCommand : ICommand<Unit>
       Terminal = terminal;
     }
 
-    public async ValueTask<Unit> Handle(TestCommand command, CancellationToken ct)
+    public async Task<Unit> Handle(TestCommand command, CancellationToken ct)
     {
       Command = command;
       Ct = ct;
 
-      if (!FindRepoRoot()) return Value;
-      if (!await BuildTestProjectAsync()) return Value;
-      if (!await RunTestProjectAsync()) return Value;
+      if (!FindRepoRoot()) return Unit.Value;
+      if (!await BuildTestProjectAsync()) return Unit.Value;
+      if (!await RunTestProjectAsync()) return Unit.Value;
 
       Terminal.WriteLine("\nTests completed successfully!".Green());
-      return Value;
+      return Unit.Value;
     }
 
     private bool FindRepoRoot()
