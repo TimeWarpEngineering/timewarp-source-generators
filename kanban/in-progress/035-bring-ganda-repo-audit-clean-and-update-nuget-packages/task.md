@@ -63,23 +63,62 @@ Nuru 4.0.0-beta.12 or Amuru 3.0.0-beta.2 may change the dev CLI. Update `tools/d
 
 ## Checklist
 
-- [ ] Re-run `ganda repo audit` and `ganda nuget outdated` and refresh this list if a row changed
-- [ ] `ganda repo audit --fix` for the fixable rows, and commit that diff
-- [ ] `ganda nuget outdated --update --force` so every outdated package matches the live New column
-- [ ] Generator, analyzer tests, and dev CLI compile on the new pins
-- [ ] `/.timewarp/signals/` is ignored and no signal journal is tracked
-- [ ] `.vscode/settings.json` exists locally and is not committed
-- [ ] `.timewarp/suppression-baseline.json` is committed
-- [ ] No new root `PackageReference` to `TimeWarp.SourceGenerators`
-- [ ] `ganda repo audit` exits 0 with no Failed row
-- [ ] `./bin/dev build` and `./bin/dev test` succeed
-- [ ] `## Results` and `### How to validate`
-- [ ] Stop after product work and Results. Do not `kanban done`. Do not `gh pr create`
+- [x] Re-run `ganda repo audit` and `ganda nuget outdated` and refresh this list if a row changed
+- [x] `ganda repo audit --fix` for the fixable rows, and commit that diff
+- [x] `ganda nuget outdated --update --force` so every outdated package matches the live New column
+- [x] Generator, analyzer tests, and dev CLI compile on the new pins
+- [x] `/.timewarp/signals/` is ignored and no signal journal is tracked
+- [x] `.vscode/settings.json` exists locally and is not committed
+- [x] `.timewarp/suppression-baseline.json` is committed
+- [x] No new root `PackageReference` to `TimeWarp.SourceGenerators`
+- [x] `ganda repo audit` exits 0 with no Failed row
+- [x] `./bin/dev build` and `./bin/dev test` succeed
+- [x] `## Results` and `### How to validate`
+- [x] Stop after product work and Results. Do not `kanban done`. Do not `gh pr create`
+
+## Results
+
+The live audit matched the 2026-11-09 snapshot: four Failed rows, all fixable. `ganda repo audit --fix` seeded `.timewarp/suppression-baseline.json`, ignored `/.timewarp/signals/`, wrote the gitignored `.vscode/settings.json`, and moved the dev CLI pins. That diff is commit `04e747a`. A second `ganda nuget outdated` then moved the three Roslyn packages to 5.9.0. After both steps, `ganda nuget outdated` reports all 10 central packages up to date.
+
+`ganda repo audit --fix` also set `TimeWarp.Terminal` to `2.0.0-beta.1`. The pre-fix outdated run had called `1.0.2` current. The post-fix outdated run calls `2.0.0-beta.1` current, so the pin stayed.
+
+`Microsoft.CodeAnalysis.CSharp` 5.9.0 still ships `netstandard2.0`. The generator target stayed `netstandard2.0`. The analyzer sources and tests compiled without API edits. `./bin/dev build` is 0 warnings and 0 errors. `./bin/dev test` passes, including the 11 TW0007 analyzer tests.
+
+Nuru 4.0.0-beta.12 pulls TimeWarp.Mediator 15, which removed `ICommandHandler`. The four local handlers implement `IRequestHandler<T, Unit>` and return `ValueTask<Unit>`. `check-version` and `release` now take `NuGetVersionService`, so `IRepoCheckVersionService` is no longer registered. `NuGetPackageService` is constructed in the workflow handler. Its greediest public constructor needs `HttpMessageHandler`, and registering that type would select the test seam. The parameterless constructor keeps the process-wide cache and avoids NURU051.
+
+`./bin/dev --help` lists `release`. `./bin/dev check-version` names `TimeWarp.SourceGenerators` and exits 1 because `1.0.0-beta.12` is already on nuget.org. That gate is the existing package version, not these pins.
+
+### How to validate
+
+Smoke:
+
+```bash
+ganda repo audit
+ganda nuget outdated
+./bin/dev build
+./bin/dev test
+./bin/dev --help
+./bin/dev check-version
+git ls-files '.timewarp/signals/*'
+git check-ignore -v .vscode/settings.json
+```
+
+Expect:
+
+- `ganda repo audit` exits 0. The table has no Failed row (this run: Passed 39, Failed 0, Skipped 3).
+- `ganda nuget outdated` prints `All packages are up to date!` for the ten central packages, including Roslyn 5.9.0, Nuru and DevCli `4.0.0-beta.12`, Amuru and Amuru.Tools `3.0.0-beta.2`, and Terminal `2.0.0-beta.1`.
+- `./bin/dev build` exits 0 with 0 errors. The generator output is `netstandard2.0`.
+- `./bin/dev test` exits 0. The analyzer suite prints `Passed: 11  Failed: 0`.
+- `./bin/dev --help` lists the `release` command.
+- `./bin/dev check-version` prints `Packages checked: TimeWarp.SourceGenerators`. Exit 1 with "already released" means `1.0.0-beta.12` is still the package version.
+- `git ls-files '.timewarp/signals/*'` prints nothing. `.vscode/settings.json` is ignored. `.timewarp/suppression-baseline.json` is tracked.
 
 ## Session
 
 - Created: 1998795 (2026-11-09)
 - Trigger: Steve asked to create one task that fixes the `ganda repo audit` failures and updates every outdated NuGet package
+- Implementation: grok task-work (2026-11-09). Audit `--fix` commit `04e747a`. Roslyn 5.9.0 and the Mediator 15 handler move are in the following commit.
+- Implement oracle: implemented by implementer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1c134-f8e8-73a0-8f30-fb2c41982ed1, max-turns 500, Done — 2026-11-09T17:02:28Z
 
 ## Notes
 
