@@ -2,7 +2,8 @@
 // Global usings for dev-cli
 #endregion
 #region Design
-// ICommand, ICommandHandler, and Unit live in TimeWarp.Mediator as of Nuru 4.
+// ICommand, IRequestHandler, and Unit live in TimeWarp.Mediator.
+// Mediator 15 removed ICommandHandler. Nested handlers implement IRequestHandler and return ValueTask.
 // A static using of Unit collides with Task inside the DevCli package sources, so handlers return Unit.Value.
 #endregion
 

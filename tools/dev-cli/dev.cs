@@ -33,6 +33,12 @@
 // This repo has no ActivitySource of its own, so none is registered.
 // IncomingTraceContext restores TRACEPARENT before RunAsync because
 // TelemetryBehavior parents its span to Activity.Current.
+// NuGetPackageService stays out of ConfigureServices. Its public
+// HttpMessageHandler constructor is the greediest one, so source-generated
+// DI reports NURU051 unless that handler is registered. The workflow handler
+// constructs the parameterless service, which keeps the process-wide cache.
+// check-version and release use NuGetVersionService. RepoCheckVersionService
+// is not registered: its only constructor needs INuGetPackageService.
 #endregion
 
 NuruApp app = NuruApp.CreateBuilder()
@@ -42,8 +48,6 @@ NuruApp app = NuruApp.CreateBuilder()
   .ConfigureServices(services =>
   {
     services.AddSingleton<IRepoCleanService, RepoCleanService>();
-    services.AddSingleton<INuGetPackageService, NuGetPackageService>();
-    services.AddSingleton<IRepoCheckVersionService, RepoCheckVersionService>();
     services.AddSingleton<NuGetVersionService>();
     services.AddSingleton<IRepoConfigService, RepoConfigService>();
     services.AddSingleton<IPackableProjectService, PackableProjectService>();
