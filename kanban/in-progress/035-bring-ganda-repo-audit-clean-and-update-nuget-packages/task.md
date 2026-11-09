@@ -88,6 +88,14 @@ Nuru 4.0.0-beta.12 pulls TimeWarp.Mediator 15, which removed `ICommandHandler`. 
 
 `./bin/dev --help` lists `release`. `./bin/dev check-version` names `TimeWarp.SourceGenerators` and exits 1 because `1.0.0-beta.12` is already on nuget.org. That gate is the existing package version, not these pins.
 
+### Review disposition
+
+- **Outcome:** clean. 1 round, effort 2, roster `general`.
+- **Final counts:** bug 0, suggestion 0, nit 0. Open 0, fixed 0, wontfix 0.
+- The reviewer re-ran build (0 warnings, 0 errors), test (11/11), `--help` (lists `release`), `check-version` (sees `TimeWarp.SourceGenerators`), `ganda repo audit` (exit 0), and `ganda nuget outdated` (10/10 current). All passed.
+- Follow-up, not blocking: the Roslyn 5.9.0 bump raises the minimum host compiler for consumers (older SDKs or Visual Studio report CS8032, and the analyzers do not load). Document the floor before the next release.
+- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md`.
+
 ### How to validate
 
 Smoke:
@@ -119,6 +127,12 @@ Expect:
 - Trigger: Steve asked to create one task that fixes the `ganda repo audit` failures and updates every outdated NuGet package
 - Implementation: grok task-work (2026-11-09). Audit `--fix` commit `04e747a`. Roslyn 5.9.0 and the Mediator 15 handler move are in the following commit.
 - Implement oracle: implemented by implementer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1c134-f8e8-73a0-8f30-fb2c41982ed1, max-turns 500, Done — 2026-11-09T17:02:28Z
+- Review oracle: claude (claude-opus-5-5), headless ganda task work, effort 2, roster general, turn cap 120. Round 1 disposition clean, 0 findings — 2026-11-10
+- Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session 88cf20ae-02ce-4e4d-9939-42ee4eca390a, max-turns 120, artifacts general.md, merged.md, disposition.md — 2026-11-09T17:06:12Z
+
+## Review
+
+- Round 1: Done
 
 ## Notes
 
