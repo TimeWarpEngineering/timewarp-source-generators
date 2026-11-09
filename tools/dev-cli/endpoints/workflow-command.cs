@@ -10,6 +10,10 @@
 // Release version comes from Version in source/Directory.Build.props and
 // must match the git tag (GITHUB_REF_NAME) on release events
 // Pack is GeneratePackageOnBuild; push targets artifacts/packages/*.nupkg
+// Handlers return ValueTask because Mediator 15 removed ICommandHandler.
+// NuGetPackageService is constructed here. Its greediest public constructor
+// takes HttpMessageHandler, which source-generated DI cannot satisfy (NURU051).
+// The parameterless constructor keeps the process-wide registration cache.
 #endregion
 
 namespace DevCli.Commands;
@@ -23,30 +27,28 @@ internal sealed class WorkflowCommand : ICommand<Unit>
   [Option("api-key", Description = "NuGet API key for publishing (release mode only)")]
   public string? ApiKey { get; set; }
 
-  internal sealed class Handler : ICommandHandler<WorkflowCommand, Unit>
+  internal sealed class Handler : IRequestHandler<WorkflowCommand, Unit>
   {
     private const string PackageId = "TimeWarp.SourceGenerators";
     private const string NuGetSource = "https://api.nuget.org/v3/index.json";
 
     private readonly ITerminal Terminal;
     private readonly IRepoCleanService RepoCleanService;
-    private readonly INuGetPackageService NuGetPackageService;
+    private readonly NuGetPackageService NuGetPackageService = new();
     private CancellationToken Ct;
     private string RepoRoot = null!;
 
     public Handler
     (
       ITerminal terminal,
-      IRepoCleanService repoCleanService,
-      INuGetPackageService nuGetPackageService
+      IRepoCleanService repoCleanService
     )
     {
       Terminal = terminal;
       RepoCleanService = repoCleanService;
-      NuGetPackageService = nuGetPackageService;
     }
 
-    public async Task<Unit> Handle(WorkflowCommand command, CancellationToken ct)
+    public async ValueTask<Unit> Handle(WorkflowCommand command, CancellationToken ct)
     {
       Ct = ct;
 
@@ -135,7 +137,7 @@ internal sealed class WorkflowCommand : ICommand<Unit>
       await PushPackageAsync(version, apiKey);
     }
 
-    private async Task<Unit> CleanAsync()
+    private async ValueTask<Unit> CleanAsync()
     {
       Terminal.WriteLine("Cleaning repository artifacts...");
       CleanResult result = await RepoCleanService.CleanAsync(Ct);
@@ -146,7 +148,7 @@ internal sealed class WorkflowCommand : ICommand<Unit>
       return Unit.Value;
     }
 
-    private async Task<bool> RunStepAsync(string title, Func<Task<Unit>> step)
+    private async Task<bool> RunStepAsync(string title, Func<ValueTask<Unit>> step)
     {
       Terminal.WriteLine($"\n=== {title} ===");
       await step();
