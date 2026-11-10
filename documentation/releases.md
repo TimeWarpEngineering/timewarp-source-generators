@@ -1,5 +1,25 @@
 # Release Notes
 
+## 1.0.0-beta.13
+
+Generic style rules moved from `TimeWarp.Architecture.Analyzers`, with the same diagnostic ids. `.editorconfig` keys do not change. Architecture-specific `TWA*` rules stay in that package.
+
+- **TWA0004** `PurposeRegionAnalyzer`. Warning, enabled. Every non-generated C# file needs a `#region Purpose` block.
+- **TWA0023** `TypeStemIdentifierAnalyzer`. Warning, disabled. An identifier ends with its type stem (interfaces drop a leading `I`). Opt-out is `[TypeStemIdentifier("reason")]`, matched by simple name. The attribute type stays in `TimeWarp.Architecture.Attributes`.
+- **TWA0038** `FileLengthAnalyzer`. Warning, enabled. Default limit is 500 lines. Override with `dotnet_diagnostic.TWA0038.max_lines`.
+
+TWA0004 and TWA0038 are on by default, as they were in Architecture.Analyzers. A repo that treats warnings as errors and does not want the file-length rule sets `dotnet_diagnostic.TWA0038.severity` to `none`. `timewarp-state` task 153 drops `TimeWarp.Architecture.Analyzers` after this package is published and keeps `dotnet_diagnostic.TWA0004.severity = error`.
+
+```ini
+[*.cs]
+dotnet_diagnostic.TWA0004.severity = warning
+dotnet_diagnostic.TWA0023.severity = warning
+dotnet_diagnostic.TWA0038.severity = warning
+dotnet_diagnostic.TWA0038.max_lines = 500
+```
+
+NuGet publish of `1.0.0-beta.13` is `dev release` from a clean master after this change merges. Until that publish, Architecture.Analyzers still reports these three ids.
+
 ## 1.0.0-beta.12
 
 The package ships analyzers only. It generates no source.

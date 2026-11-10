@@ -1,3 +1,7 @@
+#region Purpose
+// Kebab-case file fixture for the TW0001 smoke console.
+#endregion
+
 namespace TimeWarp.SourceGenerators.TestConsole;
 
 public class KebabCaseTest
