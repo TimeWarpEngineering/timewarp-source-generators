@@ -55,6 +55,7 @@ inventory table marks it **generic**. Candidates called out there include at lea
 - Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session 89dcd2ef-ee8f-4092-a9a3-71ae2a26f662, max-turns 200, artifacts general.md, merged.md — 2026-11-10T06:51:41Z
 - Fix pass (implement-fix-2, 2026-11-10): M1 makes `Locate` throw when a snippet occurs twice and makes `Flag` refuse a second match of the same span. The override test now uses unique snippets for the abstract `Run` parameter and the interface `Client` property. Two cases lock those throws. M2 names TimeWarp.Architecture.Analyzers for TWA0009 and TWA0021. M3 moves `global using System.Threading` after `System.Text.RegularExpressions`. `./bin/dev test`: Passed 56, Failed 0.
 - Review oracle round 2: Claude Opus 5.5 (`claude-opus-5-5`, headless `ganda task work`). Effort 2, general reviewer only, turn cap 120. 2026-11-10. Reviewed the delta `62a0489..e8c0ae8`. M1, M2, and M3 are fixed, with 0 open and no new findings. Disposition `clean`.
+- Installed ganda changed during this walk: was 51283112 bytes fd9c13a3f6dc496b941c1aaebbd2c73abe4d0fdd466007f81b317efb1a877891; now 51361688 bytes 5c76aeb955b03cf8cebffa0c5390a4d65300a023dca1ad308069ccc302ba8688
 
 ## Results
 
