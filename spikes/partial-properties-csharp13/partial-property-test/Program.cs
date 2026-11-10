@@ -1,3 +1,5 @@
-﻿var c = new C();
+﻿using TimeWarp.Terminal;
+
+var c = new C();
 c.Prop = "test";
-Console.WriteLine(c.Prop);
+Terminal.WriteLine(c.Prop);

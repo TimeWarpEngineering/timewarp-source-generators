@@ -53,11 +53,9 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-dotnet@v5
         with:
-          # Dev CLI targets net11 because the audit pin TimeWarp.Amuru 3.0.0-beta.1 is net11-only.
-          # Net10 stays installed so the test projects still build. Task 030.
-          dotnet-version: |
-            10.0.x
-            11.0.100-rc.3.26522.148
+          # Repo, tests, spike, dev CLI, and git hooks all target net11.0.
+          # 11.0.x is the GA band. Nothing targets net10, so that SDK is not installed. Task 036.
+          dotnet-version: 11.0.x
 
       # Prefer NuGet Trusted Publishing (OIDC). Fall back to org API key when no trust
       # policy exists yet for this package (common on first release under a new policy).

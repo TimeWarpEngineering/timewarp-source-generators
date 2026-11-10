@@ -1,5 +1,9 @@
 # Release Notes
 
+## 1.0.0-beta.14
+
+The repository builds and tests on the .NET 11 GA SDK (`net11.0`). The shipped package still targets `netstandard2.0`.
+
 ## 1.0.0-beta.13
 
 Generic style rules moved from `TimeWarp.Architecture.Analyzers`, with the same diagnostic ids. `.editorconfig` keys do not change. Architecture-specific `TWA*` rules stay in that package.
