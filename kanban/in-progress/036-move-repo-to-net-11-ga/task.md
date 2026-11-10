@@ -52,6 +52,7 @@ Current state (2026-11-11):
 - Review oracle round 1: claude-opus-5-5, headless `ganda task work`, effort 1, roster general (2026-11-11). M1 is open (bug), so a fix pass is needed.
 - Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session c6fc7119-6607-4196-9202-7ae04a2f4333, max-turns 80, artifacts general.md, merged.md — 2026-11-10T19:40:26Z
 - Fix pass (implement-fix-2, 2026-11-11): removed `ci-code-coverage.severity = off`. The workflow test step sets `Coverage`. That restores `dotnet-coverage` 18.12.0 and wraps each console run. The workflow uploads `artifacts/coverage`.
+- Review oracle round 2: claude-opus-5-5, headless `ganda task work`, effort 2, roster general, turn cap 120 (2026-11-11). Delta `ae1d8c9..7c04bdc`. 0 open; disposition clean.
 
 ## Results
 
@@ -59,7 +60,7 @@ CI installs the .NET 11 GA band `11.0.x` only. The repo default, analyzer tests,
 
 M1 is fixed. `.editorconfig` no longer sets `ci-code-coverage.severity`. `dotnet-coverage` 18.12.0 is pinned in `.config/dotnet-tools.json` (`rollForward` is true; the tool's own runtimeconfig already rolls forward on Major, so the net8.0 tool starts on the 11.0.x SDK). `test --coverage` restores that tool and wraps each Release console in `dotnet-coverage collect`, writing one Cobertura file per project under `artifacts/coverage`. The workflow test step sets `Coverage`, and the workflow uploads that directory as artifact `coverage` with `if-no-files-found: warn`. A plain `test` run does not collect.
 
-`dotnet run --file tools/dev-cli/dev.cs -- test --coverage` passed 56 of 56 and wrote both Cobertura files. The analyzer-tests report includes package `timewarp-source-generators` at line-rate about 89.3%. The test-console report covers that console only; the generator runs in the compiler during its build, not in that process. `ganda repo audit` reports `ci-code-coverage` passed.
+`dotnet run --file tools/dev-cli/dev.cs -- test --coverage` passed 56 of 56 and wrote both Cobertura files. The analyzer-tests report includes package `timewarp-source-generators` at line-rate about 74.1% (the whole report, test assembly included, is about 89.3%). The test-console report covers that console only; the generator runs in the compiler during its build, not in that process. `ganda repo audit` reports `ci-code-coverage` passed.
 
 ### How to validate
 
@@ -69,18 +70,22 @@ Expect: the test suite prints `Passed: 56  Failed: 0` and writes `artifacts/cove
 
 ### Review
 
-Round 1 ran at effort 1 with a single general reviewer. Counts after this fix: 0 bugs open, 1 bug fixed, 0 suggestions, 0 nits.
+Two rounds ran with a single general reviewer: round 1 at effort 1, round 2 (fix delta `ae1d8c9..7c04bdc`) at effort 2. Final counts: 0 open; bug 1 fixed; suggestion 0; nit 1 fixed; 0 wontfix.
+
+**Disposition: clean.** Every raised finding is fixed; no exceptions or escalations.
 
 The reviewer confirmed the .NET 11 GA move. `./bin/dev test` passed 56 of 56, the spike printed `test`, `check-version` passed, and no net10 or RC pins remain.
 
-M1 (bug, fixed): the `ci-code-coverage` opt-out is gone. CI collects Cobertura through the workflow test step and uploads `artifacts/coverage`.
+M1 (bug, fixed): the `ci-code-coverage` opt-out is gone. CI collects Cobertura through the workflow test step and uploads `artifacts/coverage`. Round 2 re-verified: `test --coverage` passes and writes both Cobertura files, a failing child exit code still fails the run under `dotnet-coverage`, and `ganda repo audit` is 42 passed / 0 failed with `ci-code-coverage` PASS.
 
-Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`.
+M2 (nit, fixed): Results quoted the report-total line-rate as the generator package's rate; the reviewer corrected the text above. Kitchen-only.
+
+Paths: `review/review-framework.md`, `review/round-2/merged.md` (last ledger), `review/round-2/general.md`, `review/round-1/`, `review/disposition.md`.
 
 ## Review
 
 - Round 1: fixed M1 on the implement-fix-2 pass. Coverage is collected and the opt-out is removed.
-
+- Round 2: Done
 ## Notes
 
 Requested by Steven 2026-11-11: "move all to dotnet 11".
