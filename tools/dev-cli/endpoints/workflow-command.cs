@@ -6,6 +6,7 @@
 //   pr/merge: clean -> build -> test
 //   release:  tag match + NuGet not-published -> clean -> build -> test -> push
 // Invokes sibling command handlers in-process so CI needs no self-install
+// The test step sets Coverage so CI writes Cobertura under artifacts/coverage
 // Clean uses IRepoCleanService (no shell to ./bin/dev)
 // Release version comes from Version in source/Directory.Build.props and
 // must match the git tag (GITHUB_REF_NAME) on release events
@@ -116,7 +117,7 @@ internal sealed class WorkflowCommand : ICommand<Unit>
     {
       if (!await RunStepAsync("Clean", CleanAsync)) return;
       if (!await RunStepAsync("Build", () => new BuildCommand.Handler(Terminal).Handle(new BuildCommand(), Ct))) return;
-      await RunStepAsync("Test", () => new TestCommand.Handler(Terminal).Handle(new TestCommand(), Ct));
+      await RunStepAsync("Test", RunTestsAsync);
     }
 
     private async Task RunReleaseWorkflowAsync(string? apiKey)
@@ -133,7 +134,7 @@ internal sealed class WorkflowCommand : ICommand<Unit>
       if (!await CheckNotPublishedOnNuGetAsync(version)) return;
       if (!await RunStepAsync("Clean", CleanAsync)) return;
       if (!await RunStepAsync("Build", () => new BuildCommand.Handler(Terminal).Handle(new BuildCommand(), Ct))) return;
-      if (!await RunStepAsync("Test", () => new TestCommand.Handler(Terminal).Handle(new TestCommand(), Ct))) return;
+      if (!await RunStepAsync("Test", RunTestsAsync)) return;
       await PushPackageAsync(version, apiKey);
     }
 
@@ -147,6 +148,9 @@ internal sealed class WorkflowCommand : ICommand<Unit>
       );
       return Unit.Value;
     }
+
+    private ValueTask<Unit> RunTestsAsync() =>
+      new TestCommand.Handler(Terminal).Handle(new TestCommand { Coverage = true }, Ct);
 
     private async Task<bool> RunStepAsync(string title, Func<ValueTask<Unit>> step)
     {

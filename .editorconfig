@@ -296,10 +296,6 @@ dotnet_diagnostic.ca1308.severity = none
 # TW0007 is implemented and tested here (task 028). Task 030.
 global-usings-analyzer.severity = off
 
-# The suite is two console apps run by tools/dev-cli, not dotnet test or
-# Microsoft.Testing.Platform. The checker has no MTP invocation to edit. Task 036.
-ci-code-coverage.severity = off
-
 # kebab-path-names prune (additive, basename match):
 # .nuget-cache = local package cache (gitignored; package basenames are not ours)
 # generated / .generated / build = generator/build outputs

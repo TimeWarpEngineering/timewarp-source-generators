@@ -93,6 +93,15 @@ jobs:
             dotnet run --file tools/dev-cli/dev.cs -- workflow
           }
 
+      # The workflow test step wraps each console in dotnet-coverage.
+      - name: coverage
+        if: success() && (github.event_name != 'workflow_dispatch' || inputs.mode != 'probe')
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage
+          path: artifacts/coverage
+          if-no-files-found: warn
+
       - name: Upload Artifacts
         if: always()
         uses: actions/upload-artifact@v6
