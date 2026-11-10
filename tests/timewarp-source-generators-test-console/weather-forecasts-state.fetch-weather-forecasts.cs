@@ -1,3 +1,7 @@
+#region Purpose
+// Multi-dot kebab partial fixture for TW0001.
+#endregion
+
 namespace TimeWarp.SourceGenerators.TestConsole;
 
 /// <summary>

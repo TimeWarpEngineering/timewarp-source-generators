@@ -16,7 +16,7 @@
 
 ![TimeWarp Logo](assets/logo.png)
 
-TimeWarp.SourceGenerators ships Roslyn analyzers for C# file names and global usings.
+TimeWarp.SourceGenerators ships Roslyn analyzers for C# file names, global usings, and the generic style rules TWA0004, TWA0023, and TWA0038.
 
 ## Give a Star! :star:
 
@@ -49,14 +49,35 @@ dotnet_diagnostic.TW0007.filename = global-usings.cs
 
 See [configure-global-usings-analyzer.md](./documentation/developer/how-to-guides/configure-global-usings-analyzer.md).
 
+### Generic rules moved from TimeWarp.Architecture.Analyzers
+
+These ids are unchanged, so an existing `.editorconfig` entry still applies. Other `TWA*` ids stay in `TimeWarp.Architecture.Analyzers`.
+
+| ID | Rule | Default |
+|----|------|---------|
+| **TWA0004** | `#region Purpose` in every non-generated C# file | Warning, enabled |
+| **TWA0023** | Identifier ends with its type stem | Warning, disabled |
+| **TWA0038** | File longer than 500 lines (`max_lines` overrides) | Warning, enabled |
+
+```ini
+[*.cs]
+dotnet_diagnostic.TWA0004.severity = warning
+dotnet_diagnostic.TWA0023.severity = none
+dotnet_diagnostic.TWA0038.severity = warning
+dotnet_diagnostic.TWA0038.max_lines = 500
+```
+
+TWA0023 opt-out is `[TypeStemIdentifier("reason")]`. The attribute type stays in `TimeWarp.Architecture.Attributes` and is matched by simple name.
+
 ### Diagnostic ID prefixes (SSOT)
 
-| Prefix | Package |
-|--------|---------|
-| **TW** | **TimeWarp.SourceGenerators** (this package) — shipped diagnostics **TW0001** and **TW0007** |
-| **TWA** | **TimeWarp Architecture** only — not used by this package |
+| Prefix | Where it lives |
+|--------|----------------|
+| **TW** | **TimeWarp.SourceGenerators** — **TW0001** and **TW0007** |
+| **TWA0004, TWA0023, TWA0038** | **TimeWarp.SourceGenerators** — generic style rules moved from Architecture.Analyzers. Same ids. |
+| **other TWA\*** | **TimeWarp.Architecture.Analyzers** — contracts, endpoints, slices, and the rest |
 
-Do **not** enable, suppress, or configure this package’s rules with Architecture IDs such as `TWA001` / `TWA*`. File-name kebab-case is **TW0001** (`dotnet_diagnostic.TW0001.*`, `#pragma warning disable TW0001`). Architecture `TWA*` keys do not apply here.
+File-name kebab-case is **TW0001** (`dotnet_diagnostic.TW0001.*`, `#pragma warning disable TW0001`). Do not configure that rule with a `TWA*` id.
 
 ## Getting started
 

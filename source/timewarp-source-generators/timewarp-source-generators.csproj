@@ -15,6 +15,7 @@
   <ItemGroup>
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="$(RepositoryRoot)readme.md" Pack="true" PackagePath=""/>
+    <InternalsVisibleTo Include="timewarp-source-generators-analyzer-tests" />
   </ItemGroup>
 
 </Project>

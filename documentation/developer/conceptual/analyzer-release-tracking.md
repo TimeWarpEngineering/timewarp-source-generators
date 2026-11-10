@@ -73,6 +73,9 @@ Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
 TW0001 | Naming | Info | FileNameRuleAnalyzer, disabled by default
 TW0007 | Usage | Warning | GlobalUsingsRuleAnalyzer, disabled by default
+TWA0004 | Documentation | Warning | PurposeRegionAnalyzer, enabled by default
+TWA0023 | Naming | Warning | TypeStemIdentifierAnalyzer, disabled by default
+TWA0038 | Maintainability | Warning | FileLengthAnalyzer, enabled by default
 
 AnalyzerReleases.Shipped.md:
 ## Release 1.0

@@ -20,7 +20,11 @@ public static class Program
       ("global-usings.cs itself does not warn", GlobalUsingsRuleAnalyzerTests.GlobalUsingsFile_Should_NotReport),
       ("PascalCase filename is configurable", GlobalUsingsRuleAnalyzerTests.PascalCaseFilename_Should_SkipConfiguredFileAndAppearInMessage),
       ("excluded_files skips matching files", GlobalUsingsRuleAnalyzerTests.ExcludedFiles_Should_NotReport),
-      ("disabled by default does not warn", GlobalUsingsRuleAnalyzerTests.DisabledByDefault_Should_NotReportWithoutEnablement)
+      ("disabled by default does not warn", GlobalUsingsRuleAnalyzerTests.DisabledByDefault_Should_NotReportWithoutEnablement),
+      ..PurposeRegionAnalyzerTests.Cases,
+      ..FileLengthAnalyzerTests.Cases,
+      ..TypeStemIdentifierNamingAnalyzerTests.Cases,
+      ..TypeStemIdentifierExemptionsAnalyzerTests.Cases
     ];
 
     int passed = 0;
