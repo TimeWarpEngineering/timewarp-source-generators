@@ -54,6 +54,7 @@ inventory table marks it **generic**. Candidates called out there include at lea
 - Review oracle round 1: Claude Opus 5.5 (headless `ganda task work`). Effort 3, general reviewer only, turn cap 200. 2026-11-10. Three findings open (M1 suggestion, M2 and M3 nits). A fix pass was requested.
 - Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session 89dcd2ef-ee8f-4092-a9a3-71ae2a26f662, max-turns 200, artifacts general.md, merged.md — 2026-11-10T06:51:41Z
 - Fix pass (implement-fix-2, 2026-11-10): M1 makes `Locate` throw when a snippet occurs twice and makes `Flag` refuse a second match of the same span. The override test now uses unique snippets for the abstract `Run` parameter and the interface `Client` property. Two cases lock those throws. M2 names TimeWarp.Architecture.Analyzers for TWA0009 and TWA0021. M3 moves `global using System.Threading` after `System.Text.RegularExpressions`. `./bin/dev test`: Passed 56, Failed 0.
+- Review oracle round 2: Claude Opus 5.5 (`claude-opus-5-5`, headless `ganda task work`). Effort 2, general reviewer only, turn cap 120. 2026-11-10. Reviewed the delta `62a0489..e8c0ae8`. M1, M2, and M3 are fixed, with 0 open and no new findings. Disposition `clean`.
 
 ## Results
 
@@ -65,13 +66,13 @@ Package version is `1.0.0-beta.13`. `dev check-version` reports source one prere
 
 ### Review
 
-Round 1 (effort 3, general reviewer) was run 2026-11-10. The fix pass implemented M1, M2, and M3. Round 2 has not closed the ledger, so `review/disposition.md` is still unwritten and `review/round-1/merged.md` still says open.
+**Disposition: clean.** There were 2 rounds, each with one general reviewer. Round 1 ran at effort 3 and round 2 at effort 2. Final counts: bug 0, suggestion 1 fixed, nit 2 fixed, 0 open, 0 wontfix. Round 1 (2026-11-10) raised M1, M2, and M3, and fix pass e8c0ae8 implemented them. Round 2 (2026-11-10) verified each fix on the delta `62a0489..e8c0ae8` and found no new issues. `./bin/dev test` reran with 56 passed, 0 failed.
 
 - M1: `Locate` throws when the snippet occurs more than once. `Flag` throws when a second expected flag resolves to a span already matched. `OverrideAndExplicit_Should_ReportOnlyFreeNames` uses `abstract void Run(HttpClient client)` and `  HttpClient Client { get; }` so the abstract parameter and the interface property are each checked once. `DuplicateSnippet_Should_Throw` and `SameSpanTwice_Should_Throw` lock those throws. The abstract `Run` snippet was also shared with the override; that flag is unique now too.
 - M2: the TWA0023 Design region says TWA0009 and TWA0021 live in TimeWarp.Architecture.Analyzers.
 - M3: `global using System.Threading;` sits after `System.Text.RegularExpressions`.
 - The analyzer ports match timewarp-architecture cef55c09f. Round 1 reran `./bin/dev test` at 54 passed. After this fix pass the analyzer console is 56 passed, 0 failed, and `ganda repo audit` exited 0 (41 passed, 0 failed, 3 skipped).
-- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md` (the live ledger).
+- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/round-2/general.md`, `review/round-2/merged.md` (final ledger), `review/disposition.md`.
 
 ### How to validate
 
@@ -100,8 +101,8 @@ grep -n 'global using' source/timewarp-source-generators/global-usings.cs
 
 ## Review
 
-- Round 1: findings M1, M2, M3 implemented on this fix pass. Round 2 has not run.
-
+- Round 1: findings M1, M2, M3 implemented on this fix pass.
+- Round 2: Done
 ## Notes
 
 Filed by Jenzi after Steven approved filing the three linked tasks (2026-11-09). Goal: remove the
