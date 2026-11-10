@@ -53,6 +53,7 @@ Current state (2026-11-11):
 - Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session c6fc7119-6607-4196-9202-7ae04a2f4333, max-turns 80, artifacts general.md, merged.md — 2026-11-10T19:40:26Z
 - Fix pass (implement-fix-2, 2026-11-11): removed `ci-code-coverage.severity = off`. The workflow test step sets `Coverage`. That restores `dotnet-coverage` 18.12.0 and wraps each console run. The workflow uploads `artifacts/coverage`.
 - Review oracle round 2: claude-opus-5-5, headless `ganda task work`, effort 2, roster general, turn cap 120 (2026-11-11). Delta `ae1d8c9..7c04bdc`. 0 open; disposition clean.
+- Installed ganda changed during this walk: was 51756808 bytes a18f3dc25f245e28614a218db4f6294c4e02bfabf5529c0b4a7a94f7b048c6ec; now 51811208 bytes 95d609125d069c357aa5683f61c2a03fac99d7793cb5c008e758c828fd37bcdf
 
 ## Results
 
