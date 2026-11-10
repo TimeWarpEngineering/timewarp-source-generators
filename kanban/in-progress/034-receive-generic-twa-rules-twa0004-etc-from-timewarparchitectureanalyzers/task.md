@@ -51,6 +51,9 @@ inventory table marks it **generic**. Candidates called out there include at lea
 - Created: 1546826 (2026-11-09)
 - Implementation: grok `01a1c422-c20a-75f1-9f7d-4fd4c78c2e0b` (2026-11-10). Ported the three generic analyzers. Audit `--fix` refreshed `.githooks/*` to the attest baseline and wrote a gitignored `.vscode/settings.json` window title. The CI `Run CI Pipeline` step is pwsh, with top-level `defaults.run.shell`.
 - Implement oracle: implemented by implementer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1c422-c20a-75f1-9f7d-4fd4c78c2e0b, max-turns 500, Done — 2026-11-10T06:47:28Z
+- Review oracle round 1: Claude Opus 5.5 (headless `ganda task work`). Effort 3, general reviewer only, turn cap 200. 2026-11-10. Three findings open (M1 suggestion, M2 and M3 nits). A fix pass was requested.
+- Review oracle: review by reviewer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session 89dcd2ef-ee8f-4092-a9a3-71ae2a26f662, max-turns 200, artifacts general.md, merged.md — 2026-11-10T06:51:41Z
+- Fix pass (implement-fix-2, 2026-11-10): M1 makes `Locate` throw when a snippet occurs twice and makes `Flag` refuse a second match of the same span. The override test now uses unique snippets for the abstract `Run` parameter and the interface `Client` property. Two cases lock those throws. M2 names TimeWarp.Architecture.Analyzers for TWA0009 and TWA0021. M3 moves `global using System.Threading` after `System.Text.RegularExpressions`. `./bin/dev test`: Passed 56, Failed 0.
 
 ## Results
 
@@ -59,6 +62,16 @@ Architecture 486's table marks TWA0004, TWA0023, and TWA0038 generic. Those thre
 Package version is `1.0.0-beta.13`. `dev check-version` reports source one prerelease ahead of NuGet `1.0.0-beta.12`. NuGet publish is `dev release` from a clean master after this pull request merges. Until that publish, Architecture.Analyzers still reports the same three ids, so this repo does not delete them there.
 
 `./bin/dev test` passed: the smoke console ran, and the analyzer console passed 54 cases (0 failed). `ganda repo audit` exited 0 (41 passed, 0 failed, 3 skipped).
+
+### Review
+
+Round 1 (effort 3, general reviewer) was run 2026-11-10. The fix pass implemented M1, M2, and M3. Round 2 has not closed the ledger, so `review/disposition.md` is still unwritten and `review/round-1/merged.md` still says open.
+
+- M1: `Locate` throws when the snippet occurs more than once. `Flag` throws when a second expected flag resolves to a span already matched. `OverrideAndExplicit_Should_ReportOnlyFreeNames` uses `abstract void Run(HttpClient client)` and `  HttpClient Client { get; }` so the abstract parameter and the interface property are each checked once. `DuplicateSnippet_Should_Throw` and `SameSpanTwice_Should_Throw` lock those throws. The abstract `Run` snippet was also shared with the override; that flag is unique now too.
+- M2: the TWA0023 Design region says TWA0009 and TWA0021 live in TimeWarp.Architecture.Analyzers.
+- M3: `global using System.Threading;` sits after `System.Text.RegularExpressions`.
+- The analyzer ports match timewarp-architecture cef55c09f. Round 1 reran `./bin/dev test` at 54 passed. After this fix pass the analyzer console is 56 passed, 0 failed, and `ganda repo audit` exited 0 (41 passed, 0 failed, 3 skipped).
+- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md` (the live ledger).
 
 ### How to validate
 
@@ -70,14 +83,24 @@ grep -n 'TWA0004' source/timewarp-source-generators/AnalyzerReleases.Unshipped.m
 grep -n 'DiagnosticId = "TWA0004"' source/timewarp-source-generators/purpose-region-analyzer.cs
 grep -n 'DiagnosticId = "TWA0023"' source/timewarp-source-generators/type-stem-identifier-analyzer.cs
 grep -n 'DiagnosticId = "TWA0038"' source/timewarp-source-generators/file-length-analyzer.cs
+grep -n 'Snippet is not unique' tests/timewarp-source-generators-analyzer-tests/type-stem-identifier-test-fixture.cs
+grep -n 'TimeWarp.Architecture.Analyzers' source/timewarp-source-generators/type-stem-identifier-analyzer.cs
+grep -n 'global using' source/timewarp-source-generators/global-usings.cs
 ```
 
 **Expect**
 
-- `./bin/dev test` ends with `Tests completed successfully!` and `Passed: 54  Failed: 0`.
+- `./bin/dev test` ends with `Tests completed successfully!` and `Passed: 56  Failed: 0`.
 - Unshipped release tracking and `documentation/releases.md` name TWA0004, TWA0023, and TWA0038.
 - The three analyzer files still use those diagnostic ids.
 - `source/Directory.Build.props` has `<Version>1.0.0-beta.13</Version>`.
+- `Locate` throws with `Snippet is not unique`.
+- The TWA0023 Design region names TimeWarp.Architecture.Analyzers for TWA0009 and TWA0021.
+- `global using System.Threading;` follows `global using System.Text.RegularExpressions;`.
+
+## Review
+
+- Round 1: findings M1, M2, M3 implemented on this fix pass. Round 2 has not run.
 
 ## Notes
 
