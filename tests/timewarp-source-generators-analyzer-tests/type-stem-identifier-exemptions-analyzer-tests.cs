@@ -18,6 +18,8 @@ internal static class TypeStemIdentifierExemptionsAnalyzerTests
     ("discard is clean", Discard_Should_BeClean),
     ("array is skipped", Array_Should_BeClean),
     ("override and explicit interface members stay", OverrideAndExplicit_Should_ReportOnlyFreeNames),
+    ("duplicate snippet throws", DuplicateSnippet_Should_Throw),
+    ("same span twice throws", SameSpanTwice_Should_Throw),
     ("pragma disable is clean", PragmaDisable_Should_BeClean),
     ("IHttpClientFactory factory warns", HttpClientFactory_Should_Report),
     ("named role types are not skipped", NamedRoleTypes_Should_Report),
@@ -166,8 +168,54 @@ internal static class TypeStemIdentifierExemptionsAnalyzerTests
     }
     """,
     ("abstract HttpClient Client", "Client", "HttpClient"),
-    ("void Run(HttpClient client)", "client", "HttpClient"),
-    ("HttpClient Client { get; }", "Client", "HttpClient"));
+    ("abstract void Run(HttpClient client)", "client", "HttpClient"),
+    ("  HttpClient Client { get; }", "Client", "HttpClient"));
+
+  public static Task DuplicateSnippet_Should_Throw()
+  {
+    const string source = "HttpClient Client { get; }\nHttpClient Client { get; }\n";
+    try
+    {
+      Locate(source, "HttpClient Client { get; }", "Client");
+    }
+    catch (InvalidOperationException exception)
+      when (exception.Message.Contains("not unique", StringComparison.Ordinal))
+    {
+      return Task.CompletedTask;
+    }
+
+    throw new InvalidOperationException("Locate accepted a snippet that occurs twice.");
+  }
+
+  public static async Task SameSpanTwice_Should_Throw()
+  {
+    try
+    {
+      await Flag(
+        """
+        #region Purpose
+        // Two snippets that name the same property must not both pass.
+        #endregion
+        using System.Net.Http;
+
+        public class Sample
+        {
+          public HttpClient Client { get; }
+          public void Run(HttpClient client) { }
+        }
+        """,
+        ("public HttpClient Client", "Client", "HttpClient"),
+        ("HttpClient Client { get; }", "Client", "HttpClient")
+      );
+    }
+    catch (InvalidOperationException exception)
+      when (exception.Message.Contains("already matched", StringComparison.Ordinal))
+    {
+      return;
+    }
+
+    throw new InvalidOperationException("Flag accepted two snippets for one diagnostic.");
+  }
 
   public static Task PragmaDisable_Should_BeClean()
   {

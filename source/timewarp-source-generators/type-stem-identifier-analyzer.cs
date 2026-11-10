@@ -23,7 +23,8 @@
 // declaring syntax is ParameterSyntax) so we do not double-report.
 //
 // Catch and lambda parameters are in — noise is why the rule ships isEnabledByDefault: false.
-// Razor @code is out of v1 (GeneratedCodeAnalysisFlags.None, like TWA0009/TWA0021).
+// Razor @code is out of v1 (GeneratedCodeAnalysisFlags.None). TWA0009 and TWA0021,
+// which make the same choice, live in TimeWarp.Architecture.Analyzers.
 // Locals/foreach have no AttributeTargets.Local; their hatch is #pragma or editorconfig.
 //
 // Skip set is a hard-coded ImmutableHashSet, not editorconfig-configurable in v1:

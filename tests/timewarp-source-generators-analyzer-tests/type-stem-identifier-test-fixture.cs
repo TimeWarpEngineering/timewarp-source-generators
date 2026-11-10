@@ -4,7 +4,8 @@
 
 #region Design
 // TypeStemIdentifierAttribute stays in TimeWarp.Architecture.Attributes. The stub is matched by
-// simple name. Locate maps a unique snippet to the identifier span the diagnostic must occupy.
+// simple name. Locate maps one snippet to the identifier span the diagnostic must occupy.
+// A second occurrence of that snippet throws. Flag refuses a second match of the same span.
 #endregion
 
 namespace TimeWarp.SourceGenerators.AnalyzerTests;
@@ -38,6 +39,7 @@ internal static class TypeStemIdentifierTestFixture
   {
     ImmutableArray<Diagnostic> diagnostics = await AnalyzeAsync(source);
     Expect.Equal(flags.Length, diagnostics.Length, "TWA0023 flag count.");
+    HashSet<(int Line, int Start, int End)> matchedSpans = [];
     foreach ((string snippet, string identifier, string stem) in flags)
     {
       (int line, int start, int end) = Locate(source, snippet, identifier);
@@ -49,6 +51,13 @@ internal static class TypeStemIdentifierTestFixture
         $"'{identifier}'",
         $"TWA0023 on {identifier}."
       );
+      if (!matchedSpans.Add((line, start, end)))
+      {
+        throw new InvalidOperationException(
+          $"TWA0023 on {identifier} already matched {line}:{start}-{end}."
+        );
+      }
+
       Expect.Contains($"'{stem}'", diagnostic.GetMessage(), $"Stem for {identifier} is {stem}.");
     }
   }
@@ -66,6 +75,12 @@ internal static class TypeStemIdentifierTestFixture
     if (index < 0)
     {
       throw new InvalidOperationException($"Snippet not found: {snippet}");
+    }
+
+    int later = source.IndexOf(snippet, index + 1, StringComparison.Ordinal);
+    if (later >= 0)
+    {
+      throw new InvalidOperationException($"Snippet is not unique: {snippet}");
     }
 
     int idOffset = snippet.LastIndexOf(identifier, StringComparison.Ordinal);
