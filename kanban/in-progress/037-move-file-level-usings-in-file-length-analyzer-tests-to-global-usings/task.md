@@ -43,6 +43,7 @@ So this is a manual cleanup.
 - Implement oracle: implemented by implementer-cursor (cursor, vendor xai, model grok-4.7-high), session not reported, max-turns uncapped (no --max-turns flag; bound 500), Done — 2026-11-11T06:40:05Z
 - Review oracle round 1: cursor (gemini-4-carbon), headless ganda task work, effort 1, roster general, max-turns uncapped (no --max-turns flag; bound 80). Disposition clean, 0 findings (2026-11-11)
 - Review oracle: review by reviewer-cursor (cursor, vendor google, model gemini-4-carbon-high), session not reported, max-turns uncapped (no --max-turns flag; bound 80), artifacts general.md, merged.md, disposition.md — 2026-11-11T06:49:01Z
+- Installed ganda changed during this walk: was 52427784 bytes 10036feefb89c261f3cb88b300b00f8b3163d1c0606d5b9489db5c4ecee5feda; now 52431880 bytes c7bbb61cd011fc4249bc48c66cafc9f933344941eca4d4e2bd3c7da7b9a4cf32
 
 ## Results
 
