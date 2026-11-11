@@ -26,6 +26,16 @@ Acceptance: the pin is `1.0.1` and restore succeeds; `./bin/dev test` passes; `g
 - [x] Pin is 1.0.1 and restore succeeds
 - [x] `./bin/dev test` passes; `ganda repo audit` clean
 
+## Scope change (2026-11-11)
+
+Steven, 2026-11-11: TimeWarp.SourceGenerators and TimeWarp.Build.Tasks have a circular
+dependency. Build.Tasks is dropping its source generator reference and will ship that as 1.0.2.
+This task now targets **1.0.2**, not 1.0.1. Do not merge PR #48 at 1.0.1.
+
+- [x] `TimeWarp.Build.Tasks` 1.0.2 is published (package restores from nuget.org; version index lagging)
+- [x] Pin is 1.0.2 in `Directory.Packages.props`; restore, `./bin/dev test`, `ganda repo audit` pass
+- [x] PR #48 title and body say 1.0.2
+
 ## Session
 
 - Created: c5b005f2-d490-4e08-a7fa-e19f46a0a9e6 (2026-11-11)
