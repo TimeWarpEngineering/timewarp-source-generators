@@ -9,10 +9,6 @@
 
 namespace TimeWarp.SourceGenerators.AnalyzerTests;
 
-using System.Globalization;
-using System.Text;
-using Microsoft.CodeAnalysis.Text;
-
 internal static class FileLengthAnalyzerTests
 {
   public static readonly (string Name, Func<Task> Body)[] Cases =
