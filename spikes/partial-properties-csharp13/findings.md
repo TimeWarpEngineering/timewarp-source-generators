@@ -1,8 +1,10 @@
 # Partial Properties in C# 13 - Findings
 
+The spike project targets `net11.0` on the .NET 11 GA SDK. The `field` keyword shipped in C# 14, so this project uses the repo `LangVersion` (`latest`) and does not pin a preview SDK.
+
 ## Test Results
 
-Successfully compiled and ran partial property test with:
+The first successful run used:
 - .NET 9.0 with `LangVersion=preview`
 - Source generator generating implementing declarations
 
@@ -22,8 +24,8 @@ Successfully compiled and ran partial property test with:
 
 ## Key Learnings
 
-- The `field` keyword requires `LangVersion=preview` in current .NET versions
-- The `field` keyword is part of .NET 10 Preview 1 as "field-backed properties"
+- On that .NET 9 run, the `field` keyword required `LangVersion=preview`
+- The feature later shipped as field-backed properties. The .NET 10 Preview 1 notes were the first write-up. It is stable on the .NET 11 GA SDK this repo uses.
 - Both declarations must be in the same partial class
 - The defining declaration is NOT an auto-property - it just declares the property contract
 - The implementing declaration uses `field` to access a compiler-generated backing field
