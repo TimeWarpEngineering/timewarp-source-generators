@@ -40,6 +40,7 @@ So this is a manual cleanup.
 
 - Created: c5b005f2-d490-4e08-a7fa-e19f46a0a9e6 (2026-11-11)
 - Implementation: implementer oracle (2026-11-11). Moved the three analyzer-test usings into `global-usings.cs`. No other file in that project needed a qualification. Moved the spike's `TimeWarp.Terminal` import into a new global usings file. `./bin/dev test` passed 56 of 56. `ganda repo audit` passed 42, failed 0.
+- Implement oracle: implemented by implementer-cursor (cursor, vendor xai, model grok-4.7-high), session not reported, max-turns uncapped (no --max-turns flag; bound 500), Done — 2026-11-11T06:40:05Z
 
 ## Results
 
