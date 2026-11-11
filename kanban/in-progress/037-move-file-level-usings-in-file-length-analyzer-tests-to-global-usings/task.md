@@ -1,5 +1,11 @@
 # Move file-level usings in file-length analyzer tests to global usings
 
+## Goal (implementer restatement)
+
+The file-length analyzer tests import `System.Globalization`, `System.Text`, and `Microsoft.CodeAnalysis.Text` as file-level usings. Those three belong in the analyzer-tests `global-usings.cs`, in alphabetical order, and the test file should not repeat them. If those globals make a name ambiguous in another file in that project, qualify or otherwise resolve that name so the project still compiles. The partial-property spike's `using TimeWarp.Terminal;` is a one-line move into a `global-usings.cs` in that project; do it because it is the same convention and does not touch hook baselines or analyzer config.
+
+Acceptance: the three directives live only as `global using` lines in the analyzer-tests global usings file; `file-length-analyzer-tests.cs` has no file-level usings; the analyzer-tests project builds with no new ambiguity; `./bin/dev test` passes; `ganda repo audit` is clean. Hook files, `using static`, usings inside test snippet strings, and enabling TW0007 stay unchanged.
+
 ## Description
 
 `tests/timewarp-source-generators-analyzer-tests/file-length-analyzer-tests.cs` has three
@@ -27,12 +33,23 @@ So this is a manual cleanup.
 
 ## Checklist
 
-- [ ] Three usings moved to `global-usings.cs`
-- [ ] `./bin/dev test` passes; `ganda repo audit` clean
+- [x] Three usings moved to `global-usings.cs`
+- [x] `./bin/dev test` passes; `ganda repo audit` clean
 
 ## Session
 
 - Created: c5b005f2-d490-4e08-a7fa-e19f46a0a9e6 (2026-11-11)
+- Implementation: implementer oracle (2026-11-11). Moved the three analyzer-test usings into `global-usings.cs`. No other file in that project needed a qualification. Moved the spike's `TimeWarp.Terminal` import into a new global usings file. `./bin/dev test` passed 56 of 56. `ganda repo audit` passed 42, failed 0.
+
+## Results
+
+`System.Globalization`, `System.Text`, and `Microsoft.CodeAnalysis.Text` are `global using` directives in `tests/timewarp-source-generators-analyzer-tests/global-usings.cs`, in alphabetical order. `file-length-analyzer-tests.cs` no longer has file-level usings. The other analyzer-test files did not gain an ambiguous name from those globals, so none of them changed. `using static` lines stayed. The partial-property spike imports `TimeWarp.Terminal` from `spikes/partial-properties-csharp13/partial-property-test/global-usings.cs`, and `Program.cs` no longer has a file-level using.
+
+### How to validate
+
+Smoke: from this worktree run `./bin/dev test`, `ganda repo audit`, and `dotnet run --project spikes/partial-properties-csharp13/partial-property-test/partial-property-test.csproj -c Release`.
+
+Expect: the test suite prints `Passed: 56  Failed: 0`. `ganda repo audit` exits 0 with 42 passed and 0 failed. The spike prints `test`. `file-length-analyzer-tests.cs` has no `using` directive. The three namespaces appear only as `global using` lines in the analyzer-tests `global-usings.cs`.
 
 ## Notes
 
