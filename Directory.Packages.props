@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Build Tasks">
-    <PackageVersion Include="TimeWarp.Build.Tasks" Version="1.0.0" />
+    <PackageVersion Include="TimeWarp.Build.Tasks" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup Label="Dev CLI">
