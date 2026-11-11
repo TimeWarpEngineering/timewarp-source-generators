@@ -41,6 +41,8 @@ So this is a manual cleanup.
 - Created: c5b005f2-d490-4e08-a7fa-e19f46a0a9e6 (2026-11-11)
 - Implementation: implementer oracle (2026-11-11). Moved the three analyzer-test usings into `global-usings.cs`. No other file in that project needed a qualification. Moved the spike's `TimeWarp.Terminal` import into a new global usings file. `./bin/dev test` passed 56 of 56. `ganda repo audit` passed 42, failed 0.
 - Implement oracle: implemented by implementer-cursor (cursor, vendor xai, model grok-4.7-high), session not reported, max-turns uncapped (no --max-turns flag; bound 500), Done — 2026-11-11T06:40:05Z
+- Review oracle round 1: cursor (gemini-4-carbon), headless ganda task work, effort 1, roster general, max-turns uncapped (no --max-turns flag; bound 80). Disposition clean, 0 findings (2026-11-11)
+- Review oracle: review by reviewer-cursor (cursor, vendor google, model gemini-4-carbon-high), session not reported, max-turns uncapped (no --max-turns flag; bound 80), artifacts general.md, merged.md, disposition.md — 2026-11-11T06:49:01Z
 
 ## Results
 
@@ -51,6 +53,17 @@ So this is a manual cleanup.
 Smoke: from this worktree run `./bin/dev test`, `ganda repo audit`, and `dotnet run --project spikes/partial-properties-csharp13/partial-property-test/partial-property-test.csproj -c Release`.
 
 Expect: the test suite prints `Passed: 56  Failed: 0`. `ganda repo audit` exits 0 with 42 passed and 0 failed. The spike prints `test`. `file-length-analyzer-tests.cs` has no `using` directive. The three namespaces appear only as `global using` lines in the analyzer-tests `global-usings.cs`.
+
+### Review disposition
+
+- **Outcome:** clean. 1 round, effort 1, roster `general`.
+- **Final counts:** bug 0, suggestion 0, nit 0. Open 0, fixed 0, wontfix 0.
+- The reviewer verified the restatement against the task (no misread) and re-ran build (0 warnings, 0 errors), test (`56/56`), the partial-property spike (`test`), and `ganda repo audit` (all 42 local checks passed). No exceptions or escalations.
+- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md`.
+
+## Review
+
+- Round 1: Done
 
 ## Notes
 
