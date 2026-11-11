@@ -32,9 +32,9 @@ Steven, 2026-11-11: TimeWarp.SourceGenerators and TimeWarp.Build.Tasks have a ci
 dependency. Build.Tasks is dropping its source generator reference and will ship that as 1.0.2.
 This task now targets **1.0.2**, not 1.0.1. Do not merge PR #48 at 1.0.1.
 
-- [ ] `TimeWarp.Build.Tasks` 1.0.2 is published (not on nuget.org as of 2026-11-11; latest 1.0.1)
-- [ ] Pin is 1.0.2 in `Directory.Packages.props`; restore, `./bin/dev test`, `ganda repo audit` pass
-- [ ] PR #48 title and body say 1.0.2
+- [x] `TimeWarp.Build.Tasks` 1.0.2 is published (package restores from nuget.org; version index lagging)
+- [x] Pin is 1.0.2 in `Directory.Packages.props`; restore, `./bin/dev test`, `ganda repo audit` pass
+- [x] PR #48 title and body say 1.0.2
 
 ## Session
 
