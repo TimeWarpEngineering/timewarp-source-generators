@@ -56,6 +56,7 @@ Acceptance:
   bumped the pin, bumped `<Version>` to 1.0.0-beta.15 (check-version said beta.14 is published),
   build/test/audit green. `ganda repo audit --fix` created the git-ignored
   `.vscode/settings.json` (vscode-window-icon advisory); nothing to commit from it.
+- Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session 4ef5c673-c6f6-48e0-99f1-393325313651, max-turns 500, Done — 2026-11-12T03:54:22Z
 
 ## Notes
 
