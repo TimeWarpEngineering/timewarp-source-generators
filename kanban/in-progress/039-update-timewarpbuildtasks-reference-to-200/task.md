@@ -57,6 +57,12 @@ Acceptance:
   build/test/audit green. `ganda repo audit --fix` created the git-ignored
   `.vscode/settings.json` (vscode-window-icon advisory); nothing to commit from it.
 - Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session 4ef5c673-c6f6-48e0-99f1-393325313651, max-turns 500, Done — 2026-11-12T03:54:22Z
+- Review oracle round 1: cursor (grok-4.7), headless ganda task work, effort 1, roster general, max-turns uncapped (no --max-turns flag; bound 80). Disposition clean, 0 findings (2026-11-12)
+- Review oracle: review by reviewer-cursor (cursor, vendor xai, model grok-4.7-high), session not reported, max-turns uncapped (no --max-turns flag; bound 80), artifacts general.md, merged.md, disposition.md — 2026-11-12T04:01:14Z
+
+## Review
+
+- Round 1: Done
 
 ## Notes
 
@@ -111,3 +117,10 @@ grep -h CommitHash source/timewarp-source-generators/obj/Release/*/*AssemblyInfo
 Expect: build prints `0 Warning(s)` and `0 Error(s)`; tests print `Failed: 0`; the assets file
 shows `"TimeWarp.Build.Tasks/2.0.0"`; the AssemblyInfo line carries a non-empty commit hash
 (git metadata injection still works under 2.0.0).
+
+### Review disposition
+
+- **Outcome:** clean. 1 round, effort 1, roster `general`.
+- **Final counts:** bug 0, suggestion 0, nit 0. Open 0, fixed 0, wontfix 0.
+- The reviewer compared `## Goal (implementer restatement)` with the original task and found no misread. The 2.0.0 nupkg matches the Notes (net11.0 task, `TWBT0001`, unchanged git-metadata properties, no package dependencies). Build (0 warnings, 0 errors) and test (`56/56`) were re-run. No exceptions or escalations.
+- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md`.
