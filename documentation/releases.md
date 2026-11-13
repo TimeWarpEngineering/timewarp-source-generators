@@ -1,5 +1,13 @@
 # Release Notes
 
+## 1.0.0-beta.15
+
+**Breaking:** the package now targets `net11.0`. The analyzer DLL under `analyzers/dotnet/cs` is built for `net11.0`, not `netstandard2.0`, and there is no `netstandard2.0` fallback.
+
+- The analyzers need the .NET 11 SDK compiler (`dotnet build` on the .NET 11 SDK, or an editor that hosts that compiler).
+- The package does not load in Visual Studio, whose compiler runs on .NET Framework.
+- The repository build uses `TimeWarp.Build.Tasks` 2.0.0.
+
 ## 1.0.0-beta.14
 
 The repository builds and tests on the .NET 11 GA SDK (`net11.0`). The shipped package still targets `netstandard2.0`.

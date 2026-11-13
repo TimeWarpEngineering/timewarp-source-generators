@@ -1,12 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <RootNamespace>TimeWarp.SourceGenerators</RootNamespace>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     <NoWarn>$(NoWarn);RS2001;NU5128</NoWarn>
+    <!-- RS1041 says a compiler extension should target netstandard2.0. Targeting net11.0 is the
+         decision (task 041): the package needs the .NET 11 SDK compiler and does not load in
+         Visual Studio. Only RS1041 is suppressed. -->
+    <NoWarn>$(NoWarn);RS1041</NoWarn>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>

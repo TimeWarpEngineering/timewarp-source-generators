@@ -1,4 +1,4 @@
-[![Dotnet](https://img.shields.io/badge/dotnet-6.0-blue)](https://dotnet.microsoft.com)
+[![Dotnet](https://img.shields.io/badge/dotnet-11.0-blue)](https://dotnet.microsoft.com)
 [![Stars](https://img.shields.io/github/stars/TimeWarpEngineering/timewarp-source-generators?logo=github)](https://github.com/TimeWarpEngineering/timewarp-source-generators)
 [![Discord](https://img.shields.io/discord/715274085940199487?logo=discord)](https://discord.gg/7F4bS2T)
 [![workflow](https://github.com/TimeWarpEngineering/timewarp-source-generators/actions/workflows/release-build.yml/badge.svg)](https://github.com/TimeWarpEngineering/timewarp-source-generators/actions)
@@ -92,6 +92,10 @@ dotnet add package TimeWarp.SourceGenerators
 You can see the latest NuGet packages from the official [TimeWarp NuGet page](https://www.nuget.org/profiles/TimeWarp.Enterprises).
 
 * [TimeWarp.SourceGenerators](https://www.nuget.org/packages/TimeWarp.SourceGenerators/) [![nuget](https://img.shields.io/nuget/v/TimeWarp.SourceGenerators?logo=nuget)](https://www.nuget.org/packages/TimeWarp.SourceGenerators/)
+
+## Requirements
+
+The analyzer assembly targets `net11.0`, not `netstandard2.0`. It loads in a compiler that runs on .NET 11: `dotnet build` with the .NET 11 SDK, and editors that host that compiler. It does not load in Visual Studio, whose compiler runs on .NET Framework.
 
 ## Releases
 
