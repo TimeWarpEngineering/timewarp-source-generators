@@ -73,7 +73,13 @@ Acceptance:
 - Implement oracle (Claude Opus 5.5, 2026-11-13): retargeted to net11.0, suppressed RS1041 only,
   updated docs, gates green. See Results.
 - Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session 72a26f76-39d9-4252-8df5-d20053eb94b1, max-turns 500, Done — 2026-11-13T07:57:25Z
+- Review oracle round 1: cursor (grok-4.7), headless ganda task work, effort 2, roster general, max-turns uncapped (no `--max-turns` flag; bound 120). Disposition clean, 0 findings (2026-11-13)
+- Review oracle: review by reviewer-cursor (cursor, vendor xai, model grok-4.7), session not reported, max-turns uncapped (no `--max-turns` flag; bound 120), artifacts general.md, merged.md, disposition.md — 2026-11-13
+- Review oracle: review by reviewer-cursor (cursor, vendor xai, model grok-4.7-high), session not reported, max-turns uncapped (no --max-turns flag; bound 120), artifacts general.md, merged.md, disposition.md — 2026-11-13T08:04:09Z
 
+## Review
+
+- Round 1: Done
 ## Results
 
 ### Changes
@@ -136,6 +142,13 @@ grep -rn netstandard2.0 --include='*.csproj' --include='*.props' .
 Expect: the build reports 0 warnings and 0 errors, and the tests pass 56/56. The nupkg lists
 `analyzers/dotnet/cs/timewarp-source-generators.dll` and no `lib/`. The strings check prints
 `.NETCoreApp,Version=v11.0`. The final grep prints nothing.
+
+### Review disposition
+
+- **Outcome:** clean. 1 round, effort 2, roster `general`.
+- **Final counts:** bug 0, suggestion 0, nit 0. Open 0, fixed 0, wontfix 0.
+- The reviewer compared `## Goal (implementer restatement)` with the original task and found no misread. The generator csproj targets `net11.0` only, `RS1041` is the only new suppression, and the docs state the Visual Studio limit. Recorded build, test, and audit results cover the change and were not re-run. No exceptions or escalations.
+- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md`.
 
 ## Notes
 
