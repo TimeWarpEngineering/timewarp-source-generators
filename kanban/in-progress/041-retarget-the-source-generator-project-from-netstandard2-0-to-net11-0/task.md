@@ -37,20 +37,118 @@ compiler host that runs on .NET Framework, which means Visual Studio. That is ac
      Studio support.
 6. Commit as a breaking change (`feat!:` or a `BREAKING CHANGE:` footer).
 
+## Goal (implementer restatement)
+
+Move `timewarp-source-generators.csproj` off `netstandard2.0` onto `net11.0` (the repo default),
+with no multi-targeting and no netstandard fallback asset. Visual Studio (a .NET Framework compiler
+host) stops loading the package; that is accepted.
+
+Acceptance:
+- The generator project builds for `net11.0`; nothing in the repo still targets `netstandard2.0`.
+- Only the "compiler extension should target netstandard2.0" Roslyn diagnostic(s) are suppressed,
+  each with a comment naming task 041; any other new diagnostic is fixed.
+- Any netstandard-only polyfills, polyfill packages, and `#if` branches are gone (none expected).
+- `./bin/dev build` is 0 warnings / 0 errors; `./bin/dev test` passes with the generator and
+  analyzers loaded from the `net11.0` build output.
+- The packed nupkg carries the `net11.0` DLL under `analyzers/dotnet/cs`.
+- Version bumped only if `./bin/dev check-version` requires it; `documentation/releases.md` gains an
+  entry for that version stating `net11.0`, .NET 11 SDK compiler required, no Visual Studio; readme
+  and other docs updated where they state the target or VS support.
+- Committed as a breaking change; `ganda repo audit` clean.
+
 ## Checklist
 
-- [ ] Generator project targets `net11.0`; no `netstandard2.0` target left in the repo
-- [ ] Only the target-framework analyzer diagnostic(s) are suppressed, each with a comment
-- [ ] netstandard-only polyfills and conditionals removed
-- [ ] `./bin/dev build` reports 0 warnings and 0 errors
-- [ ] `./bin/dev test` passes (generators and analyzers load from the `net11.0` build)
-- [ ] Packed nupkg has the `net11.0` DLL under `analyzers/dotnet/cs`
-- [ ] `documentation/releases.md` and `readme.md` state the new target and the Visual Studio limit
-- [ ] `ganda repo audit` clean
+- [x] Generator project targets `net11.0`; no `netstandard2.0` target left in the repo
+- [x] Only the target-framework analyzer diagnostic(s) are suppressed, each with a comment
+- [x] netstandard-only polyfills and conditionals removed
+- [x] `./bin/dev build` reports 0 warnings and 0 errors
+- [x] `./bin/dev test` passes (generators and analyzers load from the `net11.0` build)
+- [x] Packed nupkg has the `net11.0` DLL under `analyzers/dotnet/cs`
+- [x] `documentation/releases.md` and `readme.md` state the new target and the Visual Studio limit
+- [x] `ganda repo audit` clean
 
 ## Session
 
 - Created: 83d187ba-085b-471b-8964-44a61c5cebc6 (2026-11-12)
+- Implement oracle (Claude Opus 5.5, 2026-11-13): retargeted to net11.0, suppressed RS1041 only,
+  updated docs, gates green. See Results.
+- Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session 72a26f76-39d9-4252-8df5-d20053eb94b1, max-turns 500, Done — 2026-11-13T07:57:25Z
+- Review oracle round 1: cursor (grok-4.7), headless ganda task work, effort 2, roster general, max-turns uncapped (no `--max-turns` flag; bound 120). Disposition clean, 0 findings (2026-11-13)
+- Review oracle: review by reviewer-cursor (cursor, vendor xai, model grok-4.7), session not reported, max-turns uncapped (no `--max-turns` flag; bound 120), artifacts general.md, merged.md, disposition.md — 2026-11-13
+- Review oracle: review by reviewer-cursor (cursor, vendor xai, model grok-4.7-high), session not reported, max-turns uncapped (no --max-turns flag; bound 120), artifacts general.md, merged.md, disposition.md — 2026-11-13T08:04:09Z
+
+## Review
+
+- Round 1: Done
+## Results
+
+### Changes
+
+- `source/timewarp-source-generators/timewarp-source-generators.csproj`: `<TargetFramework>` is now
+  `net11.0`. It stays explicit, like the test projects. No `netstandard2.0` target is left
+  in the repo. `documentation/releases.md` beta.14 keeps its historical mention.
+- **Suppressed diagnostic ids: `RS1041` only.** It was the only new diagnostic: 5 errors, one per
+  compiler extension (`file-length-analyzer.cs`, `file-name-rule-analyzer.cs`,
+  `global-usings-rule-analyzer.cs`, `purpose-region-analyzer.cs`,
+  `type-stem-identifier-analyzer.cs`). It is suppressed with its own `<NoWarn>` line and a
+  comment that names task 041. `EnforceExtendedAnalyzerRules` stays on.
+- `.timewarp/suppression-baseline.json`: added `RS1041: 1` for the generator csproj by hand.
+  The `analyzer-suppressions` check says a baseline rise must be a hand edit, visible in review.
+- Polyfills, polyfill packages, and `#if` branches: none existed, so nothing was removed.
+- Existing `NoWarn` entries: both stay. Each was removed in turn and the project rebuilt with
+  `--no-incremental`. `RS2001` still fires as 3 errors (changed Category on TW0001, TW0007,
+  TWA0023 vs AnalyzerReleases.Shipped.md); it has nothing to do with the target framework.
+  `NU5128` still fires at pack: there is a `net11.0` dependency group but no lib/ref folder,
+  because `IncludeBuildOutput=false`.
+- Version: `./bin/dev check-version` reports `1.0.0-beta.15` is one prerelease ahead of the
+  published beta.14, so there is no bump. Added a `1.0.0-beta.15` entry to
+  `documentation/releases.md`: breaking, `net11.0`, needs the .NET 11 SDK compiler, and does not
+  load in Visual Studio. It also mentions Build.Tasks 2.0.0 from task 039.
+- `readme.md`: the dotnet badge changes from 6.0 to 11.0, and a new `## Requirements` section
+  states the `net11.0` target and the Visual Studio limit. No other doc stated a target or
+  Visual Studio support.
+- Audit boy-scout: `ganda repo audit --fix` refreshed the outdated memsearch hooks in
+  `.githooks/*.cs` (`memsearch-scaffold`). It also wrote the gitignored `.vscode/settings.json`
+  (`vscode-window-icon`).
+
+### Packaging check
+
+- `artifacts/packages/TimeWarp.SourceGenerators.1.0.0-beta.15.nupkg` contains
+  `analyzers/dotnet/cs/timewarp-source-generators.dll`. That DLL's TargetFrameworkAttribute is
+  `.NETCoreApp,Version=v11.0`. The nuspec dependency group is `net11.0`. There is no `lib/` folder.
+- Both test projects build against `source/timewarp-source-generators/bin/Release/net11.0/`.
+  The test console loads it as `OutputItemType="Analyzer"`, and the analyzer tests reference it.
+
+### Gates
+
+| Gate | Command | Result |
+|------|---------|--------|
+| build | `./bin/dev build` | 0 Warning(s), 0 Error(s) |
+| test | `./bin/dev test` | exit 0; Passed: 56, Failed: 0, Total: 56 |
+| audit | `ganda repo audit` | 1st run: passed, 2 advisory warnings (memsearch-scaffold, vscode-window-icon). After `--fix`: 42 passed, 0 failed, 3 skipped. "Repository passes all audit checks." |
+
+### How to validate
+
+Smoke:
+
+```bash
+./bin/dev build && ./bin/dev test
+unzip -l artifacts/packages/TimeWarp.SourceGenerators.1.0.0-beta.15.nupkg
+unzip -p artifacts/packages/TimeWarp.SourceGenerators.1.0.0-beta.15.nupkg \
+  analyzers/dotnet/cs/timewarp-source-generators.dll | strings | grep NETCoreApp
+grep -rn netstandard2.0 --include='*.csproj' --include='*.props' .
+```
+
+Expect: the build reports 0 warnings and 0 errors, and the tests pass 56/56. The nupkg lists
+`analyzers/dotnet/cs/timewarp-source-generators.dll` and no `lib/`. The strings check prints
+`.NETCoreApp,Version=v11.0`. The final grep prints nothing.
+
+### Review disposition
+
+- **Outcome:** clean. 1 round, effort 2, roster `general`.
+- **Final counts:** bug 0, suggestion 0, nit 0. Open 0, fixed 0, wontfix 0.
+- The reviewer compared `## Goal (implementer restatement)` with the original task and found no misread. The generator csproj targets `net11.0` only, `RS1041` is the only new suppression, and the docs state the Visual Studio limit. Recorded build, test, and audit results cover the change and were not re-run. No exceptions or escalations.
+- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md`.
 
 ## Notes
 
