@@ -72,6 +72,7 @@ Acceptance:
 - Created: 83d187ba-085b-471b-8964-44a61c5cebc6 (2026-11-12)
 - Implement oracle (Claude Opus 5.5, 2026-11-13): retargeted to net11.0, suppressed RS1041 only,
   updated docs, gates green. See Results.
+- Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session 72a26f76-39d9-4252-8df5-d20053eb94b1, max-turns 500, Done — 2026-11-13T07:57:25Z
 
 ## Results
 
