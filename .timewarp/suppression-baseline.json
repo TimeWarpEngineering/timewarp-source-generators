@@ -33,6 +33,7 @@
     },
     "source/timewarp-source-generators/timewarp-source-generators.csproj": {
       "NU5128": 1,
+      "RS1041": 1,
       "RS2001": 1
     },
     "tests/timewarp-source-generators-analyzer-tests/timewarp-source-generators-analyzer-tests.csproj": {
