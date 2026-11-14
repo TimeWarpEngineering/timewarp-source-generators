@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup Label="Roslyn">
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.12.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.12.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.12.0" />
   </ItemGroup>
 
   <ItemGroup Label="Code Analyzers">
@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Dev CLI">
-    <PackageVersion Include="TimeWarp.Nuru" Version="4.0.0-beta.12" />
-    <PackageVersion Include="TimeWarp.Nuru.DevCli" Version="4.0.0-beta.12" />
+    <PackageVersion Include="TimeWarp.Nuru" Version="4.0.0-beta.13" />
+    <PackageVersion Include="TimeWarp.Nuru.DevCli" Version="4.0.0-beta.13" />
     <PackageVersion Include="TimeWarp.Amuru" Version="3.0.0-beta.2" />
     <PackageVersion Include="TimeWarp.Amuru.Tools" Version="3.0.0-beta.2" />
     <PackageVersion Include="TimeWarp.Terminal" Version="2.0.0-beta.1" />
