@@ -20,7 +20,7 @@ Acceptance:
 
 - A tree under the NuGet package root is not reported. The root comes from `build_property.NuGetPackageRoot`, which the package now makes visible through `build/` and `buildTransitive/` props. When that key is absent, a `/.nuget/packages/` path segment is the fallback.
 - `obj/` and `goldens/` trees stay exempt. Generated-code skipping is unchanged.
-- When `build_property.ProjectDir` and/or `build_property.RepositoryRoot` are known, a rooted tree under neither of them is not owned and is not reported.
+- When both `build_property.ProjectDir` and `build_property.RepositoryRoot` are known, a rooted tree under neither of them is not owned and is not reported. When either key is absent, that outside-roots rule is off (review round 1 M1).
 - `.editorconfig` key `dotnet_diagnostic.TWA0038.exclude_paths` takes a `;`/`,` glob list (`*`, `**`, `?`). A matching tree is not reported.
 - A long file under `ProjectDir` still warns. `max_lines` still overrides the limit.
 - Tests cover each of those cases. The readme TWA0038 section, `documentation/releases.md` (beta.16), and the analyzer release notes describe the change.
@@ -34,6 +34,10 @@ Acceptance:
 - [x] Readme / release notes updated
 - [x] Verify against timewarp-jaribu `tools/dev-cli` with the TimeWarp.Nuru.DevCli version jaribu pins at the time (this repo pins 4.0.0-beta.15): zero TWA0038 after the fix
 - [ ] Ship as 1.0.0-beta.16 (release task separate if needed)
+
+## Review
+
+- Round 1: Blocked — open M1, M2
 
 ## Notes
 
@@ -49,12 +53,15 @@ Acceptance:
 - 2026-11-17 implement (ganda task work, Claude Opus 5.5): ownership rules, exclude_paths, build props, tests, docs, jaribu verification. Audit boy-scout: `ganda repo audit --fix` created the gitignored `.vscode/settings.json` for the advisory `vscode-window-icon` warning; nothing tracked changed.
 - Ship item: `<Version>` is already `1.0.0-beta.16` (unreleased), so no bump. The NuGet publish is a separate `dev release` after merge.
 - Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5), session not reported, max-turns 500, Done — 2026-11-16T19:41:20Z
+- 2026-11-17 implement-fix-2 (ganda task work, Claude Opus 5.5): fixed M1 (outside-roots rule needs both keys) and M2 (reference docs). Build, test 64/64, audit pass.
+- 2026-11-17 review round 1 (ganda task work, Grok 4.7): effort 2, roster general, session `01a1e5e0-f8c4-7c10-9d1a-b2cc202f5db1`, turn cap 120. Findings in `review/round-1/merged.md`. Disposition not written (open findings).
+- Review oracle: review by reviewer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1e5e0-f8c4-7c10-9d1a-b2cc202f5db1, max-turns 120, artifacts general.md, merged.md — 2026-11-16T19:55:14Z
 
 ## Results
 
 ### Changes
 
-- `source/timewarp-source-generators/source-file-ownership.cs` (new): `SourceFileOwnership` decides whether the consumer owns a tree. It skips files under `build_property.NuGetPackageRoot` (fallback when that key is absent: a `/.nuget/packages/` segment), files under `obj/`/`goldens/`, and rooted files outside both `build_property.ProjectDir` and `build_property.RepositoryRoot` (only when at least one of those keys is known). It collapses `.`/`..` lexically, because DevCli's Compile items arrive as `.../build/../content/...`. It also does the `exclude_paths` glob matching (`**`, `*`, `?`; a glob matches the path suffix at a segment boundary, and a leading `/` anchors it).
+- `source/timewarp-source-generators/source-file-ownership.cs` (new): `SourceFileOwnership` decides whether the consumer owns a tree. It skips files under `build_property.NuGetPackageRoot` (fallback when that key is absent: a `/.nuget/packages/` segment), files under `obj/`/`goldens/`, and rooted files outside both `build_property.ProjectDir` and `build_property.RepositoryRoot` (only when both keys are known; review round 1 M1). It collapses `.`/`..` lexically, because DevCli's Compile items arrive as `.../build/../content/...`. It also does the `exclude_paths` glob matching (`**`, `*`, `?`; a glob matches the path suffix at a segment boundary, and a leading `/` anchors it).
 - `file-length-analyzer.cs`: uses the ownership check and the new `ExcludePathsOptionKey` (`dotnet_diagnostic.TWA0038.exclude_paths`). Generated-code skipping and `max_lines` are unchanged. Removed the unused `IsExemptPath`; its obj/goldens rule moved to `SourceFileOwnership.IsBuildOutput`.
 - `build/TimeWarp.SourceGenerators.props` (new, packed to `build/` and `buildTransitive/`): `CompilerVisibleProperty` for `NuGetPackageRoot`, `ProjectDir`, and `RepositoryRoot`.
 - Tests: 8 new TWA0038 cases (package root with `..`, `.nuget/packages` fallback, owned ProjectDir file warns, RepositoryRoot-linked file warns, outside-roots skip, exclude glob, max_lines with roots, glob/normalize helpers).
@@ -78,6 +85,17 @@ Scratch copy of timewarp-jaribu master at `/tmp/verify-040/jaribu`, with an isol
 - A 607-line probe file added under jaribu `tools/dev-cli/endpoints/` still raised TWA0038 with the fixed analyzer.
 - The unrelated CS0103/CS0246 errors come from jaribu's endpoints, which target the newer DevCli API and do not compile against beta.12.
 
+### Review round 1 fix pass (2026-11-17)
+
+- M1 (bug): `SourceFileOwnership.IsOutsideRoots` now needs both `ProjectDir` and `RepositoryRoot`. With either absent the outside-roots rule is off, so a linked repo file outside the project still warns when `$(RepositoryRoot)` is unset. Package content still falls to the package-root rule. `OutsideRootsFile_Should_BeClean` now expects a warning with only `ProjectDir`, with a RepositoryRoot-linked file under ProjectDir-only config, and with only `RepositoryRoot`. The design comments in `source-file-ownership.cs` and `file-length-analyzer.cs`, the readme, and the restatement now say "both".
+- M2 (suggestion): `documentation/developer/reference/analyzers/file-length-analyzer.md` "Not reported" lists the package root, outside both roots, and `exclude_paths` (with an example). The `overview.md` TWA0038 blurb names the same skips.
+
+| Gate | Command | Result |
+|------|---------|--------|
+| Build | `./bin/dev build` | Pass. 0 warnings, 0 errors. |
+| Test | `./bin/dev test` | Pass. 64/64, including `PASS file outside ProjectDir and RepositoryRoot is clean` with the new one-key assertions. |
+| Audit | `ganda repo audit` | Pass. All checks pass. |
+
 ### How to validate
 
 Smoke:
@@ -87,4 +105,13 @@ Smoke:
 unzip -l artifacts/packages/TimeWarp.SourceGenerators.1.0.0-beta.16.nupkg | grep -E "build(Transitive)?/TimeWarp.SourceGenerators.props"
 ```
 
-Expect: build passes with 0 warnings. Tests are 64/64 and include `PASS file under NuGetPackageRoot is clean`, `PASS long file under ProjectDir still warns`, and `PASS exclude_paths glob skips matching files`. The nupkg lists both `build/` and `buildTransitive/TimeWarp.SourceGenerators.props`. In a consumer that compiles a package's long `.cs` (for example DevCli 4.0.0-beta.12), TWA0038 reports nothing for the package files and still reports owned files over the limit.
+Expect: build passes with 0 warnings. Tests are 64/64 and include `PASS file under NuGetPackageRoot is clean`, `PASS long file under ProjectDir still warns`, `PASS exclude_paths glob skips matching files`, and `PASS file outside ProjectDir and RepositoryRoot is clean` (which also checks that a file outside the project still warns when only one of `ProjectDir`/`RepositoryRoot` is set). The nupkg lists both `build/` and `buildTransitive/TimeWarp.SourceGenerators.props`. In a consumer that compiles a package's long `.cs` (for example DevCli 4.0.0-beta.12), TWA0038 reports nothing for the package files and still reports owned files over the limit.
+
+### Review
+
+Round 1 (2026-11-17, general, effort 2) is open: 1 bug, 1 suggestion, 0 nits. Ledger: `review/round-1/merged.md`. Framework: `review/review-framework.md`. Disposition is not written while those findings are open.
+
+## Learnings
+
+- Misread (M1): the task says a tree outside `ProjectDir` and the repository root is not owned, and the release notes say the outside-roots rule is off when a key is absent. The restatement says "When `build_property.ProjectDir` and/or `build_property.RepositoryRoot` are known, a rooted tree under neither of them is not owned." `IsOutsideRoots` and `OutsideRootsFile_Should_BeClean` follow the restatement. That drops TWA0038 for owned linked files when `$(RepositoryRoot)` is unset.
+- The description also says to skip any `packages/` restore root and a package `contentFiles` item. The restatement uses `build_property.NuGetPackageRoot` (made visible by the new props) and a `/.nuget/packages/` fallback when that key is absent. The task Notes allow that design. There is no separate contentFiles item check; a contentFiles or Compile path under the package root is covered by the package-root rule. Not a finding.

@@ -10,7 +10,7 @@
 // *.Designer.cs, *.generated.cs, and editorconfig generated_code = true).
 // SourceFileOwnership also skips obj/ and goldens/ path segments when the file lacks a generated header.
 // Only files the consuming repository owns are reported (task 040): SourceFileOwnership skips a tree
-// under the NuGet package root, or outside ProjectDir and RepositoryRoot when those keys are visible.
+// under the NuGet package root, or outside both ProjectDir and RepositoryRoot when both keys are visible.
 // `dotnet_diagnostic.TWA0038.exclude_paths` (glob list) skips what that heuristic misses.
 // Line count matches `wc -l`: a trailing line break does not open a counted line. The diagnostic
 // anchors on the first token (as TWA0004 does) so a leading `#pragma warning disable` can suppress it.

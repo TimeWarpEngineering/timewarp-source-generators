@@ -48,7 +48,7 @@ Reports an identifier that does not end with its type stem. Interfaces drop a le
 
 ### TWA0038 - File Length Analyzer
 
-Reports a C# file longer than 500 lines. `dotnet_diagnostic.TWA0038.max_lines` overrides the limit. Moved from TimeWarp.Architecture.Analyzers. The id is still TWA0038.
+Reports a C# file longer than 500 lines. `dotnet_diagnostic.TWA0038.max_lines` overrides the limit. Reports only files the consuming repository owns: it skips files under the NuGet package root, files outside both the project directory and `$(RepositoryRoot)`, and paths that match the `dotnet_diagnostic.TWA0038.exclude_paths` glob list. Moved from TimeWarp.Architecture.Analyzers. The id is still TWA0038.
 
 - **Rule ID**: TWA0038
 - **Category**: Maintainability

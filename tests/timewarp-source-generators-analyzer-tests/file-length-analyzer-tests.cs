@@ -187,7 +187,14 @@ internal static class FileLengthAnalyzerTests
 
     Dictionary<string, string> projectOnly = new() { [SourceFileOwnership.ProjectDirKey] = ProjectDir };
     ImmutableArray<Diagnostic> outsideProject = await AnalyzeAsync("/opt/vendor/widget.cs", SourceOfLines(800), projectOnly);
-    Expect.Equal(0, outsideProject.Length, "With only ProjectDir known, a file outside it is not owned.");
+    Expect.Equal(1, outsideProject.Length, "With only ProjectDir known, the outside-roots rule is off.");
+
+    ImmutableArray<Diagnostic> linked = await AnalyzeAsync(RepositoryRoot + "source/shared/widget.cs", SourceOfLines(800), projectOnly);
+    Expect.Equal(1, linked.Length, "A linked repo file outside ProjectDir still warns when RepositoryRoot is unset.");
+
+    Dictionary<string, string> repositoryOnly = new() { [SourceFileOwnership.RepositoryRootKey] = RepositoryRoot };
+    ImmutableArray<Diagnostic> outsideRepository = await AnalyzeAsync("/opt/vendor/widget.cs", SourceOfLines(800), repositoryOnly);
+    Expect.Equal(1, outsideRepository.Length, "With only RepositoryRoot known, the outside-roots rule is off.");
   }
 
   public static async Task ExcludePathsGlob_Should_SkipMatches()

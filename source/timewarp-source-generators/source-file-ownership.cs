@@ -9,8 +9,9 @@
 // Each key may be absent (a consumer that excludes build assets, or a test), so every rule degrades:
 // - Package root: under NuGetPackageRoot, or a "/.nuget/packages/" segment when the key is absent.
 // - Build output: an obj/ or goldens/ segment.
-// - Outside roots: with ProjectDir or RepositoryRoot known, a rooted tree under neither is not owned.
-//   With neither known the rule is off; a linked file elsewhere in the repo still warns.
+// - Outside roots: only with both ProjectDir and RepositoryRoot known, a rooted tree under neither is
+//   not owned. With either key absent the rule is off, so a linked file elsewhere in the repo still
+//   warns; package content then relies on the package-root rule alone.
 // exclude_paths globs: "**" spans segments, "*" and "?" stay inside one segment. A pattern matches
 // the path suffix at a segment boundary, so "tools/legacy/*.cs" works without knowing the root.
 // No file IO (EnforceExtendedAnalyzerRules): "." and ".." are collapsed lexically.
@@ -145,12 +146,12 @@ internal static class SourceFileOwnership
 
   private static bool IsOutsideRoots(string normalized, Roots roots)
   {
-    if (roots.ProjectDir is null && roots.RepositoryRoot is null) return false;
+    // Both keys are required: ProjectDir is always set by the SDK, but RepositoryRoot only by a
+    // Directory.Build.props convention. ProjectDir alone would drop owned linked files.
+    if (roots.ProjectDir is null || roots.RepositoryRoot is null) return false;
     if (!IsRooted(normalized)) return false;
 
-    bool underProject = roots.ProjectDir is not null && IsUnder(normalized, roots.ProjectDir);
-    bool underRepository = roots.RepositoryRoot is not null && IsUnder(normalized, roots.RepositoryRoot);
-    return !underProject && !underRepository;
+    return !IsUnder(normalized, roots.ProjectDir) && !IsUnder(normalized, roots.RepositoryRoot);
   }
 
   private static bool IsRooted(string normalized) =>
