@@ -6,4 +6,4 @@ TW0001 | Naming | Info | FileNameRuleAnalyzer, disabled by default; multi-dot ke
 TW0007 | Usage | Warning | GlobalUsingsRuleAnalyzer, disabled by default; visits every using including file-scoped namespace-first; default filename kebab global-usings.cs
 TWA0004 | Documentation | Warning | PurposeRegionAnalyzer, enabled by default; moved from TimeWarp.Architecture.Analyzers with the same id
 TWA0023 | Naming | Warning | TypeStemIdentifierAnalyzer, disabled by default; moved from TimeWarp.Architecture.Analyzers with the same id
-TWA0038 | Maintainability | Warning | FileLengthAnalyzer, enabled by default; moved from TimeWarp.Architecture.Analyzers with the same id; max_lines editorconfig key
+TWA0038 | Maintainability | Warning | FileLengthAnalyzer, enabled by default; moved from TimeWarp.Architecture.Analyzers with the same id; max_lines and exclude_paths editorconfig keys; skips files the consuming repo does not own (NuGet package root, outside ProjectDir and RepositoryRoot)

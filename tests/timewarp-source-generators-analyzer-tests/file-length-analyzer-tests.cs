@@ -1,5 +1,6 @@
 #region Purpose
-// TWA0038 cases: the 500-line threshold, generated and path exemptions, the editorconfig override.
+// TWA0038 cases: the 500-line threshold, generated and path exemptions, the editorconfig override,
+// and the ownership rules that skip NuGet package content (task 040).
 #endregion
 
 #region Design
@@ -22,8 +23,27 @@ internal static class FileLengthAnalyzerTests
     ("generated_code editorconfig is clean", GeneratedCodeEditorConfig_Should_BeClean),
     ("obj or goldens path is clean", ObjOrGoldensPath_Should_BeClean),
     ("max_lines overrides the default", EditorConfigMaxLines_Should_OverrideDefault),
-    ("pragma disable suppresses", PragmaDisable_Should_Suppress)
+    ("pragma disable suppresses", PragmaDisable_Should_Suppress),
+    ("file under NuGetPackageRoot is clean", PackageRootFile_Should_BeClean),
+    ("file under .nuget/packages is clean without the key", NuGetFallbackPath_Should_BeClean),
+    ("long file under ProjectDir still warns", OwnedProjectFile_Should_ReportTwa0038),
+    ("file under RepositoryRoot outside ProjectDir warns", RepositoryFile_Should_ReportTwa0038),
+    ("file outside ProjectDir and RepositoryRoot is clean", OutsideRootsFile_Should_BeClean),
+    ("exclude_paths glob skips matching files", ExcludePathsGlob_Should_SkipMatches),
+    ("max_lines still applies with ownership keys", MaxLinesWithRoots_Should_OverrideDefault),
+    ("glob and normalize helpers", GlobAndNormalizeHelpers_Should_Match)
   ];
+
+  private const string PackageRoot = "/home/dev/.cache/nuget-packages/";
+  private const string RepositoryRoot = "/repo/";
+  private const string ProjectDir = "/repo/tools/dev-cli/";
+
+  private static Dictionary<string, string> RootConfig() => new()
+  {
+    [SourceFileOwnership.NuGetPackageRootKey] = PackageRoot,
+    [SourceFileOwnership.ProjectDirKey] = ProjectDir,
+    [SourceFileOwnership.RepositoryRootKey] = RepositoryRoot
+  };
 
   public static Task TrailingLineBreak_Should_NotCount()
   {
@@ -125,6 +145,92 @@ internal static class FileLengthAnalyzerTests
       SourceOfLines(800, "#pragma warning disable TWA0038\n")
     );
     Expect.Equal(0, diagnostics.Length, "A leading pragma disable suppresses TWA0038.");
+  }
+
+  public static async Task PackageRootFile_Should_BeClean()
+  {
+    // Nuru.DevCli adds Compile items through build/../content, so the raw path carries "..".
+    ImmutableArray<Diagnostic> diagnostics = await AnalyzeAsync(
+      PackageRoot + "timewarp.nuru.devcli/4.0.0-beta.15/build/../content/any/services/release-guard.cs",
+      SourceOfLines(800),
+      RootConfig()
+    );
+    Expect.Equal(0, diagnostics.Length, "A file under NuGetPackageRoot is package content.");
+  }
+
+  public static async Task NuGetFallbackPath_Should_BeClean()
+  {
+    ImmutableArray<Diagnostic> diagnostics = await AnalyzeAsync(
+      "/home/dev/.nuget/packages/timewarp.nuru.devcli/4.0.0-beta.15/content/any/services/release-guard.cs",
+      SourceOfLines(800)
+    );
+    Expect.Equal(0, diagnostics.Length, "A .nuget/packages segment is package content when the key is absent.");
+  }
+
+  public static async Task OwnedProjectFile_Should_ReportTwa0038()
+  {
+    ImmutableArray<Diagnostic> diagnostics = await AnalyzeAsync(ProjectDir + "endpoints/widget.cs", SourceOfLines(501), RootConfig());
+    Expect.Equal(1, diagnostics.Length, "An owned file under ProjectDir still warns.");
+    Expect.Span(diagnostics[0], 4, 1, 10, "Diagnostic anchors on the namespace token.");
+  }
+
+  public static async Task RepositoryFile_Should_ReportTwa0038()
+  {
+    ImmutableArray<Diagnostic> diagnostics = await AnalyzeAsync(RepositoryRoot + "source/shared/widget.cs", SourceOfLines(501), RootConfig());
+    Expect.Equal(1, diagnostics.Length, "A linked file elsewhere in the repository is owned.");
+  }
+
+  public static async Task OutsideRootsFile_Should_BeClean()
+  {
+    ImmutableArray<Diagnostic> diagnostics = await AnalyzeAsync("/opt/vendor/widget.cs", SourceOfLines(800), RootConfig());
+    Expect.Equal(0, diagnostics.Length, "A file outside ProjectDir and RepositoryRoot is not owned.");
+
+    Dictionary<string, string> projectOnly = new() { [SourceFileOwnership.ProjectDirKey] = ProjectDir };
+    ImmutableArray<Diagnostic> outsideProject = await AnalyzeAsync("/opt/vendor/widget.cs", SourceOfLines(800), projectOnly);
+    Expect.Equal(0, outsideProject.Length, "With only ProjectDir known, a file outside it is not owned.");
+  }
+
+  public static async Task ExcludePathsGlob_Should_SkipMatches()
+  {
+    Dictionary<string, string> config = RootConfig();
+    config[FileLengthAnalyzer.ExcludePathsOptionKey] = "tools/dev-cli/legacy/*.cs; **/vendored/**";
+
+    ImmutableArray<Diagnostic> legacy = await AnalyzeAsync(ProjectDir + "legacy/widget.cs", SourceOfLines(800), config);
+    Expect.Equal(0, legacy.Length, "A relative glob matches the path suffix.");
+
+    ImmutableArray<Diagnostic> vendored = await AnalyzeAsync(RepositoryRoot + "source/vendored/deep/widget.cs", SourceOfLines(800), config);
+    Expect.Equal(0, vendored.Length, "A ** glob spans directories.");
+
+    ImmutableArray<Diagnostic> nested = await AnalyzeAsync(ProjectDir + "legacy/nested/widget.cs", SourceOfLines(800), config);
+    Expect.Equal(1, nested.Length, "A single * does not cross a directory.");
+
+    ImmutableArray<Diagnostic> other = await AnalyzeAsync(ProjectDir + "endpoints/widget.cs", SourceOfLines(800), config);
+    Expect.Equal(1, other.Length, "A file no glob matches still warns.");
+  }
+
+  public static async Task MaxLinesWithRoots_Should_OverrideDefault()
+  {
+    Dictionary<string, string> config = RootConfig();
+    config[FileLengthAnalyzer.MaximumLinesOptionKey] = "700";
+
+    ImmutableArray<Diagnostic> atLimit = await AnalyzeAsync(ProjectDir + "widget.cs", SourceOfLines(700), config);
+    Expect.Equal(0, atLimit.Length, "700 lines is the configured limit.");
+
+    ImmutableArray<Diagnostic> over = await AnalyzeAsync(ProjectDir + "widget.cs", SourceOfLines(701), config);
+    Expect.Equal(1, over.Length, "701 lines exceeds the configured limit.");
+    Expect.Contains("700", over[0].GetMessage(), "Message names the configured limit.");
+  }
+
+  public static Task GlobAndNormalizeHelpers_Should_Match()
+  {
+    Expect.Equal("/a/c/d.cs", SourceFileOwnership.Normalize("/a/b/../c/./d.cs"), "Dot segments collapse.");
+    Expect.Equal("C:/repo/x.cs", SourceFileOwnership.Normalize("C:\\repo\\x.cs"), "Backslashes become slashes.");
+    Expect.True(SourceFileOwnership.MatchesAnyGlob("/repo/a/b.cs", "/repo/**/*.cs"), "A leading / anchors at the root.");
+    Expect.True(!SourceFileOwnership.MatchesAnyGlob("/other/repo/a/b.cs", "/repo/**/*.cs"), "An anchored glob does not match a suffix.");
+    Expect.True(SourceFileOwnership.MatchesAnyGlob("/repo/a/b1.cs", "a/b?.cs"), "? matches one character.");
+    Expect.True(!SourceFileOwnership.MatchesAnyGlob("/repo/xa/b1.cs", "a/b?.cs"), "A glob matches at a segment boundary.");
+    Expect.True(!SourceFileOwnership.MatchesAnyGlob("/repo/a/b.cs", " ; , "), "An empty list matches nothing.");
+    return Task.CompletedTask;
   }
 
   private static string SourceOfLines(int lineCount, string header = "")
