@@ -19,10 +19,10 @@
   </ItemGroup>
 
   <ItemGroup Label="Dev CLI">
-    <PackageVersion Include="TimeWarp.Nuru" Version="4.0.0-beta.13" />
-    <PackageVersion Include="TimeWarp.Nuru.DevCli" Version="4.0.0-beta.13" />
-    <PackageVersion Include="TimeWarp.Amuru" Version="3.0.0-beta.2" />
-    <PackageVersion Include="TimeWarp.Amuru.Tools" Version="3.0.0-beta.2" />
-    <PackageVersion Include="TimeWarp.Terminal" Version="2.0.0-beta.1" />
+    <PackageVersion Include="TimeWarp.Nuru" Version="4.0.0-beta.15" />
+    <PackageVersion Include="TimeWarp.Nuru.DevCli" Version="4.0.0-beta.15" />
+    <PackageVersion Include="TimeWarp.Amuru" Version="3.0.0-beta.5" />
+    <PackageVersion Include="TimeWarp.Amuru.Tools" Version="3.0.0-beta.5" />
+    <PackageVersion Include="TimeWarp.Terminal" Version="2.0.0-beta.2" />
   </ItemGroup>
 </Project>

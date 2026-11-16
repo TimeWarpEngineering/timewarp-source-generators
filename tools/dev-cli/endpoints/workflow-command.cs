@@ -3,7 +3,13 @@
 #endregion
 #region Design
 // Auto-detects mode from GITHUB_EVENT_NAME or accepts explicit --mode flag
-//   pr/merge: clean -> build -> test
+//   pr/merge: classify -> clean -> build -> test
+// Classify is the shared PullRequestBuildClassifier (TimeWarp.Nuru.DevCli).
+// On a pull request that changes only non-build paths (kanban, documentation,
+// ...) it prints its message and the run exits 0. Every other event builds.
+// workflow.yml has no paths filter on pull_request, so every pull request
+// reports CI. This repo builds from the default roots only, so
+// .timewarp/dev.jsonc declares no pullRequestBuild additions. Task 043.
 //   release:  tag match + NuGet not-published -> clean -> build -> test -> push
 // Invokes sibling command handlers in-process so CI needs no self-install
 // The test step sets Coverage so CI writes Cobertura under artifacts/coverage
@@ -115,6 +121,10 @@ internal sealed class WorkflowCommand : ICommand<Unit>
 
     private async Task RunPrWorkflowAsync()
     {
+      PullRequestBuildDecision decision = await PullRequestBuildClassifier.DecideAsync(RepoRoot, Ct);
+      Terminal.WriteLine(decision.Message);
+      if (!decision.RequiresBuild) return;
+
       if (!await RunStepAsync("Clean", CleanAsync)) return;
       if (!await RunStepAsync("Build", () => new BuildCommand.Handler(Terminal).Handle(new BuildCommand(), Ct))) return;
       await RunStepAsync("Test", RunTestsAsync);
