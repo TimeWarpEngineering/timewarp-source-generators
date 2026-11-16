@@ -48,6 +48,7 @@ Acceptance:
 - Created: ce5c4952-6364-4ae8-824b-a0243ec9ccbe (2026-11-12)
 - 2026-11-17 implement (ganda task work, Claude Opus 5.5): ownership rules, exclude_paths, build props, tests, docs, jaribu verification. Audit boy-scout: `ganda repo audit --fix` created the gitignored `.vscode/settings.json` for the advisory `vscode-window-icon` warning; nothing tracked changed.
 - Ship item: `<Version>` is already `1.0.0-beta.16` (unreleased), so no bump. The NuGet publish is a separate `dev release` after merge.
+- Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5), session not reported, max-turns 500, Done — 2026-11-16T19:41:20Z
 
 ## Results
 
