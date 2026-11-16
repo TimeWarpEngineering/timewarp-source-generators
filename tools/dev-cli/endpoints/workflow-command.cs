@@ -8,8 +8,9 @@
 // On a pull request that changes only non-build paths (kanban, documentation,
 // ...) it prints its message and the run exits 0. Every other event builds.
 // workflow.yml has no paths filter on pull_request, so every pull request
-// reports CI. This repo builds from the default roots only, so
-// .timewarp/dev.jsonc declares no pullRequestBuild additions. Task 043.
+// reports CI. readme.md and assets/** are packed into the nupkg, so
+// .timewarp/dev.jsonc declares them under pullRequestBuild.buildPaths.
+// Task 043.
 //   release:  tag match + NuGet not-published -> clean -> build -> test -> push
 // Invokes sibling command handlers in-process so CI needs no self-install
 // The test step sets Coverage so CI writes Cobertura under artifacts/coverage

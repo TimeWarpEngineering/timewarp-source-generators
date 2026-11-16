@@ -3,5 +3,17 @@
   "checkVersionConfig": {
     "checkVersionStrategy": "nuget-search",
     "packages": "TimeWarp.SourceGenerators"
+  },
+
+  // Additions to the shared pull request build rule (PullRequestBuildClassifier
+  // in TimeWarp.Nuru.DevCli). readme.md and assets/logo.png are packed into the
+  // TimeWarp.SourceGenerators package (PackageReadmeFile / PackageIcon in
+  // source/Directory.Build.props), so a pull request that changes them must
+  // build and pack. The default rule treats both as non-build. Task 043.
+  "pullRequestBuild": {
+    "buildPaths": [
+      "readme.md",
+      "assets/**"
+    ]
   }
 }

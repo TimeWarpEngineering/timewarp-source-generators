@@ -38,8 +38,9 @@ Acceptance:
 - `TimeWarp.Nuru` and `TimeWarp.Nuru.DevCli` pinned at 4.0.0-beta.15.
 - `dev workflow` calls `PullRequestBuildClassifier.DecideAsync(repoRoot, ct)` first on the PR path; skip exits 0.
 - No `paths` on `pull_request`; `push` filter kept with a why comment.
-- This repo builds only from the classifier's default roots plus root files (which already build), so no
-  `pullRequestBuild` config is needed.
+- Build inputs outside the default roots are declared in `.timewarp/dev.jsonc` under
+  `pullRequestBuild.buildPaths`: `readme.md` and `assets/**`, which are packed into the nupkg
+  (`PackageReadmeFile` / `PackageIcon`). The default rule treats both as non-build (review round 1, M1).
 - No local copy of the rule in `tools/dev-cli/`.
 - `./bin/dev build`, `./bin/dev test`, and `ganda repo audit` pass (both ganda 655 CI-standard checks).
 
@@ -65,9 +66,13 @@ Acceptance:
   always builds for non-`pull_request` events.
 - `.github/workflows/workflow.yml`: `paths` removed from `pull_request`; `push` filter kept with a why comment.
   Checkout already uses `fetch-depth: 0`, which the classifier's three-dot diff needs.
-- No extra build roots: the repo builds from `source`, `tests`, `tools`, `msbuild` plus root files
-  (`Directory.*.props`, `nuget.config`, `.slnx`), which the classifier already treats as build paths.
-  No `pullRequestBuild` config added. No local classification rule exists in `tools/dev-cli/`.
+- Extra build inputs (fix for review round 1, M1): `.timewarp/dev.jsonc` declares
+  `pullRequestBuild.buildPaths` = `readme.md`, `assets/**`. Both are packed into TimeWarp.SourceGenerators
+  (`readme.md` from the csproj and `PackageReadmeFile`; `assets/logo.png` as `PackageIcon` in
+  `source/Directory.Build.props`), so a pull request that changes them builds and packs. The Design comment in
+  `workflow-command.cs` names these additions. The rest of the repo builds from `source`, `tests`, `tools`,
+  `msbuild` plus root files (`Directory.*.props`, `nuget.config`, `.slnx`), which the classifier already treats
+  as build paths. No local classification rule exists in `tools/dev-cli/`.
 - CI run URL: recorded after the host opens the pull request.
 
 ### Gates
@@ -75,6 +80,14 @@ Acceptance:
 - `./bin/dev build` — passed (0 warnings, 0 errors). Dev CLI recompiled with `dotnet run --file tools/dev-cli/dev.cs -- self-install` (succeeded) after the dev-cli change.
 - `./bin/dev test` — passed (56 passed, 0 failed).
 - `ganda repo audit` — passed ("Repository passes all audit checks"), including `workflow-file` and `dev-workflow-classifier`.
+
+### Gates (fix pass, review round 1 M1)
+
+- `./bin/dev build` — passed (0 warnings, 0 errors).
+- `./bin/dev test` — passed (56 passed, 0 failed).
+- `ganda repo audit` — passed ("Repository passes all audit checks").
+- Spot check: a synthetic `pull_request` event whose diff is `readme.md` only printed
+  "Build path changed: readme.md. Full build." and started the pipeline.
 
 ### How to validate
 
@@ -94,7 +107,17 @@ Expect:
   prints "Build path changed: ... Full build." and runs the pipeline.
 - `pull_request` has only `branches`, no `paths`; `push` keeps its `paths` list with a comment.
 - `ganda repo audit` passes, with `workflow-file` and `dev-workflow-classifier` PASS.
+- A pull request event whose diff touches only `readme.md` or `assets/logo.png` prints "Build path changed: ..."
+  and runs the full pipeline (declared in `.timewarp/dev.jsonc` `pullRequestBuild.buildPaths`).
 - The task pull request shows a `CI` check.
+
+### Review
+
+Round 1 (effort 2, roster: general) left M1 open. Disposition is not written. Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`.
+
+## Review
+
+- Round 1: Blocked — open M1
 
 ## Notes
 
@@ -107,3 +130,10 @@ plain `ganda pr merge` (no `--allow-no-ci`).
 - Created: 64677b22-d705-4b25-b537-4b53732bcb92 (2026-11-16)
 - 2026-11-16 implement: classifier wired, pr paths filter removed, pins bumped (boy-scout: package-pin-currency); build/test/audit green.
 - Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5), session not reported, max-turns 500, Done — 2026-11-16T14:50:25Z
+- 2026-11-16 review round 1: general (grok, session `01a1e4d6-a1d2-70a2-b465-9d6499d4324b`), effort 2, turn cap 120. M1 open. Disposition not written.
+- Review oracle: review by reviewer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1e4d6-a1d2-70a2-b465-9d6499d4324b, max-turns 120, artifacts general.md, merged.md — 2026-11-16T14:59:02Z
+- 2026-11-16 implement-fix-2: M1 fixed — `pullRequestBuild.buildPaths` (`readme.md`, `assets/**`) in `.timewarp/dev.jsonc`; Design comment updated; build/test/audit green.
+
+## Learnings
+
+- Misread: the Goal restatement says this repo builds only from the classifier's default roots plus root files that already count as build paths, so no `pullRequestBuild` config is needed. Requirement 5 asks for build inputs outside `source`, `tests`, `tools`, and `msbuild` to be declared through `PullRequestBuildConfig`. `readme.md` and `assets/logo.png` are packed into the package, and the default rule treats both as non-build. That gap is M1.
