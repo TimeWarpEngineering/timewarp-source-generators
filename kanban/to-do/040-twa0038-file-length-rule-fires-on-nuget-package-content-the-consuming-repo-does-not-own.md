@@ -18,13 +18,16 @@ Fix: TWA0038 should only report files the consuming repository owns.
 - [ ] `dotnet_diagnostic.TWA0038.exclude_paths` glob option
 - [ ] Analyzer tests for package-root skip, owned-file report, exclude glob, max_lines
 - [ ] Readme / release notes updated
-- [ ] Verify against timewarp-jaribu `tools/dev-cli` with TimeWarp.Nuru.DevCli 4.0.0-beta.12: zero TWA0038 after the fix
-- [ ] Ship as 1.0.0-beta.15 (release task separate if needed)
+- [ ] Verify against timewarp-jaribu `tools/dev-cli` with the TimeWarp.Nuru.DevCli version jaribu pins at the time (this repo pins 4.0.0-beta.15): zero TWA0038 after the fix
+- [ ] Ship as 1.0.0-beta.16 (release task separate if needed)
 
 ## Notes
 
 - Origin: timewarp-jaribu task 061 review (2026-11-12) rejected `NoWarn` and obj-compile workarounds; jaribu 062 holds the pin pending this fix.
 - No time estimates.
+- Groomed 2026-11-17: 1.0.0-beta.15 was released 2026-11-13 (tasks 039 and 041), and master is on unreleased `1.0.0-beta.16`, so this ships as beta.16. Bump `<Version>` only if `./bin/dev check-version` requires it.
+- `build_property.NuGetPackageRoot` is not visible to analyzers by default. A package makes it visible by shipping a build props or targets file with `<CompilerVisibleProperty Include="NuGetPackageRoot" />`. This package ships no build file today (the csproj packs only the DLL and the readme). Either add one under `build/` (and `buildTransitive/` if consumers reference it transitively) or do not depend on that property. Check which `build_property.*` keys the analyzer actually receives in a consumer before relying on any of them, `ProjectDir` included, and keep a path-based fallback for when a key is absent.
+- The package targets `net11.0` since beta.15 (task 041), so current BCL APIs are available to the analyzer; `EnforceExtendedAnalyzerRules` still bans file IO.
 
 ## Session
 
