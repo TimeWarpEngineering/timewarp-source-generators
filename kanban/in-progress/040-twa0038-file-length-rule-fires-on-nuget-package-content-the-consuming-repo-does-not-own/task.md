@@ -37,8 +37,8 @@ Acceptance:
 
 ## Review
 
-- Round 1: Blocked — open M1, M2
-
+- Round 1: open M1 (bug) and M2 (suggestion). Fixed in `4b196de`.
+- Round 2: Done
 ## Notes
 
 - Origin: timewarp-jaribu task 061 review (2026-11-12) rejected `NoWarn` and obj-compile workarounds; jaribu 062 holds the pin pending this fix.
@@ -56,6 +56,7 @@ Acceptance:
 - 2026-11-17 implement-fix-2 (ganda task work, Claude Opus 5.5): fixed M1 (outside-roots rule needs both keys) and M2 (reference docs). Build, test 64/64, audit pass.
 - 2026-11-17 review round 1 (ganda task work, Grok 4.7): effort 2, roster general, session `01a1e5e0-f8c4-7c10-9d1a-b2cc202f5db1`, turn cap 120. Findings in `review/round-1/merged.md`. Disposition not written (open findings).
 - Review oracle: review by reviewer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1e5e0-f8c4-7c10-9d1a-b2cc202f5db1, max-turns 120, artifacts general.md, merged.md — 2026-11-16T19:55:14Z
+- 2026-11-17 review round 2 (ganda task work, Grok 4.7): effort 1, roster general, session `01a1e5ee-efca-70a0-9826-29f2dcc0f939`, turn cap 80. Delta since `1c32654` (commit `4b196de`). M1 and M2 fixed. Disposition clean. Artifacts: `review/round-2/general.md`, `review/round-2/merged.md`, `review/disposition.md`.
 
 ## Results
 
@@ -109,9 +110,9 @@ Expect: build passes with 0 warnings. Tests are 64/64 and include `PASS file und
 
 ### Review
 
-Round 1 (2026-11-17, general, effort 2) is open: 1 bug, 1 suggestion, 0 nits. Ledger: `review/round-1/merged.md`. Framework: `review/review-framework.md`. Disposition is not written while those findings are open.
+Round 1 (2026-11-17, general, effort 2) raised M1 (bug) and M2 (suggestion). Both are fixed. Round 2 (2026-11-17, general, effort 1) re-checked the fix delta since `1c32654` and found no new issues. Final counts: bug 0 open / 1 fixed, suggestion 0 open / 1 fixed, nit 0. Disposition: clean. Ledger: `review/round-2/merged.md`. Framework: `review/review-framework.md`. Disposition file: `review/disposition.md`. Gates were not re-run in review; the fix-pass record above covers build, test, and audit.
 
 ## Learnings
 
-- Misread (M1): the task says a tree outside `ProjectDir` and the repository root is not owned, and the release notes say the outside-roots rule is off when a key is absent. The restatement says "When `build_property.ProjectDir` and/or `build_property.RepositoryRoot` are known, a rooted tree under neither of them is not owned." `IsOutsideRoots` and `OutsideRootsFile_Should_BeClean` follow the restatement. That drops TWA0038 for owned linked files when `$(RepositoryRoot)` is unset.
+- Misread (M1, fixed): the task says a tree outside `ProjectDir` and the repository root is not owned, and the release notes say the outside-roots rule is off when a key is absent. The original restatement said "When `build_property.ProjectDir` and/or `build_property.RepositoryRoot` are known, a rooted tree under neither of them is not owned." `IsOutsideRoots` and `OutsideRootsFile_Should_BeClean` followed that and dropped TWA0038 for owned linked files when `$(RepositoryRoot)` was unset. The fix pass aligned the restatement, the helper, and the test with the task. Round 2 found no remaining mismatch.
 - The description also says to skip any `packages/` restore root and a package `contentFiles` item. The restatement uses `build_property.NuGetPackageRoot` (made visible by the new props) and a `/.nuget/packages/` fallback when that key is absent. The task Notes allow that design. There is no separate contentFiles item check; a contentFiles or Compile path under the package root is covered by the package-root rule. Not a finding.
