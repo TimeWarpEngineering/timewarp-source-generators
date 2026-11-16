@@ -113,12 +113,12 @@ Expect:
 
 ### Review
 
-Round 1 (effort 2, roster: general) left M1 open. Disposition is not written. Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`.
+Round 1 (effort 2, roster: general) raised M1 (bug): packed `readme.md` and `assets/logo.png` were not declared as build paths. Round 2 (effort 1, roster: general) re-reviewed the fix delta `0851645`..`1acceba`. M1 is fixed. No new findings. Final counts: bug 0 open / 1 fixed / 0 wontfix; suggestion 0; nit 0. Disposition: clean. Paths: `review/review-framework.md`, `review/round-1/merged.md`, `review/round-2/general.md`, `review/round-2/merged.md`, `review/disposition.md`.
 
 ## Review
 
-- Round 1: Blocked — open M1
-
+- Round 1: M1 fixed in round 2
+- Round 2: Done
 ## Notes
 
 
@@ -133,7 +133,9 @@ plain `ganda pr merge` (no `--allow-no-ci`).
 - 2026-11-16 review round 1: general (grok, session `01a1e4d6-a1d2-70a2-b465-9d6499d4324b`), effort 2, turn cap 120. M1 open. Disposition not written.
 - Review oracle: review by reviewer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1e4d6-a1d2-70a2-b465-9d6499d4324b, max-turns 120, artifacts general.md, merged.md — 2026-11-16T14:59:02Z
 - 2026-11-16 implement-fix-2: M1 fixed — `pullRequestBuild.buildPaths` (`readme.md`, `assets/**`) in `.timewarp/dev.jsonc`; Design comment updated; build/test/audit green.
+- 2026-11-16 review round 2: general (grok, session `01a1e4e0-431b-7263-934a-d67a013a47d4`), effort 1, turn cap 80. M1 fixed. No new findings. Disposition: clean.
 
 ## Learnings
 
-- Misread: the Goal restatement says this repo builds only from the classifier's default roots plus root files that already count as build paths, so no `pullRequestBuild` config is needed. Requirement 5 asks for build inputs outside `source`, `tests`, `tools`, and `msbuild` to be declared through `PullRequestBuildConfig`. `readme.md` and `assets/logo.png` are packed into the package, and the default rule treats both as non-build. That gap is M1.
+- Misread: the Goal restatement said this repo builds only from the classifier's default roots plus root files that already count as build paths, so no `pullRequestBuild` config is needed. Requirement 5 asks for build inputs outside `source`, `tests`, `tools`, and `msbuild` to be declared through `PullRequestBuildConfig`. `readme.md` and `assets/logo.png` are packed into the package, and the default rule treats both as non-build. That gap was M1.
+- The fix pass corrected the Goal restatement: it now names `pullRequestBuild.buildPaths` for `readme.md` and `assets/**`. Round 2 compared that restatement with requirements 1–7 and found no remaining mismatch.
