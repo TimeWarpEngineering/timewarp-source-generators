@@ -7,6 +7,8 @@ defaults:
 on:
   push:
     branches: [master]
+    # The push filter stays: a kanban-only or docs-only merge to master must not
+    # rebuild and upload packages. Task 043.
     paths:
       - 'source/**'
       - 'tests/**'
@@ -17,18 +19,10 @@ on:
       - 'Directory.Packages.props'
       - 'source/Directory.Build.props'
       - 'nuget.config'
+  # No paths filter on pull_request: every pull request reports CI, and dev workflow
+  # asks the shared PullRequestBuildClassifier (TimeWarp.Nuru.DevCli) whether to build. Task 043.
   pull_request:
     branches: [master, 'feature/**']
-    paths:
-      - 'source/**'
-      - 'tests/**'
-      - 'tools/**'
-      - 'msbuild/**'
-      - '.github/workflows/**'
-      - 'Directory.Build.props'
-      - 'Directory.Packages.props'
-      - 'source/Directory.Build.props'
-      - 'nuget.config'
   release:
     types: [published]
   workflow_dispatch:
