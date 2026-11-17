@@ -1,6 +1,6 @@
 # Release Notes
 
-## 1.0.0-beta.16
+## 1.0.0-beta.17
 
 TWA0038 reports only files the consuming repository owns (task 040). Before this change, `.cs` files that a NuGet package compiles into the consumer (for example `TimeWarp.Nuru.DevCli` services) raised TWA0038, and the consumer could not shorten them.
 
@@ -13,6 +13,14 @@ TWA0038 reports only files the consuming repository owns (task 040). Before this
 [*.cs]
 dotnet_diagnostic.TWA0038.exclude_paths = tools/dev-cli/vendored/**
 ```
+
+## 1.0.0-beta.16
+
+Dependency refresh (task 042). No analyzer or rule changes.
+
+- Roslyn (`Microsoft.CodeAnalysis.Analyzers`, `Microsoft.CodeAnalysis.CSharp`, `Microsoft.CodeAnalysis.CSharp.Workspaces`) 5.9.0 to 5.12.0.
+- Dev CLI: `TimeWarp.Nuru` and `TimeWarp.Nuru.DevCli` 4.0.0-beta.12 to 4.0.0-beta.13.
+- Repository build: `TimeWarp.Build.Tasks` 2.0.0 to 2.0.1-beta.1 (build-time only, not shipped in the package).
 
 ## 1.0.0-beta.15
 
