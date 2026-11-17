@@ -19,6 +19,8 @@
   <ItemGroup>
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="$(RepositoryRoot)readme.md" Pack="true" PackagePath=""/>
+    <!-- Makes NuGetPackageRoot, ProjectDir, and RepositoryRoot visible to TWA0038 (task 040). -->
+    <None Include="build/TimeWarp.SourceGenerators.props" Pack="true" PackagePath="build;buildTransitive" />
     <InternalsVisibleTo Include="timewarp-source-generators-analyzer-tests" />
   </ItemGroup>
 

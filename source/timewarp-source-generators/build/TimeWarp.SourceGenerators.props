@@ -1,0 +1,13 @@
+<Project>
+  <!--
+    TWA0038 reports only files the consuming repository owns (task 040). The analyzer reads these
+    MSBuild properties as build_property.* global options to tell package content and files outside
+    the project from owned source. Each key is optional: the analyzer falls back to path rules when
+    one is absent. The NuGet package root name must match the PackageId, so this file is not kebab-case.
+  -->
+  <ItemGroup>
+    <CompilerVisibleProperty Include="NuGetPackageRoot" />
+    <CompilerVisibleProperty Include="ProjectDir" />
+    <CompilerVisibleProperty Include="RepositoryRoot" />
+  </ItemGroup>
+</Project>

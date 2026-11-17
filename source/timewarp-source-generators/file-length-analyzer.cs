@@ -8,7 +8,10 @@
 // DefaultMaximumLines is the limit. `dotnet_diagnostic.TWA0038.max_lines` overrides it per tree.
 // Generated code is skipped by GeneratedCodeAnalysisFlags.None (auto-generated header, *.g.cs,
 // *.Designer.cs, *.generated.cs, and editorconfig generated_code = true).
-// IsExemptPath also skips obj/ and goldens/ path segments when the file lacks a generated header.
+// SourceFileOwnership also skips obj/ and goldens/ path segments when the file lacks a generated header.
+// Only files the consuming repository owns are reported (task 040): SourceFileOwnership skips a tree
+// under the NuGet package root, or outside both ProjectDir and RepositoryRoot when both keys are visible.
+// `dotnet_diagnostic.TWA0038.exclude_paths` (glob list) skips what that heuristic misses.
 // Line count matches `wc -l`: a trailing line break does not open a counted line. The diagnostic
 // anchors on the first token (as TWA0004 does) so a leading `#pragma warning disable` can suppress it.
 // Id stays TWA0038 so an Architecture.Analyzers .editorconfig key still applies.
@@ -28,6 +31,9 @@ public class FileLengthAnalyzer : DiagnosticAnalyzer
 
   /// <summary>.editorconfig key that overrides <see cref="DefaultMaximumLines"/> for a tree.</summary>
   public const string MaximumLinesOptionKey = "dotnet_diagnostic.TWA0038.max_lines";
+
+  /// <summary>.editorconfig key holding a <c>;</c>- or <c>,</c>-separated glob list of paths to skip.</summary>
+  public const string ExcludePathsOptionKey = "dotnet_diagnostic.TWA0038.exclude_paths";
 
   private static readonly DiagnosticDescriptor Rule =
     new
@@ -60,22 +66,19 @@ public class FileLengthAnalyzer : DiagnosticAnalyzer
     return count;
   }
 
-  /// <summary>True when the path sits under an obj/ or goldens/ directory.</summary>
-  internal static bool IsExemptPath(string? path)
-  {
-    if (string.IsNullOrEmpty(path)) return false;
-
-    // Leading "/" lets a relative "obj/..." path match the same segment test as an absolute one.
-    string normalized = "/" + path!.Replace('\\', '/');
-    return normalized.Contains("/obj/", StringComparison.Ordinal)
-      || normalized.Contains("/goldens/", StringComparison.Ordinal);
-  }
-
   private static void AnalyzeTree(SyntaxTreeAnalysisContext context)
   {
-    if (IsExemptPath(context.Tree.FilePath)) return;
+    string filePath = context.Tree.FilePath;
+    AnalyzerConfigOptionsProvider provider = context.Options.AnalyzerConfigOptionsProvider;
+    AnalyzerConfigOptions options = provider.GetOptions(context.Tree);
 
-    int maximumLines = MaximumLines(context.Options.AnalyzerConfigOptionsProvider.GetOptions(context.Tree));
+    SourceFileOwnership.Roots roots = SourceFileOwnership.ReadRoots(options, provider.GlobalOptions);
+    if (!SourceFileOwnership.IsOwned(filePath, roots)) return;
+
+    options.TryGetValue(ExcludePathsOptionKey, out string? excludePaths);
+    if (SourceFileOwnership.MatchesAnyGlob(filePath, excludePaths)) return;
+
+    int maximumLines = MaximumLines(options);
     int lineCount = CountLines(context.Tree.GetText(context.CancellationToken));
     if (lineCount <= maximumLines) return;
 
@@ -84,7 +87,7 @@ public class FileLengthAnalyzer : DiagnosticAnalyzer
       ? Location.Create(context.Tree, new TextSpan(0, 0))
       : firstToken.GetLocation();
 
-    string fileName = Path.GetFileName(context.Tree.FilePath);
+    string fileName = Path.GetFileName(filePath);
     context.ReportDiagnostic(Diagnostic.Create(Rule, location, fileName, lineCount, maximumLines));
   }
 

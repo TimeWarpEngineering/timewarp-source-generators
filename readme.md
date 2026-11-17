@@ -67,6 +67,13 @@ dotnet_diagnostic.TWA0038.severity = warning
 dotnet_diagnostic.TWA0038.max_lines = 500
 ```
 
+TWA0038 reports only files the consuming repository owns. It skips a file under the NuGet package root (`.cs` that a package compiles in through `contentFiles` or a `Compile` item in its build props), under `obj/` or `goldens/`, or outside both the project directory and `$(RepositoryRoot)` (only when both are known). The package's `build/TimeWarp.SourceGenerators.props` makes `NuGetPackageRoot`, `ProjectDir`, and `RepositoryRoot` visible to the analyzer. When a key is absent, a `/.nuget/packages/` path segment still marks package content. For anything that heuristic misses, list globs (`;` or `,` separated; `**` spans directories, `*` and `?` stay in one) in `exclude_paths`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.TWA0038.exclude_paths = tools/dev-cli/vendored/**; **/third-party/*.cs
+```
+
 TWA0023 opt-out is `[TypeStemIdentifier("reason")]`. The attribute type stays in `TimeWarp.Architecture.Attributes` and is matched by simple name.
 
 ### Diagnostic ID prefixes (SSOT)

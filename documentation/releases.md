@@ -1,5 +1,19 @@
 # Release Notes
 
+## 1.0.0-beta.16
+
+TWA0038 reports only files the consuming repository owns (task 040). Before this change, `.cs` files that a NuGet package compiles into the consumer (for example `TimeWarp.Nuru.DevCli` services) raised TWA0038, and the consumer could not shorten them.
+
+- Skipped: a file under the NuGet package root, under `obj/` or `goldens/`, or outside both the project directory and `$(RepositoryRoot)`. Generated-code skipping is unchanged.
+- The package now ships `build/` and `buildTransitive/TimeWarp.SourceGenerators.props`, which makes `NuGetPackageRoot`, `ProjectDir`, and `RepositoryRoot` visible to the analyzer. When a key is absent, a `/.nuget/packages/` path segment still marks package content, and the outside-roots rule is off.
+- New `.editorconfig` key `dotnet_diagnostic.TWA0038.exclude_paths`: a `;`- or `,`-separated glob list. `**` spans directories, and `*` and `?` stay inside one. A glob without a leading `/` matches the end of the path at a directory boundary.
+- `dotnet_diagnostic.TWA0038.max_lines` still overrides the 500-line limit.
+
+```ini
+[*.cs]
+dotnet_diagnostic.TWA0038.exclude_paths = tools/dev-cli/vendored/**
+```
+
 ## 1.0.0-beta.15
 
 **Breaking:** the package now targets `net11.0`. The analyzer DLL under `analyzers/dotnet/cs` is built for `net11.0`, not `netstandard2.0`, and there is no `netstandard2.0` fallback.
