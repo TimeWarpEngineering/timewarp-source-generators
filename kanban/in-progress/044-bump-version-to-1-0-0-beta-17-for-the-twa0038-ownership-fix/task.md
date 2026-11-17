@@ -45,6 +45,12 @@ doc names beta.16 for the fix, and build, test, and audit pass.
 - Created: 83d187ba-085b-471b-8964-44a61c5cebc6 (2026-11-17)
 - 2026-11-17 implement (ganda task work, Claude Opus 5.5): version bump and release notes. Searched readme, `documentation/`, and `AnalyzerReleases.*.md`: none names a package version for the TWA0038 fix or `exclude_paths`, so only `releases.md` changed. Audit boy-scout: the advisory `vscode-window-icon` warning was fixed by `ganda repo audit --fix`, which writes the gitignored `.vscode/settings.json`; nothing tracked changed.
 - Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session 56431ef2-3cd7-4bf8-bffe-a75e8b3146ac, max-turns 500, Done — 2026-11-17T13:10:42Z
+- Reviewer: grok session 01a1e9a1-b181-70a3-9fe0-5b25965c6740 (2026-11-17), effort 1, roster general. Round 1 disposition clean. No misread between the implementer restatement and the original task.
+- Review oracle: review by reviewer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1e9a1-b181-70a3-9fe0-5b25965c6740, max-turns 80, artifacts general.md, merged.md, disposition.md — 2026-11-17T13:14:49Z
+
+## Review
+
+- Round 1: Done
 
 ## Notes
 
@@ -79,3 +85,10 @@ git diff v1.0.0-beta.15 v1.0.0-beta.16 -- Directory.Packages.props
 ```
 
 Expect: `check-version` says the version is new and safe to release. `<Version>1.0.0-beta.17</Version>`. `releases.md` headings appear in order beta.17, beta.16, beta.15; the beta.17 body is the TWA0038 ownership text and the beta.16 body lists exactly the pin changes the `git diff` shows.
+
+### Review
+
+- Round 1, effort 1, reviewer roster: general (grok session 01a1e9a1-b181-70a3-9fe0-5b25965c6740, 2026-11-17).
+- Counts: bug 0 open / 0 fixed / 0 wontfix; suggestion 0; nit 0. Final open count 0.
+- Disposition: clean. The implementer restatement matches the original task. No wontfix and no escalation.
+- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md`.
