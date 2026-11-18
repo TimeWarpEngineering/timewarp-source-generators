@@ -108,9 +108,9 @@ internal sealed class TestCommand : ICommand<Unit>
     private async Task<bool> RestoreCoverageToolAsync()
     {
       Terminal.WriteLine("Restoring local dotnet-coverage tool...");
-      CommandResult restore = Shell.Builder("dotnet")
-        .WithArguments("tool", "restore")
+      CommandResult restore = DotNet.Tool()
         .WithWorkingDirectory(RepoRoot)
+        .Restore()
         .WithNoValidation()
         .Build();
 
@@ -141,10 +141,13 @@ internal sealed class TestCommand : ICommand<Unit>
         Path.GetFileNameWithoutExtension(relativePath) + ".cobertura.xml");
 
       // dotnet-coverage 18.12.0 targets net8.0. Major roll-forward starts it on the 11.0.x SDK.
-      CommandResult covered = Shell.Builder("dotnet")
+      CommandResult covered = DotNet.Tool()
+        .WithWorkingDirectory(RepoRoot)
+        .WithEnvironmentVariable("DOTNET_ROLL_FORWARD", "Major")
+        .Run("dotnet-coverage")
         .WithArguments
         (
-          "dotnet-coverage", "collect",
+          "collect",
           "--nologo",
           "--output-format", "cobertura",
           "--output", outputPath,
@@ -154,8 +157,6 @@ internal sealed class TestCommand : ICommand<Unit>
           "--configuration", "Release",
           "--no-build"
         )
-        .WithWorkingDirectory(RepoRoot)
-        .WithEnvironmentVariable("DOTNET_ROLL_FORWARD", "Major")
         .WithNoValidation()
         .Build();
 
