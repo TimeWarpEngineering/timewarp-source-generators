@@ -36,6 +36,7 @@ Acceptance criteria:
   Checked by hand that `dotnet tool run dotnet-coverage collect … -- <cmd>` passes `--` through to the tool and writes the cobertura file.
 - Boy-scout: `ganda repo audit` raised the advisory `vscode-window-icon` (missing `.vscode/settings.json`).
   `ganda repo audit --fix` wrote it. The file is gitignored, so nothing was committed for it.
+- Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5), session not reported, max-turns 500, Done — 2026-11-18T17:13:49Z
 
 ## Results
 
