@@ -37,6 +37,8 @@ Acceptance criteria:
 - Boy-scout: `ganda repo audit` raised the advisory `vscode-window-icon` (missing `.vscode/settings.json`).
   `ganda repo audit --fix` wrote it. The file is gitignored, so nothing was committed for it.
 - Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5), session not reported, max-turns 500, Done — 2026-11-18T17:13:49Z
+- Reviewer: grok session 01a1efa6-a317-7bc2-926f-64028ee5dfae (grok 4.7, effort 1, general, turn cap 80) (2026-11-19)
+- Review oracle: review by reviewer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a1efa6-a317-7bc2-926f-64028ee5dfae, max-turns 80, artifacts general.md, merged.md, disposition.md — 2026-11-18T17:23:32Z
 
 ## Results
 
@@ -54,6 +56,13 @@ Gates:
 - Test files: none added or edited. No test covers the dev CLI endpoints (grep for `TestCommand`, `WorkflowCommand`, `PushPackageAsync`, and `RestoreCoverageToolAsync` under `tests/` finds nothing). CI runs the full suite.
 - `ganda repo audit`: PASS (1 advisory, `vscode-window-icon`). After `ganda repo audit --fix`: all checks PASS.
 
+### Review
+
+- Round 1, effort 1, roster: general (grok 4.7, session 01a1efa6-a317-7bc2-926f-64028ee5dfae).
+- Counts: bug 0 open / 0 fixed / 0 wontfix; suggestion 0; nit 0. Final open count: 0.
+- Disposition: clean. No wontfix. No escalation. The Goal restatement matches the original task; no misread.
+- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md`.
+
 ### How to validate
 
 Smoke:
@@ -65,3 +74,7 @@ dotnet run --file tools/dev-cli/dev.cs -- self-install
 ```
 
 Expect: self-install prints "Successfully installed dev CLI" and has no AMURU0001/AMURU0002 errors. Build prints "Build completed successfully!" with 0 warnings and 0 errors. `--help` lists the dev commands.
+
+## Review
+
+- Round 1: Done
