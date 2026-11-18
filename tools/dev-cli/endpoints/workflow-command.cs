@@ -243,17 +243,18 @@ internal sealed class WorkflowCommand : ICommand<Unit>
 
       Terminal.WriteLine($"Pushing {PackageId}.{version}.nupkg...");
 
-      List<string> args = ["nuget", "push", nupkgPath, "--source", NuGetSource, "--skip-duplicate"];
+      DotNetNuGetPushBuilder push = DotNet.NuGet()
+        .WithWorkingDirectory(RepoRoot)
+        .Push(nupkgPath)
+        .WithSource(NuGetSource)
+        .WithSkipDuplicate()
+        .WithNoValidation();
       if (!string.IsNullOrEmpty(apiKey))
       {
-        args.AddRange(["--api-key", apiKey]);
+        push = push.WithApiKey(apiKey);
       }
 
-      int exitCode = await Shell.Builder("dotnet")
-        .WithArguments([.. args])
-        .WithWorkingDirectory(RepoRoot)
-        .WithNoValidation()
-        .RunAsync(Ct);
+      int exitCode = await push.RunAsync(Ct);
 
       if (exitCode != 0)
       {
