@@ -24,6 +24,8 @@ Acceptance criteria:
 
 - Minted by ganda task wave run 20261126T021837Z-0cb631
 - Implement oracle: implemented by implementer-claude (claude, vendor anthropic, model claude-opus-5-5, response model claude-opus-5-5), session d919282a-a5e4-44aa-9b2b-2d1317b55902, max-turns 500, Done — 2026-11-26T02:32:15Z
+- Review oracle: grok session 01a215b2-67be-77a0-abce-d526f70215a8 (2026-11-26), effort 1, roster general, turn cap 80
+- Review oracle: review by reviewer-grok (grok, vendor xai, model grok-4.7, response model grok-4.7-build), session 01a215b2-67be-77a0-abce-d526f70215a8, max-turns 80, artifacts general.md, merged.md, disposition.md — 2026-11-26T02:35:48Z
 
 ## Results
 
@@ -40,3 +42,14 @@ Gates:
 
 Smoke: `dotnet run --file tools/dev-cli/dev.cs -- self-install && ./bin/dev --capabilities && ./bin/dev build`
 Expect: the dev CLI publishes against Nuru 4.0.0-beta.17, `--capabilities` exits 0, and the build reports 0 errors.
+
+### Review
+
+- Round 1, effort 1, reviewer roster: general (grok session 01a215b2-67be-77a0-abce-d526f70215a8, 2026-11-26).
+- Counts: bug 0 open / 0 fixed / 0 wontfix; suggestion 0; nit 0. Final open count 0.
+- Disposition: clean. The implementer restatement matches the original task. No wontfix and no escalation.
+- Paths: `review/review-framework.md`, `review/round-1/general.md`, `review/round-1/merged.md`, `review/disposition.md`.
+
+## Review
+
+- Round 1: Done
