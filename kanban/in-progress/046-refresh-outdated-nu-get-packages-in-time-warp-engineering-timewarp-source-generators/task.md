@@ -10,6 +10,32 @@ Outdated:
 Every outdated pin is dev-only. Bump them. Do not change <Version> in source/Directory.Build.props: the wave merges this task and does not release this repo.
 Edit Directory.Packages.props in this repo only.
 
+## Goal (implementer restatement)
+
+Bump the two dev-only Nuru pins in `Directory.Packages.props` from 4.0.0-beta.16 to 4.0.0-beta.17
+(TimeWarp.Nuru and TimeWarp.Nuru.DevCli, consumed only by tools/dev-cli).
+
+Acceptance criteria:
+- `Directory.Packages.props` pins both packages at 4.0.0-beta.17; nothing else in the repo pins beta.16.
+- `<Version>` in source/Directory.Build.props is unchanged (no release).
+- The dev CLI still compiles and `./bin/dev build` passes; `ganda repo audit` passes.
+
 ## Session
 
 - Minted by ganda task wave run 20261126T021837Z-0cb631
+
+## Results
+
+Bumped `TimeWarp.Nuru` and `TimeWarp.Nuru.DevCli` from 4.0.0-beta.16 to 4.0.0-beta.17 in
+`Directory.Packages.props` (dev-only, used by tools/dev-cli). `<Version>` in
+source/Directory.Build.props is unchanged. Re-ran `dev self-install` so `./bin/dev` uses the new packages.
+
+Gates:
+- `./bin/dev build` — pass (0 warnings, 0 errors)
+- Tests: no test file covers tools/dev-cli; the change edits only a package pin, so no test runfile was run (CI runs the full suite).
+- `ganda repo audit` — pass; 1 advisory warning `vscode-window-icon` (.vscode/settings.json missing), non-blocking and pre-existing, left as is.
+
+### How to validate
+
+Smoke: `dotnet run --file tools/dev-cli/dev.cs -- self-install && ./bin/dev --capabilities && ./bin/dev build`
+Expect: the dev CLI publishes against Nuru 4.0.0-beta.17, `--capabilities` exits 0, and the build reports 0 errors.
